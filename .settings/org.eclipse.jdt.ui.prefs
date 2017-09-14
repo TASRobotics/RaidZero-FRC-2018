@@ -2,6 +2,6 @@ eclipse.preferences.version=1
 formatter_profile=_Raid Zero
 formatter_settings_version=12
 org.eclipse.jdt.ui.ignorelowercasenames=true
-org.eclipse.jdt.ui.importorder=\#;;
+org.eclipse.jdt.ui.importorder=\#org.usfirst.frc.team4253.robot2017;org.usfirst.frc.team4253.robot2017;\#;;
 org.eclipse.jdt.ui.ondemandthreshold=99
 org.eclipse.jdt.ui.staticondemandthreshold=99
