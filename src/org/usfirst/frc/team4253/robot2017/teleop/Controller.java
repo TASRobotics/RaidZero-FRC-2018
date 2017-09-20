@@ -1,6 +1,7 @@
-package org.usfirst.frc.team4253.robot2017;
+package org.usfirst.frc.team4253.robot2017.teleop;
 
 import edu.wpi.first.wpilibj.Joystick;
+import java.util.stream.Stream;
 
 public class Controller {
 
@@ -14,18 +15,20 @@ public class Controller {
         return joystick.getRawAxis(axis.raw);
     }
     
-    public Controller ifPressed(Button button, Runnable action) {
-        if (joystick.getRawButton(button.raw)) {
-            action.run();
-        }
-        return this;
+    public boolean isPressed(Button button) {
+        return joystick.getRawButton(button.raw);
     }
     
-    public Controller ifPressed(DPad dPad, Runnable action) {
-        if (joystick.getPOV() == dPad.angle) {
-            action.run();
-        }
-        return this;
+    public boolean isPressed(DPad dPad) {
+        return joystick.getPOV() == dPad.angle;
+    }
+    
+    public boolean isAnyPressed(Button... buttons) {
+        return Stream.of(buttons).anyMatch(this::isPressed);
+    }
+    
+    public boolean isAnyPressed(DPad... dPads) {
+        return Stream.of(dPads).anyMatch(this::isPressed);
     }
     
     public static enum Axis {

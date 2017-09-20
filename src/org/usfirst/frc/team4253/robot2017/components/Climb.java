@@ -1,4 +1,4 @@
-package org.usfirst.frc.team4253.robot2017;
+package org.usfirst.frc.team4253.robot2017.components;
 
 import com.ctre.CANTalon;
 import com.ctre.CANTalon.TalonControlMode;
