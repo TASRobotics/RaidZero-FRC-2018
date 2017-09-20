@@ -6,22 +6,22 @@ import org.usfirst.frc.team4253.robot2017.teleop.Controller.Button;
 import org.usfirst.frc.team4253.robot2017.teleop.Controller.DPad;
 
 public class Teleop {
-    
+
     private static Controller firstController;
     private static Controller secondController;
     private static TeleopDrive teleopDrive;
-    
+
     public static void initialize() {
         firstController = new Controller(0);
         secondController = new Controller(1);
         teleopDrive = new TeleopDrive(Components.getDrive());
     }
-    
+
     public static void setup() {
         teleopDrive.setup();
         Components.getCompressor().start();
     }
-    
+
     public static void run() {
         // drive controls
         if (firstController.isPressed(Button.RB)) {
@@ -34,7 +34,7 @@ public class Teleop {
             firstController.getAxisValue(Axis.LeftY),
             firstController.getAxisValue(Axis.LeftX)
         );
-        
+
         // climb controls
         if (secondController.isPressed(Button.LB)) {
             Components.getClimb().upHalfPower();
@@ -45,7 +45,7 @@ public class Teleop {
         } else {
             Components.getClimb().stop();
         }
-        
+
         // gear door controls
         if (firstController.isAnyPressed(Button.X, Button.A, Button.B, Button.Y)
                 || secondController.isPressed(Button.RB)) {
@@ -55,5 +55,5 @@ public class Teleop {
             Components.getGearDoor().close();
         }
     }
-    
+
 }

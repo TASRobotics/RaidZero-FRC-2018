@@ -8,7 +8,7 @@ public class Components {
     private static Climb climb;
     private static GearDoor gearDoor;
     private static Compressor compressor;
-    
+
     public static void initialize() {
         drive = new Drive(1, 2, 3, 4, 5, 6, 0, 1);
         climb = new Climb(15, 13);
@@ -16,19 +16,19 @@ public class Components {
         compressor = new Compressor();
         compressor.stop();
     }
-    
+
     public static Drive getDrive() {
         return drive;
     }
-    
+
     public static Climb getClimb() {
         return climb;
     }
-    
+
     public static GearDoor getGearDoor() {
         return gearDoor;
     }
-    
+
     public static Compressor getCompressor() {
         return compressor;
     }

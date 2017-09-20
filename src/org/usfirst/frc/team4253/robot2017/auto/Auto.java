@@ -4,19 +4,19 @@ import org.usfirst.frc.team4253.robot2017.auto.AutoChooser.Color;
 import org.usfirst.frc.team4253.robot2017.components.Components;
 
 public class Auto {
-    
+
     private static AutoDrive autoDrive;
-    
+
     public static void initialize() {
         AutoChooser.initialize();
         autoDrive = new AutoDrive(Components.getDrive());
     }
-    
+
     public static void setup() {
         autoDrive.setup();
         Components.getCompressor().start();
     }
-    
+
     public static void run() {
         Color color = AutoChooser.getColor();
         switch (AutoChooser.getMode()) {
@@ -36,11 +36,11 @@ public class Auto {
                 break;
         }
     }
-    
+
     private static void crossLine() {
         autoDrive.moveMeters(4, 5);
     }
-    
+
     private static void deliverCenterGear(Color color) {
         boolean red = color == Color.Red;
         autoDrive.moveInches(44, 1);
@@ -59,7 +59,7 @@ public class Auto {
         autoDrive.turn(red ? 90 : -90, 2.2);
         autoDrive.moveMeters(8, 3);
     }
-    
+
     private static void deliverSideGear(Color color, Side side) {
         boolean leftSide = side == Side.Left;
         // red left or blue right = gear loading side
@@ -81,16 +81,16 @@ public class Auto {
         autoDrive.turn(leftSide ? -60 : 60, 2.2);
         autoDrive.moveMeters(7, 3);
     }
-    
+
     private static void visionTurn() {
         // TODO
     }
-    
+
     private static boolean visionForward() {
         // TODO
         return false;
     }
-    
+
     private static enum Side { Left, Right }
 
 }

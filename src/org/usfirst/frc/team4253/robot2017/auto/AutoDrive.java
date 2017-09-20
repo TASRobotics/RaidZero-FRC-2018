@@ -6,7 +6,7 @@ import org.usfirst.frc.team4253.robot2017.components.Drive;
 import com.ctre.CANTalon.TalonControlMode;
 
 public class AutoDrive {
-    
+
     private static final double ON_TARGET_TIME = 0.5;
     private static final int ON_TARGET_TOLERANCE = 200;
     private static final double METER_TO_TICKS_MULTIPLIER = 18000;
@@ -30,7 +30,7 @@ public class AutoDrive {
                 TURN_PID = new double[] { 0.41, 0.0006, 33 };
         }
     }
-    
+
     private Drive drive;
     private Timer moveTimer;
     private Timer onTargetTimer;
@@ -42,28 +42,28 @@ public class AutoDrive {
         moveTimer = new Timer();
         onTargetTimer = new Timer();
     }
-    
+
     public void setup() {
         drive.setLowGear();
         drive.setControlMode(TalonControlMode.Position);
     }
-    
+
     public void moveInches(double distance, double timeLimit) {
         moveMeters(distance * 2.54 / 100, timeLimit);
     }
-    
+
     public void moveMeters(double distance, double timeLimit) {
         switchProfile(STRAIGHT_PROFILE);
         int ticks = (int) (distance * METER_TO_TICKS_MULTIPLIER);
         move(ticks, ticks, timeLimit);
     }
-    
+
     public void turn(double angle, double timeLimit) {
         switchProfile(TURN_PROFILE);
         int ticks = (int) (angle * DEGREE_TO_TICKS_MULTIPLIER);
         move(ticks, -ticks, timeLimit);
     }
-    
+
     private void move(int leftTicks, int rightTicks, double timeLimit) {
         moveTimer.reset();
         onTargetTimer.reset();
@@ -83,16 +83,16 @@ public class AutoDrive {
             }
         }
     }
-    
+
     private static boolean onTarget(double current, int target) {
         return Math.abs(current - target) < ON_TARGET_TOLERANCE;
     }
-    
+
     private void saveProfile(double[] pid, int profile) {
         drive.getLeftMotor().setPID(pid[0], pid[1], pid[2], 0, 0, 0, profile);
         drive.getRightMotor().setPID(pid[0], pid[1], pid[2], 0, 0, 0, profile);
     }
-    
+
     private void switchProfile(int profile) {
         drive.getLeftMotor().setProfile(profile);
         drive.getRightMotor().setProfile(profile);

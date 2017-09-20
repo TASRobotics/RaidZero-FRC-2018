@@ -8,7 +8,7 @@ public class AutoChooser {
 
     private static SendableChooser<Color> colorChooser;
     private static SendableChooser<AutoMode> modeChooser;
-    
+
     public static void initialize() {
         colorChooser = new SendableChooser<>();
         switch (DriverStation.getInstance().getAlliance()) {
@@ -28,7 +28,7 @@ public class AutoChooser {
                 SmartDashboard.putData("Alliance (could not automatically detect)", colorChooser);
                 break;
         }
-        
+
         modeChooser = new SendableChooser<>();
         modeChooser.addDefault("Do nothing", AutoMode.DoNothing);
         modeChooser.addObject("Right gear", AutoMode.RightGear);
@@ -37,17 +37,17 @@ public class AutoChooser {
         modeChooser.addObject("Cross the line", AutoMode.CrossLine);
         SmartDashboard.putData("Mode", modeChooser);
     }
-    
+
     public static Color getColor() {
         return colorChooser.getSelected();
     }
-    
+
     public static AutoMode getMode() {
         return modeChooser.getSelected();
     }
-    
+
     public static enum Color { Red, Blue }
-    
+
     public static enum AutoMode {
         DoNothing,
         CrossLine,
@@ -55,5 +55,5 @@ public class AutoChooser {
         CenterGear,
         RightGear
     }
-    
+
 }
