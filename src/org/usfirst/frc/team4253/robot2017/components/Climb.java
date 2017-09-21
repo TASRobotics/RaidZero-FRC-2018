@@ -5,7 +5,7 @@ import com.ctre.CANTalon.TalonControlMode;
 
 public class Climb {
 
-    private static final double POWER_MULTIPLIER = 1;
+    private static final double POWER = 1;
 
     private CANTalon motor;
 
@@ -23,11 +23,11 @@ public class Climb {
     }
 
     public void up() {
-        motor.set(POWER_MULTIPLIER);
+        motor.set(POWER);
     }
 
     public void upHalfPower() {
-        motor.set(POWER_MULTIPLIER / 2);
+        motor.set(POWER / 2);
     }
 
     public void stop() {
@@ -35,7 +35,7 @@ public class Climb {
     }
 
     public void down() {
-        motor.set(-POWER_MULTIPLIER);
+        motor.set(-POWER);
     }
 
 }
