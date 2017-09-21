@@ -14,7 +14,7 @@ public class Intake {
         motor.changeControlMode(TalonControlMode.PercentVbus);
     }
 
-    public void start() {
+    public void run() {
         motor.set(POWER);
     }
 
