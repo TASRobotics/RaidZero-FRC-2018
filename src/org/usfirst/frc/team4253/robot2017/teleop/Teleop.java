@@ -54,6 +54,13 @@ public class Teleop {
         if (secondController.isPressed(Button.RT)) {
             Components.getGearDoor().close();
         }
+        
+        // intake controls
+        if (secondController.isPressed(Button.X)) {
+            Components.getIntake().run();
+        } else {
+            Components.getIntake().stop();
+        }
     }
 
 }
