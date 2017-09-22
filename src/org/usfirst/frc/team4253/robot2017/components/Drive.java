@@ -47,6 +47,7 @@ public class Drive {
 
     private void initFollower(int id, CANTalon leader) {
         CANTalon motor = new CANTalon(id);
+        motor.changeControlMode(TalonControlMode.Follower);
         motor.enableBrakeMode(true);
         motor.set(leader.getDeviceID());
     }

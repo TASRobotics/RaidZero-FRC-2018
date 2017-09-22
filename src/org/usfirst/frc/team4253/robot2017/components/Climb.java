@@ -16,7 +16,7 @@ public class Climb {
         motor.setInverted(true);
 
         CANTalon motor2 = new CANTalon(motor2ID);
-        motor2.changeControlMode(TalonControlMode.PercentVbus);
+        motor2.changeControlMode(TalonControlMode.Follower);
         motor2.set(motor1ID);
         motor2.enableBrakeMode(true);
         motor2.reverseOutput(true);
