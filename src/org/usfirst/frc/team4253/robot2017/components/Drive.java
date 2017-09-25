@@ -14,12 +14,14 @@ public class Drive {
     private CANTalon rightMotor;
     private DoubleSolenoid gearShift;
 
+    //@formatter:off
     public Drive(
             int left1ID, int right1ID,
             int left2ID, int right2ID,
             int left3ID, int right3ID,
             int gearShiftForward, int gearShiftReverse
     ) {
+        //@formatter:on
         leftMotor = initLeader(left1ID);
         rightMotor = initLeader(right1ID);
         leftMotor.configPeakOutputVoltage(LEFT_PEAK_VOLTAGE, -LEFT_PEAK_VOLTAGE);
