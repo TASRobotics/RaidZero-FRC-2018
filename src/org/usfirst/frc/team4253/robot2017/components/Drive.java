@@ -15,9 +15,10 @@ public class Drive {
     private DoubleSolenoid gearShift;
 
     public Drive(
-        int left1ID, int left2ID, int left3ID,
-        int right1ID, int right2ID, int right3ID,
-        int gearShiftForward, int gearShiftReverse
+            int left1ID, int right1ID,
+            int left2ID, int right2ID,
+            int left3ID, int right3ID,
+            int gearShiftForward, int gearShiftReverse
     ) {
         leftMotor = initLeader(left1ID);
         rightMotor = initLeader(right1ID);
