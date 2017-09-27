@@ -34,8 +34,4 @@ public class Climb {
         motor.set(0);
     }
 
-    public void down() {
-        motor.set(-POWER);
-    }
-
 }

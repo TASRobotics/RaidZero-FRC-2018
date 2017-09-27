@@ -3,7 +3,6 @@ package org.usfirst.frc.team4253.robot2017.teleop;
 import org.usfirst.frc.team4253.robot2017.components.Components;
 import org.usfirst.frc.team4253.robot2017.teleop.Controller.Axis;
 import org.usfirst.frc.team4253.robot2017.teleop.Controller.Button;
-import org.usfirst.frc.team4253.robot2017.teleop.Controller.DPad;
 
 public class Teleop {
 
@@ -40,8 +39,6 @@ public class Teleop {
             Components.getClimb().upHalfPower();
         } else if (secondController.isPressed(Button.LT)) {
             Components.getClimb().up();
-        } else if (secondController.isPressed(DPad.Down)) {
-            Components.getClimb().down();
         } else {
             Components.getClimb().stop();
         }
