@@ -16,10 +16,10 @@ public class Drive {
 
     //@formatter:off
     public Drive(
-            int left1ID, int right1ID,
-            int left2ID, int right2ID,
-            int left3ID, int right3ID,
-            int gearShiftForward, int gearShiftReverse
+        int left1ID, int right1ID,
+        int left2ID, int right2ID,
+        int left3ID, int right3ID,
+        int gearShiftForward, int gearShiftReverse
     ) {
         //@formatter:on
         leftMotor = initLeader(left1ID);
