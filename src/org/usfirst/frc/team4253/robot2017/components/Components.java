@@ -33,22 +33,47 @@ public class Components {
         compressor.stop();
     }
 
+    /**
+     * Returns the drive component.
+     * 
+     * @return the drive component
+     */
     public static Drive getDrive() {
         return drive;
     }
 
+    /**
+     * Returns the climb component.
+     * 
+     * @return the climb component
+     */
     public static Climb getClimb() {
         return climb;
     }
 
+    /**
+     * Returns the gear door component.
+     * 
+     * @return the gear door component
+     */
     public static GearDoor getGearDoor() {
         return gearDoor;
     }
 
+    /**
+     * Returns the intake component.
+     * 
+     * @return the intake component
+     */
     public static Intake getIntake() {
         return intake;
     }
 
+    /**
+     * Returns the compressor component.
+     * 
+     * @return the compressor component
+     */
     public static Compressor getCompressor() {
         return compressor;
     }
