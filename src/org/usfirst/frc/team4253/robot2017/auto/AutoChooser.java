@@ -23,9 +23,9 @@ public class AutoChooser {
                 SmartDashboard.putData("Alliance", colorChooser);
                 break;
             case Invalid:
-                colorChooser.addDefault("Red", Color.Red);
+                colorChooser.addDefault("Red (default, could not automatically detect)", Color.Red);
                 colorChooser.addObject("Blue", Color.Blue);
-                SmartDashboard.putData("Alliance (could not automatically detect)", colorChooser);
+                SmartDashboard.putData("Alliance", colorChooser);
                 break;
         }
 
