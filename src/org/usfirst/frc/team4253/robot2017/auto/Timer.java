@@ -20,6 +20,7 @@ public class Timer {
     public void start() {
         if (!running) {
             startTime = Utility.getFPGATime();
+            running = true;
         } else {
             System.err.println("[Timer] start() called on a timer that was already running");
         }
