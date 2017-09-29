@@ -70,9 +70,9 @@ public class AutoDrive {
         drive.getLeftMotor().setEncPosition(0);
         drive.getRightMotor().setEncPosition(0);
         moveTimer.start();
-        drive.getLeftMotor().setSetpoint(leftTicks);
-        drive.getRightMotor().setSetpoint(rightTicks);
         while (moveTimer.lessThan(timeLimit) && onTargetTimer.lessThan(ON_TARGET_TIME)) {
+            drive.getLeftMotor().setSetpoint(leftTicks);
+            drive.getRightMotor().setSetpoint(rightTicks);
             if (onTarget(drive.getLeftMotor().getEncPosition(), leftTicks)
                     || onTarget(drive.getRightMotor().getEncPosition(), rightTicks)) {
                 if (!onTargetTimer.isRunning()) {
