@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.Compressor;
  * <p>All the variables and methods in this class should be static, because there is only one set of
  * components throughout the whole robot. Do not construct an instance of this class.
  * 
- * <p>Make sure you call the {@code initialize()} method before accessing any components.
+ * <p>Make sure the {@link #initialize()} method has been called before accessing any components.
  */
 public class Components {
 
@@ -21,8 +21,8 @@ public class Components {
     /**
      * Initializes each component by calling its constructor.
      * 
-     * <p>Make sure you call this method before accessing any components, as they will be null
-     * before this method is called.
+     * <p>Make sure this method has been called before accessing any components, as they will be
+     * null before this method is called.
      */
     public static void initialize() {
         drive = new Drive(1, 2, 3, 4, 5, 6, 0, 1);
