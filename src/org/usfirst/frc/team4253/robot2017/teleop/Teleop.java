@@ -26,7 +26,7 @@ public class Teleop {
      * 
      * <p>The difference between this method and {@link #setup()} is that this should only be run
      * once at the beginning, but {@link #setup()} should be called once every time the robot is
-     * switched to autonomous mode.
+     * switched to teleop mode.
      */
     public static void initialize() {
         firstController = new Controller(0);
@@ -37,12 +37,12 @@ public class Teleop {
     /**
      * Configures the components for use in teleop mode.
      * 
-     * <p>This should be called once every time the robot is switched to autonomous mode, before
-     * calling {@link #run()}.
+     * <p>This should be called once every time the robot is switched to teleop mode, before calling
+     * {@link #run()}.
      * 
      * <p>The difference between this method and {@link #initialize()} is that this should be called
-     * once every time the robot is switched to autonomous mode, but {@link #initialize()} should
-     * only be run once at the beginning.
+     * once every time the robot is switched to teleop mode, but {@link #initialize()} should only
+     * be run once at the beginning.
      */
     public static void setup() {
         teleopDrive.setup();
@@ -62,10 +62,8 @@ public class Teleop {
         if (firstController.isPressed(Button.RT)) {
             Components.getDrive().setLowGear();
         }
-        teleopDrive.drive(
-            firstController.getAxisValue(Axis.LeftY),
-            firstController.getAxisValue(Axis.LeftX)
-        );
+        teleopDrive.drive(firstController.getAxisValue(Axis.LeftY),
+                firstController.getAxisValue(Axis.LeftX));
 
         // climb controls
         if (secondController.isPressed(Button.LB)) {
@@ -84,7 +82,7 @@ public class Teleop {
         if (secondController.isPressed(Button.RT)) {
             Components.getGearDoor().close();
         }
-        
+
         // intake controls
         if (secondController.isPressed(Button.X)) {
             Components.getIntake().run();
