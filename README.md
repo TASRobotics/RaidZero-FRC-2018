@@ -1,3 +1,2 @@
-# RaidZero-FRC-2017-Rewrite
+# RaidZero-FRC-2018
 
-Rewrite of 2017 competition code
