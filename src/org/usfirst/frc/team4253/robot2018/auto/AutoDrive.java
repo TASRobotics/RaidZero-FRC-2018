@@ -1,9 +1,8 @@
-package org.usfirst.frc.team4253.robot2017.auto;
-
-import org.usfirst.frc.team4253.robot2017.Settings;
-import org.usfirst.frc.team4253.robot2017.components.Drive;
+package org.usfirst.frc.team4253.robot2018.auto;
 
 import com.ctre.CANTalon.TalonControlMode;
+import org.usfirst.frc.team4253.robot2018.Settings;
+import org.usfirst.frc.team4253.robot2018.components.Drive;
 
 /**
  * Autonomous-specific functionality for the drive.

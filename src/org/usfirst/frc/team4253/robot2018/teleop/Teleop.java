@@ -1,8 +1,8 @@
-package org.usfirst.frc.team4253.robot2017.teleop;
+package org.usfirst.frc.team4253.robot2018.teleop;
 
-import org.usfirst.frc.team4253.robot2017.components.Components;
-import org.usfirst.frc.team4253.robot2017.teleop.Controller.Axis;
-import org.usfirst.frc.team4253.robot2017.teleop.Controller.Button;
+import org.usfirst.frc.team4253.robot2018.components.Components;
+import org.usfirst.frc.team4253.robot2018.teleop.Controller.Axis;
+import org.usfirst.frc.team4253.robot2018.teleop.Controller.Button;
 
 /**
  * Teleop (remote control) specific code for the robot.

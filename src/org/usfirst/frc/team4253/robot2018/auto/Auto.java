@@ -1,7 +1,7 @@
-package org.usfirst.frc.team4253.robot2017.auto;
+package org.usfirst.frc.team4253.robot2018.auto;
 
-import org.usfirst.frc.team4253.robot2017.auto.AutoChooser.Color;
-import org.usfirst.frc.team4253.robot2017.components.Components;
+import org.usfirst.frc.team4253.robot2018.auto.AutoChooser.Color;
+import org.usfirst.frc.team4253.robot2018.components.Components;
 
 /**
  * Autonomous specific code for the robot.

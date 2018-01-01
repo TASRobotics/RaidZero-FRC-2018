@@ -1,11 +1,10 @@
-package org.usfirst.frc.team4253.robot2017;
-
-import org.usfirst.frc.team4253.robot2017.auto.Auto;
-import org.usfirst.frc.team4253.robot2017.components.Components;
-import org.usfirst.frc.team4253.robot2017.teleop.Teleop;
+package org.usfirst.frc.team4253.robot2018;
 
 import edu.wpi.first.wpilibj.SampleRobot;
 import edu.wpi.first.wpilibj.Timer;
+import org.usfirst.frc.team4253.robot2018.auto.Auto;
+import org.usfirst.frc.team4253.robot2018.components.Components;
+import org.usfirst.frc.team4253.robot2018.teleop.Teleop;
 
 /**
  * The main class of the program.
