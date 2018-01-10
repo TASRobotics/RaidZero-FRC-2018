@@ -27,7 +27,7 @@ public class Teleop {
     /**
      * Runs the teleop code.
      * 
-     * <p>This method should be called repeatedly during teleop mode.
+     * <p>This should be called repeatedly during teleop mode.
      */
     public static void run() {
 
