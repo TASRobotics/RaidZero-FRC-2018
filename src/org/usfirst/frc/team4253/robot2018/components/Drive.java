@@ -1,117 +1,86 @@
 package org.usfirst.frc.team4253.robot2018.components;
 
-import com.ctre.CANTalon;
-import com.ctre.CANTalon.FeedbackDevice;
-import com.ctre.CANTalon.TalonControlMode;
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 
 /**
- * The drive system (i.e. the six wheels and gear shift).
+ * The drive system.
  */
 public class Drive {
 
-    /**
-     * The peak output voltage for the left motor.
-     */
-    private static final double LEFT_PEAK_VOLTAGE = 11.7;
-    /**
-     * The peak output voltage for the right motor.
-     */
-    private static final double RIGHT_PEAK_VOLTAGE = 12;
-
-    private CANTalon leftMotor;
-    private CANTalon rightMotor;
+    private TalonSRX leftMotor;
+    private TalonSRX rightMotor;
     private DoubleSolenoid gearShift;
 
     /**
      * Constructs a Drive object and sets up the motors and gear shift.
      * 
-     * @param left1ID the ID of the first left motor
-     * @param right1ID the ID of the first right motor
-     * @param left2ID the ID of the second left motor
-     * @param right2ID the ID of the second right motor
-     * @param left3ID the ID of the third left motor
-     * @param right3ID the ID of the third right motor
+     * @param leftLeaderID the ID of the left leader motor
+     * @param rightLeaderID the ID of the right leader motor
+     * @param leftFollowerID the ID of the left follower motor
+     * @param rightFollowerID the ID of the right follower motor
      * @param gearShiftForward the forward channel for the gear shift
      * @param gearShiftReverse the reverse channel for the gear shift
      */
     //@formatter:off
     public Drive(
-        int left1ID, int right1ID,
-        int left2ID, int right2ID,
-        int left3ID, int right3ID,
+        int leftLeaderID, int rightLeaderID,
+        int leftFollowerID, int rightFollowerID,
         int gearShiftForward, int gearShiftReverse
     ) {
         //@formatter:on
-        leftMotor = initLeader(left1ID);
-        rightMotor = initLeader(right1ID);
-        leftMotor.configPeakOutputVoltage(LEFT_PEAK_VOLTAGE, -LEFT_PEAK_VOLTAGE);
-        rightMotor.configPeakOutputVoltage(RIGHT_PEAK_VOLTAGE, -RIGHT_PEAK_VOLTAGE);
-        leftMotor.reverseOutput(true);
-        leftMotor.reverseSensor(true);
-
-        initFollower(left2ID, leftMotor);
-        initFollower(left3ID, leftMotor);
-        initFollower(right2ID, rightMotor);
-        initFollower(right3ID, rightMotor);
-
+        leftMotor = initSide(leftLeaderID, leftFollowerID);
+        rightMotor = initSide(rightLeaderID, rightFollowerID);
         gearShift = new DoubleSolenoid(gearShiftForward, gearShiftReverse);
     }
 
     /**
-     * Constructs, configures, and returns a CANTalon object.
+     * Constructs and configures the motors for one side of the robot (i.e. one leader and one
+     * follower), and returns the leader motor object.
      * 
-     * @param id the ID of the motor
-     * @return the newly constructed CANTalon object
+     * <p>TODO: Make sure allowing the follower motor to be garbage collected is OK.
+     * 
+     * @param leaderID the ID of the leader motor
+     * @param followerID the ID of the follower motor
+     * @return the newly constructed leader motor object
      */
-    private CANTalon initLeader(int id) {
-        CANTalon motor = new CANTalon(id);
-        motor.changeControlMode(TalonControlMode.PercentVbus);
-        motor.configNominalOutputVoltage(0, 0);
-        motor.setVoltageRampRate(50);
-        motor.enableBrakeMode(true);
-        motor.setFeedbackDevice(FeedbackDevice.QuadEncoder);
-        return motor;
+    private TalonSRX initSide(int leaderID, int followerID) {
+        TalonSRX leader = new TalonSRX(leaderID);
+        TalonSRX follower = new TalonSRX(followerID);
+
+        leader.setNeutralMode(NeutralMode.Brake);
+        follower.setNeutralMode(NeutralMode.Brake);
+
+        leader.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, MotorSettings.PID_IDX,
+            MotorSettings.TIMEOUT);
+
+        follower.set(ControlMode.Follower, leaderID);
+
+        return leader;
     }
 
     /**
-     * Constructs and configures a follower CANTalon given the leader motor.
+     * Returns the left leader motor.
      * 
-     * <p>Unlike {@link #initLeader(int) initLeader}, this method does not return the constructed
-     * CANTalon object, because once it is set to follower mode there is no more use in keeping the
-     * object around.
+     * <p>Anything done to this motor will also be followed by the other left motor.
      * 
-     * @param id the ID of the follower motor
-     * @param leader the motor to follow
+     * @return the left leader motor
      */
-    private void initFollower(int id, CANTalon leader) {
-        CANTalon motor = new CANTalon(id);
-        motor.changeControlMode(TalonControlMode.Follower);
-        motor.enableBrakeMode(true);
-        motor.set(leader.getDeviceID());
-    }
-
-    /**
-     * Returns the left motor.
-     * 
-     * <p>Since the other two left motors are set to follow this one, anything done to this one will
-     * also be done to the other two.
-     * 
-     * @return the left motor
-     */
-    public CANTalon getLeftMotor() {
+    public TalonSRX getLeftMotor() {
         return leftMotor;
     }
 
     /**
-     * Returns the right motor.
+     * Returns the right leader motor.
      * 
-     * <p>Since the other two right motors are set to follow this one, anything done to this one
-     * will also be done to the other two.
+     * <p>Anything done to this motor will also be followed by the other right motor.
      * 
-     * @return the right motor
+     * @return the right leader motor
      */
-    public CANTalon getRightMotor() {
+    public TalonSRX getRightMotor() {
         return rightMotor;
     }
 
@@ -127,16 +96,6 @@ public class Drive {
      */
     public void setHighGear() {
         gearShift.set(DoubleSolenoid.Value.kReverse);
-    }
-
-    /**
-     * Sets the control mode of both drive motors.
-     * 
-     * @param mode the control mode
-     */
-    public void setControlMode(TalonControlMode mode) {
-        leftMotor.changeControlMode(mode);
-        rightMotor.changeControlMode(mode);
     }
 
 }
