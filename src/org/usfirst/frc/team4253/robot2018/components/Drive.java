@@ -3,7 +3,7 @@ package org.usfirst.frc.team4253.robot2018.components;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 
 /**
@@ -11,8 +11,8 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
  */
 public class Drive {
 
-    private TalonSRX leftMotor;
-    private TalonSRX rightMotor;
+    private WPI_TalonSRX leftMotor;
+    private WPI_TalonSRX rightMotor;
     private DoubleSolenoid gearShift;
 
     /**
@@ -47,9 +47,9 @@ public class Drive {
      * @param followerID the ID of the follower motor
      * @return the newly constructed leader motor object
      */
-    private TalonSRX initSide(int leaderID, int followerID) {
-        TalonSRX leader = new TalonSRX(leaderID);
-        TalonSRX follower = new TalonSRX(followerID);
+    private WPI_TalonSRX initSide(int leaderID, int followerID) {
+        WPI_TalonSRX leader = new WPI_TalonSRX(leaderID);
+        WPI_TalonSRX follower = new WPI_TalonSRX(followerID);
 
         leader.setNeutralMode(NeutralMode.Brake);
         follower.setNeutralMode(NeutralMode.Brake);
@@ -69,7 +69,7 @@ public class Drive {
      * 
      * @return the left leader motor
      */
-    public TalonSRX getLeftMotor() {
+    public WPI_TalonSRX getLeftMotor() {
         return leftMotor;
     }
 
@@ -80,7 +80,7 @@ public class Drive {
      * 
      * @return the right leader motor
      */
-    public TalonSRX getRightMotor() {
+    public WPI_TalonSRX getRightMotor() {
         return rightMotor;
     }
 

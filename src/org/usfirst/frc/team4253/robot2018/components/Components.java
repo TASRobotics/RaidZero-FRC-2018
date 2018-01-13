@@ -18,7 +18,7 @@ public class Components {
      * null before this method is called.
      */
     public static void initialize() {
-
+        drive = new Drive(1, 2, 3, 4, 0, 1);
     }
 
     /**
