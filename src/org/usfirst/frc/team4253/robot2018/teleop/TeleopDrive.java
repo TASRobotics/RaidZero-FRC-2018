@@ -19,7 +19,7 @@ public class TeleopDrive {
     }
 
     public void drive(double leftInput, double rightInput) {
-        differentialDrive.tankDrive(leftInput, rightInput);
+        differentialDrive.tankDrive(-leftInput, -rightInput);
     }
 
 }
