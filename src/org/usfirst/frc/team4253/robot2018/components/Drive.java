@@ -88,14 +88,14 @@ public class Drive {
      * Sets the gear shift to low gear.
      */
     public void setLowGear() {
-        gearShift.set(DoubleSolenoid.Value.kForward);
+        gearShift.set(DoubleSolenoid.Value.kReverse);
     }
 
     /**
      * Sets the gear shift to high gear.
      */
     public void setHighGear() {
-        gearShift.set(DoubleSolenoid.Value.kReverse);
+        gearShift.set(DoubleSolenoid.Value.kForward);
     }
 
 }
