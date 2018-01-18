@@ -38,8 +38,7 @@ public class Drive {
     public Drive(
         int leftLeaderID, int rightLeaderID,
         int leftFollowerID, int rightFollowerID,
-        int gearShiftForward, int gearShiftReverse,
-        int pigeonID
+        int gearShiftForward, int gearShiftReverse
     ) {
         //@formatter:on
         leftMotor = initSide(leftLeaderID, leftFollowerID, false);
