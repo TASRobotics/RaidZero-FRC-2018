@@ -5,6 +5,7 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.ctre.phoenix.sensors.PigeonIMU;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 
 /**
@@ -15,6 +16,7 @@ public class Drive {
     private WPI_TalonSRX leftMotor;
     private WPI_TalonSRX rightMotor;
     private DoubleSolenoid gearShift;
+    private PigeonIMU pigeon;
     
     private final static double kF = 0.717;
     private final static double kP = 1.5;
@@ -36,7 +38,8 @@ public class Drive {
     public Drive(
         int leftLeaderID, int rightLeaderID,
         int leftFollowerID, int rightFollowerID,
-        int gearShiftForward, int gearShiftReverse
+        int gearShiftForward, int gearShiftReverse,
+        int pigeonID
     ) {
         //@formatter:on
         leftMotor = initSide(leftLeaderID, leftFollowerID, false);
@@ -77,6 +80,7 @@ public class Drive {
             leader.setSensorPhase(false);
             leader.setInverted(false);
             follower.setInverted(true);
+            pigeon = new PigeonIMU(follower);
         }
         
         setPID(leader);
@@ -118,6 +122,15 @@ public class Drive {
      */
     public WPI_TalonSRX getRightMotor() {
         return rightMotor;
+    }
+    
+    /**
+     * Returns the pigeon
+     * 
+     * @return the pigeon
+     */
+    public PigeonIMU getPigeon() {
+        return pigeon;
     }
 
     /**
