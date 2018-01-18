@@ -1,6 +1,7 @@
 package org.usfirst.frc.team4253.robot2018.teleop;
 
 import org.usfirst.frc.team4253.robot2018.components.Components;
+import org.usfirst.frc.team4253.robot2018.components.Lift;
 
 import static edu.wpi.first.wpilibj.GenericHID.Hand.kLeft;
 import static edu.wpi.first.wpilibj.GenericHID.Hand.kRight;
@@ -14,6 +15,12 @@ public class Teleop {
 
     private static XboxController controller;
     private static TeleopDrive teleopDrive;
+    private static Lift lift;
+    
+    // Note that the constants below should be fine tuned through testing
+    private static final int SWITCH_POS = 3000; 
+    private static final int SCALE_POS = 6000;
+    private static final double AXIS_TO_LIFT = 3000; 
 
     /**
      * Initializes the teleop-specific components.
@@ -23,6 +30,7 @@ public class Teleop {
     public static void initialize() {
         controller = new XboxController(0);
         teleopDrive = new TeleopDrive(Components.getDrive());
+        lift = new Lift(10, 11);
     }
 
     /**
@@ -48,6 +56,16 @@ public class Teleop {
             Components.getDrive().setLowGear();
         }
         teleopDrive.drive(controller.getY(kLeft), controller.getY(kRight));
+        
+        if (controller.getAButton()) {
+            lift.move(0 + controller.getY(kLeft) * AXIS_TO_LIFT);  // for lowest target position for the lift
+        }
+        if (controller.getBButton()) {
+            lift.move(SWITCH_POS + controller.getY(kLeft) * AXIS_TO_LIFT);  // for switch target position for the lift
+        }
+        if (controller.getXButton()) {
+            lift.move(SCALE_POS + controller.getY(kLeft) * AXIS_TO_LIFT);  // for scale target position for the lift
+        }
     }
 
 }
