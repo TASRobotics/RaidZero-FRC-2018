@@ -5,6 +5,9 @@ package org.usfirst.frc.team4253.robot2018.auto;
  */
 public class Auto {
 
+    private final static int TARGETVEL = 1072;
+    private final static int TARGETACCEL = 2144;
+    
     /**
      * Initializes the autonomous-specific components.
      * 
