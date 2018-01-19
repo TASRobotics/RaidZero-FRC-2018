@@ -10,7 +10,7 @@ public class TeleopDrive {
     private DifferentialDrive differentialDrive;
 
     /**
-     * Constructs a differentialDrive object and assigns up the motors from the drive param.
+     * Constructs a TeleopDrive object and assigns the motors from the drive param to differentialDrive.
      * 
      * @param drive the Drive object to use
      */
@@ -20,17 +20,19 @@ public class TeleopDrive {
     }
 
     /**
-     * <p> Sets up the TeleopDrive settings. This should be called when teleopDrive starts.
+     * Sets up the TeleopDrive settings.
+     * 
+     * <p> This should be called when teleop starts.
      */
     public void setup() {
         drive.setLowGear();
     }
 
     /**
-     * drives the robot using tankDrive
+     * Drives the robot using tankDrive.
      * 
-     * @param leftInput the robot's left side speed
-     * @param rightInput the robot's right side speed
+     * @param leftInput left input of the joystick from -1 to 1
+     * @param rightInput right input of the joystick from -1 to 1
      */
     public void drive(double leftInput, double rightInput) {
         differentialDrive.tankDrive(-leftInput, -rightInput);
