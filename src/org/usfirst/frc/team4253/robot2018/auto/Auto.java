@@ -1,12 +1,14 @@
 package org.usfirst.frc.team4253.robot2018.auto;
 
+import org.usfirst.frc.team4253.robot2018.components.Components;
+import org.usfirst.frc.team4253.robot2018.components.Drive;
+
 /**
  * Autonomous specific code for the robot.
  */
 public class Auto {
-
-    private final static int TARGETVEL = 1072;
-    private final static int TARGETACCEL = 2144;
+    private static AutoDrive autoDrive;
+    private static Drive drive;
     
     /**
      * Initializes the autonomous-specific components.
@@ -14,7 +16,8 @@ public class Auto {
      * <p>This should be called when the robot starts up.
      */
     public static void initialize() {
-
+        drive = Components.getDrive();
+        autoDrive = new AutoDrive(drive);
     }
 
     /**
@@ -31,7 +34,6 @@ public class Auto {
      * Runs the autonomous code once.
      */
     public static void run() {
-
+        
     }
-
 }

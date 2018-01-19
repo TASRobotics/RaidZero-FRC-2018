@@ -18,11 +18,8 @@ public class Drive {
     private DoubleSolenoid gearShift;
     private PigeonIMU pigeon;
     
-    private final static double kF = 0.717;
-    private final static double kP = 1.5;
-    private final static double kI = 0.004;
-    private final static double kD = 15;
-    private final static int iZone = 50;
+    private final static double[] FPID = {0.717, 1.5, 0.004, 15, 50};
+    private final static double PEAKOUTPUTPERCENT = 0.965;
 
     /**
      * Constructs a Drive object and sets up the motors and gear shift.
@@ -45,8 +42,8 @@ public class Drive {
         rightMotor = initSide(rightLeaderID, rightFollowerID, true);
         gearShift = new DoubleSolenoid(gearShiftForward, gearShiftReverse);
         
-        rightMotor.configPeakOutputForward(0.965, MotorSettings.TIMEOUT);
-        rightMotor.configPeakOutputReverse(-0.965, MotorSettings.TIMEOUT);
+        rightMotor.configPeakOutputForward(PEAKOUTPUTPERCENT, MotorSettings.TIMEOUT);
+        rightMotor.configPeakOutputReverse(-PEAKOUTPUTPERCENT, MotorSettings.TIMEOUT);
     }
 
     /**
@@ -94,11 +91,11 @@ public class Drive {
      */
     public void setPID(TalonSRX leader) {
         leader.selectProfileSlot(MotorSettings.PID_SLOT, MotorSettings.PID_IDX);
-        leader.config_kF(MotorSettings.PID_SLOT, kF, MotorSettings.TIMEOUT);
-        leader.config_kP(MotorSettings.PID_SLOT, kP, MotorSettings.TIMEOUT);
-        leader.config_kI(MotorSettings.PID_SLOT, kI, MotorSettings.TIMEOUT);
-        leader.config_kD(MotorSettings.PID_SLOT, kD, MotorSettings.TIMEOUT);
-        leader.config_IntegralZone(MotorSettings.PID_SLOT, iZone, MotorSettings.TIMEOUT);
+        leader.config_kF(MotorSettings.PID_SLOT, FPID[0], MotorSettings.TIMEOUT);
+        leader.config_kP(MotorSettings.PID_SLOT, FPID[1], MotorSettings.TIMEOUT);
+        leader.config_kI(MotorSettings.PID_SLOT, FPID[2], MotorSettings.TIMEOUT);
+        leader.config_kD(MotorSettings.PID_SLOT, FPID[3], MotorSettings.TIMEOUT);
+        leader.config_IntegralZone(MotorSettings.PID_SLOT, (int) FPID[4], MotorSettings.TIMEOUT);
     }
 
     /**
@@ -122,7 +119,7 @@ public class Drive {
     public WPI_TalonSRX getRightMotor() {
         return rightMotor;
     }
-    
+
     /**
      * Returns the pigeon
      * 
