@@ -10,7 +10,8 @@ public class TeleopDrive {
     private DifferentialDrive differentialDrive;
 
     /**
-     * Constructs a TeleopDrive object and assigns the motors from the drive param to differentialDrive.
+     * Constructs a TeleopDrive object and assigns the motors from the drive param to
+     * differentialDrive.
      * 
      * @param drive the Drive object to use
      */
