@@ -10,7 +10,7 @@ import java.util.Optional;
  */
 public class GeoGebraReader {
 
-    private static final String FILENAME = "data.csv";
+    private static final String FILENAME = "/home/lvuser/data.csv";
 
     /**
      * Reads the CSV file on the robot file system and, if successful, returns the data.
@@ -24,6 +24,7 @@ public class GeoGebraReader {
                 return new GeoGebraEntry(Double.parseDouble(nums[0]), Double.parseDouble(nums[1]));
             }).toArray(GeoGebraEntry[]::new));
         } catch (IOException e) {
+            System.out.println(e);
             return Optional.empty();
         }
     }
