@@ -15,6 +15,9 @@ public class GeoGebraReader {
     /**
      * Reads the CSV file on the robot file system and, if successful, returns the data.
      * 
+     * <p>This returns an Optional object because there may be a failure when trying to read the
+     * file.
+     * 
      * @return the data from the CSV file
      */
     public static Optional<GeoGebraEntry[]> readFile() {
