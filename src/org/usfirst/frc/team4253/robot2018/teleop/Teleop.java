@@ -30,7 +30,6 @@ public class Teleop {
     public static void initialize() {
         controller = new XboxController(0);
         teleopDrive = new TeleopDrive(Components.getDrive());
-        lift = new Lift(10, 11);
     }
 
     /**
@@ -58,13 +57,13 @@ public class Teleop {
         teleopDrive.drive(controller.getY(kLeft), controller.getY(kRight));
         
         if (controller.getAButton()) {
-            lift.move(0 + controller.getY(kLeft) * AXIS_TO_LIFT);  // for lowest target position for the lift
+            Components.getLift().move(0 + controller.getY(kLeft) * AXIS_TO_LIFT);  // for lowest target position for the lift
         }
         if (controller.getBButton()) {
-            lift.move(SWITCH_POS + controller.getY(kLeft) * AXIS_TO_LIFT);  // for switch target position for the lift
+            Components.getLift().move(SWITCH_POS + controller.getY(kLeft) * AXIS_TO_LIFT);  // for switch target position for the lift
         }
         if (controller.getXButton()) {
-            lift.move(SCALE_POS + controller.getY(kLeft) * AXIS_TO_LIFT);  // for scale target position for the lift
+            Components.getLift().move(SCALE_POS + controller.getY(kLeft) * AXIS_TO_LIFT);  // for scale target position for the lift
         }
     }
 

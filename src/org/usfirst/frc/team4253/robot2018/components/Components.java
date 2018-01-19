@@ -10,6 +10,7 @@ package org.usfirst.frc.team4253.robot2018.components;
 public class Components {
 
     private static Drive drive;
+    private static Lift lift;
 
     /**
      * Initializes each component by calling its constructor.
@@ -19,6 +20,7 @@ public class Components {
      */
     public static void initialize() {
         drive = new Drive(1, 2, 3, 4, 0, 1);
+        lift = new Lift(10, 11);
     }
 
     /**
@@ -26,6 +28,10 @@ public class Components {
      * 
      * @return the drive component
      */
+    
+    public static Lift getLift() {
+        return lift;
+    }
     public static Drive getDrive() {
         return drive;
     }
