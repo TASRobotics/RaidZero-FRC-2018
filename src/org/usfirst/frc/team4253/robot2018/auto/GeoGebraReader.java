@@ -27,7 +27,7 @@ public class GeoGebraReader {
                 return new GeoGebraEntry(Double.parseDouble(nums[0]), Double.parseDouble(nums[1]));
             }).toArray(GeoGebraEntry[]::new));
         } catch (IOException e) {
-            System.out.println(e);
+            System.err.println("Error reading CSV file: " + e);
             return Optional.empty();
         }
     }
