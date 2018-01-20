@@ -11,6 +11,7 @@ public class Components {
 
     private static Drive drive;
     private static Lift lift;
+    private static Climb climb;
 
     /**
      * Initializes each component by calling its constructor.
@@ -21,6 +22,7 @@ public class Components {
     public static void initialize() {
         drive = new Drive(1, 2, 3, 4, 0, 1);
         lift = new Lift(10, 11);
+        climb = new Climb(12,13);
     }
 
     /**
@@ -34,6 +36,9 @@ public class Components {
     }
     public static Drive getDrive() {
         return drive;
+    }
+    public static Climb getClimb() {
+        return climb;
     }
 
 }
