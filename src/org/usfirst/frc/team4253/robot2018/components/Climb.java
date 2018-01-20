@@ -9,10 +9,9 @@ public class Climb {
 
     private TalonSRX leaderMotor;
     private TalonSRX follower;
-    private DoubleSolenoid rampL;
-    private DoubleSolenoid rampR;
+    private DoubleSolenoid ramp;
 
-    private static final int lowEnc = 0, highEnc = 3000;//can be changed
+    private static final int lowEnc = 0, highEnc = 3000;// can be changed
 
     private static final int TARGET_VEL = 1515; // can be changed
     private static final int TARGET_ACCEL = 6060;
@@ -21,6 +20,7 @@ public class Climb {
     private static final double I_VALUE = 0.0;
     private static final double D_VALUE = 0.0;
     private static final double F_VALUE = 0.0;
+    private static final double IZone_VALUE = 0.0;
 
     // # of motors can be changed by adding more slave motors
 
@@ -35,8 +35,7 @@ public class Climb {
     public Climb(int leaderID, int followerID, int in, int out) {
         leaderMotor = new TalonSRX(leaderID);
         follower = new TalonSRX(followerID);
-        rampL = new DoubleSolenoid(in, out);
-        rampR = new DoubleSolenoid(in, out);
+        ramp = new DoubleSolenoid(in, out);
 
         follower.set(ControlMode.Follower, leaderID);
 
@@ -67,41 +66,35 @@ public class Climb {
     /**
      * Moves the robot up.
      * 
-     * @param speed speed for climbing up (0~1)
+     * @param percentV percent Voltage provided for climbing up (0~1)
      */
-    public void up(double speed) {
+    public void up(double percentV) {
         if (leaderMotor.getSelectedSensorPosition(0) <= highEnc)
-            leaderMotor.set(ControlMode.PercentOutput, speed);
+            leaderMotor.set(ControlMode.PercentOutput, Math.abs(percentV));
 
     }
 
     /**
      * Moves the robot down.
      * 
-     * @param speed speed for climbing down (0~1)
+     * @param percentV percent Voltage provided for climbing down (0~1)
      */
-    public void down(double speed) {
-        if (leaderMotor.getSelectedSensorPosition(0) >=lowEnc)
-            leaderMotor.set(ControlMode.PercentOutput, -speed);
+    public void down(double percentV) {
+        if (leaderMotor.getSelectedSensorPosition(0) >= lowEnc)
+            leaderMotor.set(ControlMode.PercentOutput, -Math.abs(percentV));
     }
-    
+
     /**
      * put down the ramp.
-     * 
-     * @param
      */
     public void rampDown() {
-        rampL.set(DoubleSolenoid.Value.kForward);
-        rampR.set(DoubleSolenoid.Value.kForward);
+        ramp.set(DoubleSolenoid.Value.kForward);
     }
-    
+
     /**
      * take up the ramp.
-     * 
-     * @param
      */
     public void rampUp() {
-        rampR.set(DoubleSolenoid.Value.kReverse);
-        rampL.set(DoubleSolenoid.Value.kReverse);
-    }    
+        ramp.set(DoubleSolenoid.Value.kReverse);
+    }
 }
