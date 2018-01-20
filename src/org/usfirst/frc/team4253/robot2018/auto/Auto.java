@@ -7,9 +7,10 @@ import org.usfirst.frc.team4253.robot2018.components.Drive;
  * Autonomous specific code for the robot.
  */
 public class Auto {
+
     private static AutoDrive autoDrive;
     private static Drive drive;
-    
+
     /**
      * Initializes the autonomous-specific components.
      * 
@@ -34,6 +35,6 @@ public class Auto {
      * Runs the autonomous code once.
      */
     public static void run() {
-        
+
     }
 }

@@ -94,8 +94,8 @@ public class AutoDrive {
     }
 
     /**
-     * Straightens the robot based of the gyro.
-     * <p>This changes the {@link #autoStraightModifier} so that the robot moves straight.
+     * Straightens the robot based of the gyro. <p>This changes the {@link #autoStraightModifier} so
+     * that the robot moves straight.
      */
     public void autoStraight() {
         PigeonIMU.FusionStatus fusionStatus = new PigeonIMU.FusionStatus();
@@ -113,7 +113,8 @@ public class AutoDrive {
 
     /**
      * Ensures the robot moves with the angle from the geogebra data.
-     * <p>This changes the {@link #autoAngleModifier} so that the robot moves straight.
+     * 
+     * <p>This changes the * {@link #autoAngleModifier} so that the robot moves straight.
      */
     public double autoAngle(double targetAngle) {
         PigeonIMU.FusionStatus fusionStatus = new PigeonIMU.FusionStatus();
@@ -132,24 +133,24 @@ public class AutoDrive {
     }
 
     /**
-     * Converts the geogebra data to targets for motors. 
-     * <p>The returned array contains: 
-     * <p>First index is left velocity 
-     * <p>Second index is right velocity 
-     * <p>Third index is left acceleration
-     * <p>Fourth index is right acceleration
+     * Converts the geogebra data to targets for motors.
+     * 
+     * <p>The returned array contains:
+     * 
+     * <p>First index is left velocity. Second index is right velocity. Third index is left
+     * acceleration. Fourth index is right acceleration
      * 
      * @param geogebra the data from geogebra sorted into an array.
      * @param targetPos the target position for the robot to go to.
      * @return the array containing motor targets.
      */
-    public int[] convertToMotorValues(double percentDiff, int targetPos) {
+    public int[] convertToMotorValues(double percentDiiff, int targetPos) {
         int[] motorValues = new int[4];
 
-        motorValues[0] = (int) ((1 + percentDiff) * DEFAULT_VEL);
-        motorValues[1] = (int) ((1 - percentDiff) * DEFAULT_VEL);
-        motorValues[2] = (int) ((1 + percentDiff) * DEFAULT_ACCEL);
-        motorValues[3] = (int) ((1 - percentDiff) * DEFAULT_ACCEL);
+        motorValues[0] = (int) ((1 + percentDiiff) * DEFAULT_VEL);
+        motorValues[1] = (int) ((1 - percentDiiff) * DEFAULT_VEL);
+        motorValues[2] = (int) ((1 + percentDiiff) * DEFAULT_ACCEL);
+        motorValues[3] = (int) ((1 - percentDiiff) * DEFAULT_ACCEL);
 
         return motorValues;
     }

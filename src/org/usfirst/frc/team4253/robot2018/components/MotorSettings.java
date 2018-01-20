@@ -13,7 +13,7 @@ public class MotorSettings {
      * Timeout in milliseconds for motor config checking.
      */
     public static final int TIMEOUT = 10;
-    
+
     /**
      * The main PID Setting Slot
      */

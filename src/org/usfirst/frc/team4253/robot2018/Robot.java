@@ -40,7 +40,7 @@ public class Robot extends IterativeRobot {
     public void teleopInit() {
         Teleop.setup();
     }
-    
+
     /**
      * Runs periodic code for teleop mode.
      * 

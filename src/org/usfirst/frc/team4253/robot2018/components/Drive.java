@@ -17,8 +17,8 @@ public class Drive {
     private WPI_TalonSRX rightMotor;
     private DoubleSolenoid gearShift;
     private PigeonIMU pigeon;
-    
-    private final static double[] FPID = {0.717, 1.5, 0.004, 15, 50};
+
+    private final static double[] FPID = { 0.717, 1.5, 0.004, 15, 50 };
     private final static double PEAKOUTPUTPERCENT = 0.965;
 
     /**
@@ -41,7 +41,7 @@ public class Drive {
         leftMotor = initSide(leftLeaderID, leftFollowerID, false);
         rightMotor = initSide(rightLeaderID, rightFollowerID, true);
         gearShift = new DoubleSolenoid(gearShiftForward, gearShiftReverse);
-        
+
         rightMotor.configPeakOutputForward(PEAKOUTPUTPERCENT, MotorSettings.TIMEOUT);
         rightMotor.configPeakOutputReverse(-PEAKOUTPUTPERCENT, MotorSettings.TIMEOUT);
     }
@@ -78,12 +78,12 @@ public class Drive {
             follower.setInverted(true);
             pigeon = new PigeonIMU(follower);
         }
-        
+
         setPID(leader);
-        
+
         return leader;
     }
-    
+
     /**
      * Sets the PID of the leader Talon SRX
      * 
