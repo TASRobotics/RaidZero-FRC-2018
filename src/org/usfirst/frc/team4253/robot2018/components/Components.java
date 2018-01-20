@@ -20,7 +20,16 @@ public class Components {
      */
     public static void initialize() {
         drive = new Drive(1, 2, 3, 4, 0, 1);
-        lift = new Lift(10, 11);
+        lift = new Lift(10, 11); // placeholder numbers
+    }
+
+    /**
+     * Returns the lift component.
+     * 
+     * @return the lift component
+     */
+    public static Lift getLift() {
+        return lift;
     }
 
     /**
@@ -28,11 +37,6 @@ public class Components {
      * 
      * @return the drive component
      */
-
-    public static Lift getLift() {
-        return lift;
-    }
-
     public static Drive getDrive() {
         return drive;
     }
