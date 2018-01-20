@@ -24,21 +24,21 @@ public class Components {
     }
 
     /**
-     * Returns the lift component.
-     * 
-     * @return the lift component
-     */
-    public static Lift getLift() {
-        return lift;
-    }
-
-    /**
      * Returns the drive component.
      * 
      * @return the drive component
      */
     public static Drive getDrive() {
         return drive;
+    }
+
+    /**
+     * Returns the lift component.
+     * 
+     * @return the lift component
+     */
+    public static Lift getLift() {
+        return lift;
     }
 
 }
