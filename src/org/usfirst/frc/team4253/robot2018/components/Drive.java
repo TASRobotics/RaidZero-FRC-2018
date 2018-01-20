@@ -18,8 +18,8 @@ public class Drive {
     private DoubleSolenoid gearShift;
     private PigeonIMU pigeon;
 
-    private final static double[] FPID = { 0.717, 1.5, 0.004, 15, 50 };
-    private final static double PEAKOUTPUTPERCENT = 0.965;
+    private static final double[] FPID = { 0.717, 1.5, 0.004, 15, 50 };
+    private static final double PEAK_OUTPUT_PERCENT = 0.965;
 
     /**
      * Constructs a Drive object and sets up the motors and gear shift.
@@ -42,8 +42,8 @@ public class Drive {
         rightMotor = initSide(rightLeaderID, rightFollowerID, true);
         gearShift = new DoubleSolenoid(gearShiftForward, gearShiftReverse);
 
-        rightMotor.configPeakOutputForward(PEAKOUTPUTPERCENT, MotorSettings.TIMEOUT);
-        rightMotor.configPeakOutputReverse(-PEAKOUTPUTPERCENT, MotorSettings.TIMEOUT);
+        rightMotor.configPeakOutputForward(PEAK_OUTPUT_PERCENT, MotorSettings.TIMEOUT);
+        rightMotor.configPeakOutputReverse(-PEAK_OUTPUT_PERCENT, MotorSettings.TIMEOUT);
     }
 
     /**
@@ -68,16 +68,10 @@ public class Drive {
 
         follower.set(ControlMode.Follower, leaderID);
 
-        if (invert) {
-            leader.setSensorPhase(true);
-            leader.setInverted(true);
-            follower.setInverted(true);
-        } else {
-            leader.setSensorPhase(false);
-            leader.setInverted(false);
-            follower.setInverted(true);
-            pigeon = new PigeonIMU(follower);
-        }
+        leader.setSensorPhase(invert);
+        leader.setInverted(invert);
+        follower.setInverted(invert);
+        pigeon = new PigeonIMU(follower);
 
         setPID(leader);
 
@@ -85,7 +79,7 @@ public class Drive {
     }
 
     /**
-     * Sets the PID of the leader Talon SRX
+     * Sets the PID of the leader Talon SRX.
      * 
      * @param leader the leader TalonSRX to change PID settings for
      */
@@ -121,7 +115,7 @@ public class Drive {
     }
 
     /**
-     * Returns the pigeon
+     * Returns the pigeon.
      * 
      * @return the pigeon
      */

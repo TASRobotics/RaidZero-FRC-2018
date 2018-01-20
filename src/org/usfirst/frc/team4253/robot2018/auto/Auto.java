@@ -9,7 +9,6 @@ import org.usfirst.frc.team4253.robot2018.components.Drive;
 public class Auto {
 
     private static AutoDrive autoDrive;
-    private static Drive drive;
 
     /**
      * Initializes the autonomous-specific components.
@@ -17,8 +16,7 @@ public class Auto {
      * <p>This should be called when the robot starts up.
      */
     public static void initialize() {
-        drive = Components.getDrive();
-        autoDrive = new AutoDrive(drive);
+        autoDrive = new AutoDrive(Components.getDrive());
     }
 
     /**
