@@ -3,33 +3,40 @@ package org.usfirst.frc.team4253.robot2018.components;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 
 public class Climb {
 
     private TalonSRX leaderMotor;
     private TalonSRX follower;
+    private DoubleSolenoid rampL;
+    private DoubleSolenoid rampR;
 
-    private final static int lowEnc = 0, highEnc = 3000;
+    private static final int lowEnc = 0, highEnc = 3000;//can be changed
 
-    private final static int TARGET_VEL = 1515; // can be changed
-    private final static int TARGET_ACCEL = 6060;
+    private static final int TARGET_VEL = 1515; // can be changed
+    private static final int TARGET_ACCEL = 6060;
 
-    private final double P_VALUE = 0.0;
-    private final double I_VALUE = 0.0;
-    private final double D_VALUE = 0.0;
-    private final double F_VALUE = 0.0;
+    private static final double P_VALUE = 0.0;
+    private static final double I_VALUE = 0.0;
+    private static final double D_VALUE = 0.0;
+    private static final double F_VALUE = 0.0;
 
     // # of motors can be changed by adding more slave motors
 
     /**
-     * Constructs a Lift object and sets up the lift motors.
+     * Constructs a climb object and sets up the climb motors and pneumatics.
      * 
-     * @param leaderID the ID of the leader lift motor
-     * @param followerID the ID of the follower lift motor
+     * @param leaderID the ID of the leader climb motor
+     * @param followerID the ID of the follower climb motor
+     * @param in the forward channel for the ramp pneumatics
+     * @param out the reverse channel for the ramp pneumatics
      */
-    public Climb(int leaderID, int followerID) {
+    public Climb(int leaderID, int followerID, int in, int out) {
         leaderMotor = new TalonSRX(leaderID);
         follower = new TalonSRX(followerID);
+        rampL = new DoubleSolenoid(in, out);
+        rampR = new DoubleSolenoid(in, out);
 
         follower.set(ControlMode.Follower, leaderID);
 
@@ -60,11 +67,10 @@ public class Climb {
     /**
      * Moves the robot up.
      * 
-     * @param speed for climbing up (0~1)
+     * @param speed speed for climbing up (0~1)
      */
     public void up(double speed) {
-        if (leaderMotor.getSelectedSensorPosition(0) < highEnc
-            && leaderMotor.getSelectedSensorPosition(0) > lowEnc)
+        if (leaderMotor.getSelectedSensorPosition(0) <= highEnc)
             leaderMotor.set(ControlMode.PercentOutput, speed);
 
     }
@@ -72,11 +78,30 @@ public class Climb {
     /**
      * Moves the robot down.
      * 
-     * @param speed for climbing down (0~1)
+     * @param speed speed for climbing down (0~1)
      */
     public void down(double speed) {
-        if (leaderMotor.getSelectedSensorPosition(0) < highEnc
-            && leaderMotor.getSelectedSensorPosition(0) > lowEnc)
+        if (leaderMotor.getSelectedSensorPosition(0) >=lowEnc)
             leaderMotor.set(ControlMode.PercentOutput, -speed);
     }
+    
+    /**
+     * put down the ramp.
+     * 
+     * @param
+     */
+    public void rampDown() {
+        rampL.set(DoubleSolenoid.Value.kForward);
+        rampR.set(DoubleSolenoid.Value.kForward);
+    }
+    
+    /**
+     * take up the ramp.
+     * 
+     * @param
+     */
+    public void rampUp() {
+        rampR.set(DoubleSolenoid.Value.kReverse);
+        rampL.set(DoubleSolenoid.Value.kReverse);
+    }    
 }
