@@ -1,7 +1,6 @@
 package org.usfirst.frc.team4253.robot2018.teleop;
 
 import org.usfirst.frc.team4253.robot2018.components.Components;
-import org.usfirst.frc.team4253.robot2018.components.Lift;
 
 import static edu.wpi.first.wpilibj.GenericHID.Hand.kLeft;
 import static edu.wpi.first.wpilibj.GenericHID.Hand.kRight;
@@ -15,7 +14,6 @@ public class Teleop {
 
     private static XboxController controller;
     private static TeleopDrive teleopDrive;
-    private static Lift lift;
 
     // Note that the constants below should be fine tuned through testing
     private static final int SWITCH_POS = 3000;
