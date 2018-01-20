@@ -9,7 +9,7 @@ public class Climb {
     private TalonSRX leaderMotor;
     private TalonSRX follower;
 
-    private final static int botEnc = 0, topEnc = 3000;
+    private final static int lowEnc = 0, highEnc = 3000;
 
     private final static int TARGET_VEL = 1515; // can be changed
     private final static int TARGET_ACCEL = 6060;
@@ -63,8 +63,8 @@ public class Climb {
      * @param speed for climbing up (0~1)
      */
     public void up(double speed) {
-        if (leaderMotor.getSelectedSensorPosition(0) < topEnc
-            && leaderMotor.getSelectedSensorPosition(0) > botEnc)
+        if (leaderMotor.getSelectedSensorPosition(0) < highEnc
+            && leaderMotor.getSelectedSensorPosition(0) > lowEnc)
             leaderMotor.set(ControlMode.PercentOutput, speed);
 
     }
@@ -75,8 +75,8 @@ public class Climb {
      * @param speed for climbing down (0~1)
      */
     public void down(double speed) {
-        if (leaderMotor.getSelectedSensorPosition(0) < topEnc
-            && leaderMotor.getSelectedSensorPosition(0) > botEnc)
+        if (leaderMotor.getSelectedSensorPosition(0) < highEnc
+            && leaderMotor.getSelectedSensorPosition(0) > lowEnc)
             leaderMotor.set(ControlMode.PercentOutput, -speed);
     }
 }
