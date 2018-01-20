@@ -144,13 +144,13 @@ public class AutoDrive {
      * @param targetPos the target position for the robot to go to.
      * @return the array containing motor targets.
      */
-    public int[] convertToMotorValues(double percentDiiff, int targetPos) {
+    public int[] convertToMotorValues(double percentDiff, int targetPos) {
         int[] motorValues = new int[4];
 
-        motorValues[0] = (int) ((1 + percentDiiff) * DEFAULT_VEL);
-        motorValues[1] = (int) ((1 - percentDiiff) * DEFAULT_VEL);
-        motorValues[2] = (int) ((1 + percentDiiff) * DEFAULT_ACCEL);
-        motorValues[3] = (int) ((1 - percentDiiff) * DEFAULT_ACCEL);
+        motorValues[0] = (int) ((1 + percentDiff) * DEFAULT_VEL);
+        motorValues[1] = (int) ((1 - percentDiff) * DEFAULT_VEL);
+        motorValues[2] = (int) ((1 + percentDiff) * DEFAULT_ACCEL);
+        motorValues[3] = (int) ((1 - percentDiff) * DEFAULT_ACCEL);
 
         return motorValues;
     }
