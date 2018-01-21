@@ -149,8 +149,10 @@ public class AutoDrive {
      * @return the array containing motor targets
      */
     public int[] convertToMotorValues(double percentDiff, int targetPos) {
-        return new int[] { (int) ((1 + percentDiff) * DEFAULT_VEL),
-            (int) ((1 - percentDiff) * DEFAULT_VEL), (int) ((1 + percentDiff) * DEFAULT_ACCEL),
+        return new int[] {
+            (int) ((1 + percentDiff) * DEFAULT_VEL),
+            (int) ((1 - percentDiff) * DEFAULT_VEL),
+            (int) ((1 + percentDiff) * DEFAULT_ACCEL),
             (int) ((1 - percentDiff) * DEFAULT_ACCEL) };
     }
 
