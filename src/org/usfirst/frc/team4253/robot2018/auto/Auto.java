@@ -1,7 +1,9 @@
 package org.usfirst.frc.team4253.robot2018.auto;
 
 import org.usfirst.frc.team4253.robot2018.components.Components;
-import org.usfirst.frc.team4253.robot2018.components.Drive;
+
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import java.util.Optional;
 
 /**
  * Autonomous specific code for the robot.
@@ -9,6 +11,8 @@ import org.usfirst.frc.team4253.robot2018.components.Drive;
 public class Auto {
 
     private static AutoDrive autoDrive;
+    private static SendableChooser<String> autonChoose;
+    private static Optional<GeoGebraEntry[]> geoGebraData;
 
     /**
      * Initializes the autonomous-specific components.
@@ -26,13 +30,35 @@ public class Auto {
      * calling {@link #run()}.
      */
     public static void setup() {
-
+        autoDrive.setUp();
+        autonChoose = new SendableChooser<String>();
+        autonChoose.addDefault("Do Nothing", "Do Nothing");
+        autonChoose.addObject("Left", "Left");
+        autonChoose.addObject("Center", "Center");
+        autonChoose.addObject("Right", "Right");
+        geoGebraData = GeoGebraReader.readFile();
     }
 
     /**
      * Runs the autonomous code once.
      */
     public static void run() {
+        String position = autonChoose.getSelected();
+        switch (position) {
+            case "Do Nothing":
+                break;
 
+            case "Left":
+                break;
+
+            case "Center":
+                break;
+
+            case "Right":
+                break;
+        }
+        geoGebraData.ifPresent(data -> {
+            autoDrive.moveCurve(data, 10000);
+        });
     }
 }
