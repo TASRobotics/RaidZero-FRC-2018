@@ -71,7 +71,9 @@ public class Drive {
         leader.setSensorPhase(invert);
         leader.setInverted(invert);
         follower.setInverted(invert);
-        pigeon = new PigeonIMU(follower);
+        if (!invert) {
+            pigeon = new PigeonIMU(follower);
+        }
 
         setPID(leader);
 

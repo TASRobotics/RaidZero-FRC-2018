@@ -97,11 +97,11 @@ public class AutoDrive {
     }
 
     /**
-     * Straightens the robot based of the gyro.
+     * Straightens the robot based off the gyro.
      * 
      * <p>This changes the {@link #autoStraightModifier} so that the robot moves straight.
      */
-    public void autoStraight() {
+    private void autoStraight() {
         PigeonIMU.FusionStatus fusionStatus = new PigeonIMU.FusionStatus();
         double[] xyz_dps = new double[3];
         pigeon.getRawGyro(xyz_dps);
@@ -122,7 +122,7 @@ public class AutoDrive {
      * 
      * @param targetAngle the angle to try to reach
      */
-    public void autoAngle(double targetAngle) {
+    private void autoAngle(double targetAngle) {
         PigeonIMU.FusionStatus fusionStatus = new PigeonIMU.FusionStatus();
         double[] xyz_dps = new double[3];
         pigeon.getRawGyro(xyz_dps);
@@ -148,7 +148,7 @@ public class AutoDrive {
      * @param targetPos the target position for the robot to go to
      * @return the array containing motor targets
      */
-    public int[] convertToMotorValues(double percentDiff, int targetPos) {
+    private int[] convertToMotorValues(double percentDiff, int targetPos) {
         return new int[] {
             (int) ((1 + percentDiff) * DEFAULT_VEL),
             (int) ((1 - percentDiff) * DEFAULT_VEL),
@@ -163,7 +163,7 @@ public class AutoDrive {
      * @param length the length of the array from geogebra data
      * @return the interval that the robot is in right now
      */
-    public int determineInterval(int targetPos, int length) {
+    private int determineInterval(int targetPos, int length) {
         int averagePos = (leftMotor.getSelectedSensorPosition(MotorSettings.PID_IDX)
             + rightMotor.getSelectedSensorPosition(MotorSettings.PID_IDX)) / 2;
         int interval = (averagePos * length) / targetPos;
@@ -182,7 +182,7 @@ public class AutoDrive {
      *            less
      * @return the number to modify the velocity or acceleration
      */
-    public double limit(double value) {
+    private double limit(double value) {
         if (value < -MAX_MODIFIER) {
             return -MAX_MODIFIER;
         }
