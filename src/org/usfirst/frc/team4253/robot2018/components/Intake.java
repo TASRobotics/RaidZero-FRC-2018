@@ -11,8 +11,8 @@ public class Intake {
     private TalonSRX follower;
     private DoubleSolenoid claw;
     private static final double IDLE_POWER = 0.1;
-    // private static DoubleSolenoid.Value kOpen = DoubleSolenoid.Value.kForward,kClose =
-    // DoubleSolenoid.Value.kReverse,kOff = DoubleSolenoid.Value.kOff;
+    private static DoubleSolenoid.Value OPEN = DoubleSolenoid.Value.kForward,
+        CLOSE = DoubleSolenoid.Value.kReverse, NEUTRAL = DoubleSolenoid.Value.kOff;
 
     /**
      * Construct an intake object
@@ -31,24 +31,22 @@ public class Intake {
         follower.setNeutralMode(NeutralMode.Brake);
 
         follower.set(ControlMode.Follower, leaderID);
-
-        claw.set(SolenoidSetting.FORWARD);
     }
 
     /**
-     * Closes the claw
+     * Grabs the cube
      */
-    public void closeClaw() {
+    public void grab() {
         leaderMotor.set(ControlMode.PercentOutput, 1.0);
-        claw.set(SolenoidSetting.REVERSE);
+        claw.set(OPEN);
     }
 
     /**
-     * Opens the claw
+     * Releases the cube
      */
-    public void openClaw() {
+    public void release() {
         leaderMotor.set(ControlMode.PercentOutput, -1.0);
-        claw.set(SolenoidSetting.FORWARD);
+        claw.set(OPEN);
     }
 
     /**
@@ -56,6 +54,6 @@ public class Intake {
      */
     public void idle() {
         leaderMotor.set(ControlMode.PercentOutput, IDLE_POWER);
-        claw.set(SolenoidSetting.OFF);
+        claw.set(CLOSE);
     }
 }
