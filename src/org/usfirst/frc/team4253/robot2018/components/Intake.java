@@ -32,7 +32,7 @@ public class Intake {
 
         follower.set(ControlMode.Follower, leaderID);
 
-        claw.set(SolenoidSetting.kForward);
+        claw.set(SolenoidSetting.FORWARD);
     }
 
     /**
@@ -40,7 +40,7 @@ public class Intake {
      */
     public void closeClaw() {
         leaderMotor.set(ControlMode.PercentOutput, 1.0);
-        claw.set(SolenoidSetting.kReverse);
+        claw.set(SolenoidSetting.REVERSE);
     }
 
     /**
@@ -48,7 +48,7 @@ public class Intake {
      */
     public void openClaw() {
         leaderMotor.set(ControlMode.PercentOutput, -1.0);
-        claw.set(SolenoidSetting.kForward);
+        claw.set(SolenoidSetting.FORWARD);
     }
 
     /**
@@ -56,6 +56,6 @@ public class Intake {
      */
     public void idle() {
         leaderMotor.set(ControlMode.PercentOutput, IDLE_POWER);
-        claw.set(SolenoidSetting.kOff);
+        claw.set(SolenoidSetting.OFF);
     }
 }
