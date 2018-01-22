@@ -11,13 +11,16 @@ public class Intake {
     private TalonSRX follower;
     private DoubleSolenoid claw;
     private static final double IDLE_POWER = 0.1;
+    // private static DoubleSolenoid.Value kOpen = DoubleSolenoid.Value.kForward,kClose =
+    // DoubleSolenoid.Value.kReverse,kOff = DoubleSolenoid.Value.kOff;
 
     /**
+     * Construct an intake object
      * 
      * @param leaderID the ID for the leader motor
      * @param followerID the ID for the follower motor
-     * @param forwardChannel the pneumatic channel for forward
-     * @param backwardChannel the pneumatic channel for backward
+     * @param forwardChannel the pneumatic channel for opening claw
+     * @param backwardChannel the pneumatic channel for closing claw
      */
     public Intake(int leaderID, int followerID, int forwardChannel, int backwardChannel) {
         leaderMotor = new TalonSRX(leaderID);
@@ -29,7 +32,7 @@ public class Intake {
 
         follower.set(ControlMode.Follower, leaderID);
 
-        claw.set(DoubleSolenoid.Value.kReverse);
+        claw.set(SolenoidSetting.kForward);
     }
 
     /**
@@ -37,7 +40,7 @@ public class Intake {
      */
     public void closeClaw() {
         leaderMotor.set(ControlMode.PercentOutput, 1.0);
-        claw.set(DoubleSolenoid.Value.kReverse);
+        claw.set(SolenoidSetting.kReverse);
     }
 
     /**
@@ -45,7 +48,7 @@ public class Intake {
      */
     public void openClaw() {
         leaderMotor.set(ControlMode.PercentOutput, -1.0);
-        claw.set(DoubleSolenoid.Value.kForward);
+        claw.set(SolenoidSetting.kForward);
     }
 
     /**
@@ -53,6 +56,6 @@ public class Intake {
      */
     public void idle() {
         leaderMotor.set(ControlMode.PercentOutput, IDLE_POWER);
-        claw.set(DoubleSolenoid.Value.kReverse);
+        claw.set(SolenoidSetting.kOff);
     }
 }
