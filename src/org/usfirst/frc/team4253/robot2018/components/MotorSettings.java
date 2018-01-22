@@ -14,4 +14,8 @@ public class MotorSettings {
      */
     public static final int TIMEOUT = 10;
 
+    /**
+     * The main PID Setting Slot
+     */
+    public static final int PID_SLOT = 0;
 }
