@@ -15,6 +15,11 @@ public class Teleop {
     private static XboxController controller;
     private static TeleopDrive teleopDrive;
 
+    // Note that the constants below should be fine tuned through testing
+    private static final int SWITCH_POS = 3000;
+    private static final int SCALE_POS = 6000;
+    private static final double AXIS_TO_LIFT = 3000;
+
     /**
      * Initializes the teleop-specific components.
      * 
@@ -48,6 +53,19 @@ public class Teleop {
             Components.getDrive().setLowGear();
         }
         teleopDrive.drive(controller.getY(kLeft), controller.getY(kRight));
+
+        if (controller.getAButton()) {
+            // for lowest target position for the lift
+            Components.getLift().move(0 + controller.getY(kLeft) * AXIS_TO_LIFT);
+        }
+        if (controller.getBButton()) {
+            // for switch target position for the lift
+            Components.getLift().move(SWITCH_POS + controller.getY(kLeft) * AXIS_TO_LIFT);
+        }
+        if (controller.getXButton()) {
+            // for scale target position for the lift
+            Components.getLift().move(SCALE_POS + controller.getY(kLeft) * AXIS_TO_LIFT);
+        }
     }
 
 }
