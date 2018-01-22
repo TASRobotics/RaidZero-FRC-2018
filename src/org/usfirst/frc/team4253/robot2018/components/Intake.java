@@ -7,15 +7,16 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 
 public class Intake {
 
+    private static final double IDLE_POWER = 0.1;
+    private static DoubleSolenoid.Value OPEN_POSITION = DoubleSolenoid.Value.kForward;
+    private static DoubleSolenoid.Value CLOSED_POSITION = DoubleSolenoid.Value.kReverse;
+
     private TalonSRX leaderMotor;
     private TalonSRX follower;
     private DoubleSolenoid claw;
-    private static final double IDLE_POWER = 0.1;
-    private static DoubleSolenoid.Value OPEN = DoubleSolenoid.Value.kForward,
-        CLOSE = DoubleSolenoid.Value.kReverse, NEUTRAL = DoubleSolenoid.Value.kOff;
 
     /**
-     * Construct an intake object
+     * Constructs an intake object.
      * 
      * @param leaderID the ID for the leader motor
      * @param followerID the ID for the follower motor
@@ -34,26 +35,27 @@ public class Intake {
     }
 
     /**
-     * Grabs the cube
+     * Grabs the cube.
      */
     public void grab() {
         leaderMotor.set(ControlMode.PercentOutput, 1.0);
-        claw.set(OPEN);
+        claw.set(OPEN_POSITION);
     }
 
     /**
-     * Releases the cube
+     * Releases the cube.
      */
     public void release() {
         leaderMotor.set(ControlMode.PercentOutput, -1.0);
-        claw.set(OPEN);
+        claw.set(OPEN_POSITION);
     }
 
     /**
-     * Sets the motor to a lower output when idle
+     * Sets the motor to a lower output when idle.
      */
     public void idle() {
         leaderMotor.set(ControlMode.PercentOutput, IDLE_POWER);
-        claw.set(CLOSE);
+        claw.set(CLOSED_POSITION);
     }
+
 }
