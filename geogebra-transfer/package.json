@@ -1,0 +1,15 @@
+{
+  "name": "geogebra-transfer",
+  "version": "1.0.0",
+  "description": "Transfer GeoGebra data from clipboard to RoboRIO",
+  "main": "main.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TASRobotics/RaidZero-FRC-2018.git"
+  },
+  "license": "UNLICENSED",
+  "dependencies": {
+    "clipboardy": "^1.2.2",
+    "ssh2": "^0.5.5"
+  }
+}
