@@ -20,7 +20,7 @@ public class Climb {
     private static final double I_VALUE = 0.0;
     private static final double D_VALUE = 0.0;
     private static final double F_VALUE = 0.0;
-    private static final double IZone_VALUE = 0.0;
+    private static final int IZONE_VALUE = 0;
 
     // # of motors can be changed by adding more slave motors
 
@@ -52,6 +52,7 @@ public class Climb {
         leaderMotor.config_kI(0, I_VALUE, MotorSettings.TIMEOUT);
         leaderMotor.config_kD(0, D_VALUE, MotorSettings.TIMEOUT);
         leaderMotor.config_kF(0, F_VALUE, MotorSettings.TIMEOUT);
+        leaderMotor.config_IntegralZone(0, IZONE_VALUE, MotorSettings.TIMEOUT);
     }
 
     /**
@@ -69,8 +70,9 @@ public class Climb {
      * @param percentV percent Voltage provided for climbing up (0~1)
      */
     public void up(double percentV) {
-        if (leaderMotor.getSelectedSensorPosition(0) <= highEnc)
+        if (leaderMotor.getSelectedSensorPosition(0) <= highEnc) {
             leaderMotor.set(ControlMode.PercentOutput, Math.abs(percentV));
+        }
 
     }
 
@@ -80,8 +82,9 @@ public class Climb {
      * @param percentV percent Voltage provided for climbing down (0~1)
      */
     public void down(double percentV) {
-        if (leaderMotor.getSelectedSensorPosition(0) >= lowEnc)
+        if (leaderMotor.getSelectedSensorPosition(0) >= lowEnc) {
             leaderMotor.set(ControlMode.PercentOutput, -Math.abs(percentV));
+        }
     }
 
     /**
