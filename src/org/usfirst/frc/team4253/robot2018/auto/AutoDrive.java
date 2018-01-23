@@ -79,7 +79,7 @@ public class AutoDrive {
      * @param targetPos the target encoder position to move the robot to
      */
     public void moveCurve(GeoGebraEntry[] targets, int targetPos) {
-        GeoGebraEntry current = targets[determineInterval(targetPos, targets.length)];
+        GeoGebraEntry current = interpolate(targets, targetPos);
         int[] currentTargets = convertToMotorValues(current.getPercentDifference(), targetPos);
         autoAngle(current.getAngle());
 
@@ -157,17 +157,36 @@ public class AutoDrive {
     }
 
     /**
-     * Determines the interval that the robot is in right now.
+     * Linearly interpolates between GeoGebra entries to find current angle and percent difference
+     * based on drive encoders.
      * 
-     * @param targetPos the target position for the robot to go to
-     * @param length the length of the array from geogebra data
-     * @return the interval that the robot is in right now
+     * @param data data from GeoGebra
+     * @param targetPos total number of encoder ticks to travel
+     * @return the current angle and percent difference
      */
-    private int determineInterval(int targetPos, int length) {
-        int averagePos = (leftMotor.getSelectedSensorPosition(MotorSettings.PID_IDX)
+    private GeoGebraEntry interpolate(GeoGebraEntry[] data, int targetPos) {
+        double currentPos = (leftMotor.getSelectedSensorPosition(MotorSettings.PID_IDX)
             + rightMotor.getSelectedSensorPosition(MotorSettings.PID_IDX)) / 2;
-        int interval = (averagePos * length) / targetPos;
-        return interval;
+
+        if (currentPos <= 0) {
+            return data[0];
+        }
+        if (currentPos >= targetPos) {
+            return data[data.length - 1];
+        }
+
+        double progress = currentPos * data.length / targetPos;
+        int prevIndex = (int) progress;
+        int nextIndex = prevIndex + 1;
+
+        double prevAngle = data[prevIndex].getAngle();
+        double nextAngle = data[nextIndex].getAngle();
+        double prevPercentDifference = data[prevIndex].getPercentDifference();
+        double nextPercentDifference = data[nextIndex].getPercentDifference();
+        double x = progress - prevIndex;
+
+        return new GeoGebraEntry((nextAngle - prevAngle) * x + prevAngle,
+            (nextPercentDifference - prevPercentDifference) * x + prevPercentDifference);
     }
 
     /**
