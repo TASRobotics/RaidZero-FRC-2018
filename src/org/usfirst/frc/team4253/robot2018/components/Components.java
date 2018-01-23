@@ -10,7 +10,9 @@ package org.usfirst.frc.team4253.robot2018.components;
 public class Components {
 
     private static Drive drive;
+    private static Intake intake;
     private static Lift lift;
+    private static Climb climb;
 
     /**
      * Initializes each component by calling its constructor.
@@ -20,7 +22,9 @@ public class Components {
      */
     public static void initialize() {
         drive = new Drive(1, 2, 3, 4, 0, 1);
+        intake = new Intake(8, 9, 2, 3);
         lift = new Lift(10, 11); // placeholder numbers
+        climb = new Climb(12, 13, 4, 5);
     }
 
     /**
@@ -33,12 +37,30 @@ public class Components {
     }
 
     /**
+     * Returns the intake component.
+     * 
+     * @return the intake component
+     */
+    public static Intake getIntake() {
+        return intake;
+    }
+
+    /**
      * Returns the lift component.
      * 
      * @return the lift component
      */
     public static Lift getLift() {
         return lift;
+    }
+
+    /**
+     * Returns the climb component.
+     * 
+     * @return the climb component
+     */
+    public static Climb getClimb() {
+        return climb;
     }
 
 }
