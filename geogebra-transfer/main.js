@@ -9,7 +9,7 @@ console.log('Reading data from clipboard...');
 const data = clip.readSync().trim().split('\n').map(line => {
     const nums = line.trim().split('\t');
     for (const num of nums) {
-        if (Number.isNaN(parseFloat(num))) {
+        if (num !== '?' && Number.isNaN(parseFloat(num))) {
             throw new Error(`${num} is not a number`);
         }
     }
