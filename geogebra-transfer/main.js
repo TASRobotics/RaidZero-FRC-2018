@@ -6,10 +6,15 @@ const conn = new require('ssh2').Client();
 
 console.log('Reading data from clipboard...');
 
-const data = clip.readSync().trim().split('\n').map(line => {
+const data = [];
+outer:
+for (const line of clip.readSync().trim().split('\n')) {
     const nums = line.trim().split('\t');
     for (const num of nums) {
-        if (num !== '?' && Number.isNaN(parseFloat(num))) {
+        if (num === '?') {
+            break outer;
+        }
+        if (Number.isNaN(parseFloat(num))) {
             throw new Error(`${num} is not a number`);
         }
     }
@@ -17,8 +22,8 @@ const data = clip.readSync().trim().split('\n').map(line => {
         throw new Error(
             `Data contains ${nums.length} column${nums.length === 1 ? '' : 's'} but should have ${columnCount}`);
     }
-    return nums.join();
-}).join('\n');
+    data.push(nums.join());
+}
 
 console.log('Connecting to robot...');
 
@@ -29,7 +34,7 @@ conn.on('ready', () => {
         console.log('Opening file...');
         sftp.open(filename, 'w', (err, handle) => {
             if (err) throw err;
-            const buffer = Buffer.from(data);
+            const buffer = Buffer.from(data.join('\n'));
             console.log('Writing data...');
             sftp.write(handle, buffer, 0, buffer.length, 0, err => {
                 if (err) throw err;
