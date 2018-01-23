@@ -1,9 +1,10 @@
 package org.usfirst.frc.team4253.robot2018;
 
-import edu.wpi.first.wpilibj.IterativeRobot;
 import org.usfirst.frc.team4253.robot2018.auto.Auto;
 import org.usfirst.frc.team4253.robot2018.components.Components;
 import org.usfirst.frc.team4253.robot2018.teleop.Teleop;
+
+import edu.wpi.first.wpilibj.IterativeRobot;
 
 /**
  * The main class of the program.
@@ -21,13 +22,22 @@ public class Robot extends IterativeRobot {
     }
 
     /**
-     * Runs autonomous code.
+     * Starts autonomous code setup.
      * 
      * <p>This is called once when autonomous mode begins.
      */
     @Override
     public void autonomousInit() {
         Auto.setup();
+    }
+
+    /**
+     * Starts the autonomous procedures.
+     * 
+     * <p> This is constantly repeated.
+     */
+    @Override
+    public void autonomousPeriodic() {
         Auto.run();
     }
 

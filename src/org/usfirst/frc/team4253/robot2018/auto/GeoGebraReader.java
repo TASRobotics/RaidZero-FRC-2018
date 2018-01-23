@@ -24,7 +24,7 @@ public class GeoGebraReader {
         try {
             return Optional.of(Files.lines(Paths.get(FILENAME)).map(line -> {
                 String[] nums = line.split(",");
-                return new GeoGebraEntry(Double.parseDouble(nums[0]), Double.parseDouble(nums[1]));
+                return new GeoGebraEntry(Double.parseDouble(nums[1]), Double.parseDouble(nums[0]));
             }).toArray(GeoGebraEntry[]::new));
         } catch (IOException e) {
             System.err.println("Error reading CSV file: " + e);

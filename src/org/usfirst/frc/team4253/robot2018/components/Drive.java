@@ -42,8 +42,8 @@ public class Drive {
         rightMotor = initSide(rightLeaderID, rightFollowerID, true);
         gearShift = new DoubleSolenoid(gearShiftForward, gearShiftReverse);
 
-        rightMotor.configPeakOutputForward(PEAK_OUTPUT_PERCENT, MotorSettings.TIMEOUT);
-        rightMotor.configPeakOutputReverse(-PEAK_OUTPUT_PERCENT, MotorSettings.TIMEOUT);
+        // rightMotor.configPeakOutputForward(PEAK_OUTPUT_PERCENT, MotorSettings.TIMEOUT);
+        // rightMotor.configPeakOutputReverse(-PEAK_OUTPUT_PERCENT, MotorSettings.TIMEOUT);
     }
 
     /**
@@ -71,7 +71,7 @@ public class Drive {
         leader.setSensorPhase(invert);
         leader.setInverted(invert);
         follower.setInverted(invert);
-        if (!invert) {
+        if (invert) {
             pigeon = new PigeonIMU(follower);
         }
 

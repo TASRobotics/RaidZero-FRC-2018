@@ -18,6 +18,8 @@ public class AutoDrive {
     private static final int MAX_MODIFIER = 200;
     private static final int DEFAULT_VEL = 1072;
     private static final int DEFAULT_ACCEL = 2144;
+    private static final int DEFAULT_VEL = 500;
+    private static final int DEFAULT_ACCEL = 500;
 
     private double currentAngle;
     private double currentAngularRate;
@@ -37,6 +39,8 @@ public class AutoDrive {
         rightMotor = drive.getRightMotor();
         leftMotor = drive.getLeftMotor();
         pigeon = drive.getPigeon();
+        // Reset Encoder At Init
+        setUp();
     }
 
     /**
@@ -134,6 +138,7 @@ public class AutoDrive {
         autoAngleModifier =
             (targetAngle - currentAngle) * AUTO_ANGLE_P - currentAngularRate * AUTO_ANGLE_D;
         autoAngleModifier = limit(autoAngleModifier);
+        autoAngleModifier = 0 * limit(autoAngleModifier);
     }
 
     /**
