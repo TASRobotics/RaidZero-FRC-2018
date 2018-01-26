@@ -46,6 +46,7 @@ public class Teleop {
      * <p>This should be called repeatedly during teleop mode.
      */
     public static void run() {
+        // Drive
         if (controller.getBumperPressed(kRight)) {
             Components.getDrive().setHighGear();
         }
@@ -54,6 +55,28 @@ public class Teleop {
         }
         teleopDrive.drive(controller.getY(kLeft), controller.getY(kRight));
 
+        // Lift
+        Components.getLift().movePWM(controller.getTriggerAxis(kRight));
+        Components.getLift().movePWM(-controller.getTriggerAxis(kLeft));
+
+        // Intake
+        if (controller.getBButton()) {
+            Components.getIntake().grab();
+        } else if (controller.getAButton()) {
+            Components.getIntake().release();
+        } else {
+            Components.getIntake().idle();
+        }
+        // Climb
+        if (controller.getPOV() == 180) {
+            Components.getClimb().up(0.5);
+        } else if (controller.getPOV() == 0) {
+            Components.getClimb().down(0.5);
+        } else {
+            Components.getClimb().idle();
+        }
+
+        /* This if for motion magic in the future for the lift
         if (controller.getAButton()) {
             // for lowest target position for the lift
             Components.getLift().move(0 + controller.getY(kLeft) * AXIS_TO_LIFT);
@@ -66,6 +89,7 @@ public class Teleop {
             // for scale target position for the lift
             Components.getLift().move(SCALE_POS + controller.getY(kLeft) * AXIS_TO_LIFT);
         }
+        */
     }
 
 }

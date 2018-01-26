@@ -32,10 +32,9 @@ public class Climb {
      * @param in the forward channel for the ramp pneumatics
      * @param out the reverse channel for the ramp pneumatics
      */
-    public Climb(int leaderID, int followerID, int in, int out) {
+    public Climb(int leaderID, int followerID) {
         leaderMotor = new TalonSRX(leaderID);
         follower = new TalonSRX(followerID);
-        ramp = new DoubleSolenoid(in, out);
 
         follower.set(ControlMode.Follower, leaderID);
 
@@ -65,7 +64,7 @@ public class Climb {
     }
 
     /**
-     * Moves the robot up.
+     * Moves the ramp up.
      * 
      * @param percentV percent Voltage provided for climbing up (0~1)
      */
@@ -77,7 +76,7 @@ public class Climb {
     }
 
     /**
-     * Moves the robot down.
+     * Moves the ramp down.
      * 
      * @param percentV percent Voltage provided for climbing down (0~1)
      */
@@ -88,16 +87,9 @@ public class Climb {
     }
 
     /**
-     * put down the ramp.
+     * Stop the ramp
      */
-    public void rampDown() {
-        ramp.set(DoubleSolenoid.Value.kForward);
-    }
-
-    /**
-     * take up the ramp.
-     */
-    public void rampUp() {
-        ramp.set(DoubleSolenoid.Value.kReverse);
+    public void idle() {
+        leaderMotor.set(ControlMode.PercentOutput, 0);
     }
 }

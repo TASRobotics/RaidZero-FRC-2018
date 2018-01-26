@@ -6,8 +6,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 public class Lift {
 
-    private TalonSRX leaderMotor;
-    private TalonSRX follower;
+    private TalonSRX lift;
 
     private static final int TARGET_VEL = 1515; // can be changed
     private static final int TARGET_ACCEL = 6060;
@@ -26,24 +25,19 @@ public class Lift {
      * @param followerID the ID of the follower lift motor
      */
     public Lift(int leaderID, int followerID) {
-        leaderMotor = new TalonSRX(leaderID);
-        follower = new TalonSRX(followerID);
+        lift = new TalonSRX(leaderID);
 
-        follower.set(ControlMode.Follower, leaderID);
+        lift.setNeutralMode(NeutralMode.Brake);
 
-        leaderMotor.setNeutralMode(NeutralMode.Brake);
-        follower.setNeutralMode(NeutralMode.Brake);
+        lift.configMotionCruiseVelocity(TARGET_VEL, MotorSettings.TIMEOUT);
+        lift.configMotionAcceleration(TARGET_ACCEL, MotorSettings.TIMEOUT);
 
-        leaderMotor.configMotionCruiseVelocity(TARGET_VEL, MotorSettings.TIMEOUT);
-        leaderMotor.configMotionAcceleration(TARGET_ACCEL, MotorSettings.TIMEOUT);
+        lift.setSelectedSensorPosition(0, 0, MotorSettings.TIMEOUT);
 
-        leaderMotor.setSelectedSensorPosition(0, 0, MotorSettings.TIMEOUT);
-        follower.setSelectedSensorPosition(0, 0, MotorSettings.TIMEOUT);
-
-        leaderMotor.config_kP(0, P_VALUE, MotorSettings.TIMEOUT);
-        leaderMotor.config_kI(0, I_VALUE, MotorSettings.TIMEOUT);
-        leaderMotor.config_kD(0, D_VALUE, MotorSettings.TIMEOUT);
-        leaderMotor.config_kF(0, F_VALUE, MotorSettings.TIMEOUT);
+        lift.config_kP(0, P_VALUE, MotorSettings.TIMEOUT);
+        lift.config_kI(0, I_VALUE, MotorSettings.TIMEOUT);
+        lift.config_kD(0, D_VALUE, MotorSettings.TIMEOUT);
+        lift.config_kF(0, F_VALUE, MotorSettings.TIMEOUT);
     }
 
     /**
@@ -52,7 +46,15 @@ public class Lift {
      * @param targetPos the target position for the lift
      */
     public void move(double targetPos) {
-        leaderMotor.set(ControlMode.MotionMagic, targetPos);
+        lift.set(ControlMode.MotionMagic, targetPos);
     }
 
+    /**
+     * Moves the lift by percentOutput.
+     * 
+     * @param percentPower the percent power the run the motor.
+     */
+    public void movePWM(double percentPower) {
+        lift.set(ControlMode.PercentOutput, percentPower / 2);
+    }
 }
