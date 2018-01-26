@@ -75,12 +75,15 @@ public class Teleop {
         }
 
         // Climb
-        if (controller.getPOV() == 180) {
-            Components.getClimb().up(0.5);
-        } else if (controller.getPOV() == 0) {
-            Components.getClimb().down(0.5);
+        if (controller.getPOV() == 90) {
+            Components.getLeftClimb().move(0.5);
         } else {
-            Components.getClimb().idle();
+            Components.getLeftClimb().stop();
+        }
+        if (controller.getPOV() == 270) {
+            Components.getRightClimb().move(0.5);
+        } else {
+            Components.getRightClimb().stop();
         }
 
         /* This if for motion magic in the future for the lift

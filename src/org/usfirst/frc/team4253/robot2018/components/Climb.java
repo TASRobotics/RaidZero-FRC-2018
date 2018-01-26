@@ -3,13 +3,10 @@ package org.usfirst.frc.team4253.robot2018.components;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import edu.wpi.first.wpilibj.DoubleSolenoid;
 
 public class Climb {
 
-    private TalonSRX leaderMotor;
-    private TalonSRX follower;
-    private DoubleSolenoid ramp;
+    private TalonSRX motor;
 
     private static final int lowEnc = 0, highEnc = 3000;// can be changed
 
@@ -22,36 +19,26 @@ public class Climb {
     private static final double F_VALUE = 0.0;
     private static final int IZONE_VALUE = 0;
 
-    // # of motors can be changed by adding more slave motors
-
     /**
-     * Constructs a climb object and sets up the climb motors and pneumatics.
+     * Constructs a climb object and sets up the climb motor.
      * 
-     * @param leaderID the ID of the leader climb motor
-     * @param followerID the ID of the follower climb motor
-     * @param in the forward channel for the ramp pneumatics
-     * @param out the reverse channel for the ramp pneumatics
+     * @param motorID the ID of the climb motor
      */
-    public Climb(int leaderID, int followerID) {
-        leaderMotor = new TalonSRX(leaderID);
-        follower = new TalonSRX(followerID);
+    public Climb(int motorID) {
+        motor = new TalonSRX(motorID);
 
-        follower.set(ControlMode.Follower, leaderID);
+        motor.setNeutralMode(NeutralMode.Brake);
 
-        leaderMotor.setNeutralMode(NeutralMode.Brake);
-        follower.setNeutralMode(NeutralMode.Brake);
+        motor.configMotionCruiseVelocity(TARGET_VEL, MotorSettings.TIMEOUT);
+        motor.configMotionAcceleration(TARGET_ACCEL, MotorSettings.TIMEOUT);
 
-        leaderMotor.configMotionCruiseVelocity(TARGET_VEL, MotorSettings.TIMEOUT);
-        leaderMotor.configMotionAcceleration(TARGET_ACCEL, MotorSettings.TIMEOUT);
+        motor.setSelectedSensorPosition(0, 0, MotorSettings.TIMEOUT);
 
-        leaderMotor.setSelectedSensorPosition(0, 0, MotorSettings.TIMEOUT);
-        follower.setSelectedSensorPosition(0, 0, MotorSettings.TIMEOUT);
-
-        leaderMotor.config_kP(0, P_VALUE, MotorSettings.TIMEOUT);
-        leaderMotor.config_kI(0, I_VALUE, MotorSettings.TIMEOUT);
-        leaderMotor.config_kD(0, D_VALUE, MotorSettings.TIMEOUT);
-        leaderMotor.config_kF(0, F_VALUE, MotorSettings.TIMEOUT);
-        leaderMotor.config_IntegralZone(0, IZONE_VALUE, MotorSettings.TIMEOUT);
+        motor.config_kP(0, P_VALUE, MotorSettings.TIMEOUT);
+        motor.config_kI(0, I_VALUE, MotorSettings.TIMEOUT);
+        motor.config_kD(0, D_VALUE, MotorSettings.TIMEOUT);
+        motor.config_kF(0, F_VALUE, MotorSettings.TIMEOUT);
+        motor.config_IntegralZone(0, IZONE_VALUE, MotorSettings.TIMEOUT);
     }
 
     /**
@@ -59,37 +46,23 @@ public class Climb {
      * 
      * @param targetPos the target position for the climb
      */
-    public void move(double targetPos) {
-        leaderMotor.set(ControlMode.MotionMagic, targetPos);
-    }
-
-    /**
-     * Moves the ramp up.
-     * 
-     * @param percentV percent Voltage provided for climbing up (0~1)
-     */
-    public void up(double percentV) {
-        if (leaderMotor.getSelectedSensorPosition(0) <= highEnc) {
-            leaderMotor.set(ControlMode.PercentOutput, Math.abs(percentV));
-        }
-
+    public void moveMotionMagic(double targetPos) {
+        motor.set(ControlMode.MotionMagic, targetPos);
     }
 
     /**
      * Moves the ramp down.
      * 
-     * @param percentV percent Voltage provided for climbing down (0~1)
+     * @param percentV percent voltage (0~1)
      */
-    public void down(double percentV) {
-        if (leaderMotor.getSelectedSensorPosition(0) >= lowEnc) {
-            leaderMotor.set(ControlMode.PercentOutput, -Math.abs(percentV));
-        }
+    public void move(double percentV) {
+        motor.set(ControlMode.PercentOutput, Math.abs(percentV));
     }
 
     /**
-     * Stop the ramp
+     * Stops the ramp.
      */
-    public void idle() {
-        leaderMotor.set(ControlMode.PercentOutput, 0);
+    public void stop() {
+        motor.set(ControlMode.PercentOutput, 0);
     }
 }

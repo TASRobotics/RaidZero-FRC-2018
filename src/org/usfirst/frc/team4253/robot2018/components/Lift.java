@@ -19,13 +19,12 @@ public class Lift {
     // # of motors can be changed by adding more slave motors
 
     /**
-     * Constructs a Lift object and sets up the lift motors.
+     * Constructs a Lift object and sets up the lift motor.
      * 
-     * @param leaderID the ID of the leader lift motor
-     * @param followerID the ID of the follower lift motor
+     * @param motorID the ID of the lift motor
      */
-    public Lift(int leaderID, int followerID) {
-        lift = new TalonSRX(leaderID);
+    public Lift(int motorID) {
+        lift = new TalonSRX(motorID);
 
         lift.setNeutralMode(NeutralMode.Brake);
 
