@@ -31,6 +31,8 @@ public class Intake {
         leaderMotor.setNeutralMode(NeutralMode.Brake);
         follower.setNeutralMode(NeutralMode.Brake);
 
+        follower.setInverted(true);
+
         follower.set(ControlMode.Follower, leaderID);
     }
 
