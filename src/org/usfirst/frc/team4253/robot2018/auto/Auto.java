@@ -57,8 +57,9 @@ public class Auto {
             case "Right":
                 break;
         }
+        // autoDrive.moveStraight(10000);
         geoGebraData.ifPresent(data -> {
-            autoDrive.moveCurve(data, 10000);
+            autoDrive.moveCurve(data, 10500);
         });
     }
 }

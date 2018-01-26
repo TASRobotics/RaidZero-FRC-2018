@@ -18,6 +18,7 @@ public class TeleopDrive {
     public TeleopDrive(Drive drive) {
         this.drive = drive;
         differentialDrive = new DifferentialDrive(drive.getLeftMotor(), drive.getRightMotor());
+        differentialDrive.setSafetyEnabled(false);
     }
 
     /**

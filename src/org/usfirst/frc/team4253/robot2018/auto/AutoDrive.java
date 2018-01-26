@@ -6,20 +6,19 @@ import org.usfirst.frc.team4253.robot2018.components.MotorSettings;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.sensors.PigeonIMU;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class AutoDrive {
 
     private static final double AUTO_STRAIGHT_P = 0.08;
     private static final double AUTO_STRIAGHT_D = 0.0004;
-    private static final double AUTO_ANGLE_P = 0.08;
+    private static final double AUTO_ANGLE_P = 0.6; // 0.08;
     private static final double AUTO_ANGLE_D = 0.0004;
 
     private static final int PIGEON_TIMEOUT = 100;
     private static final int MAX_MODIFIER = 200;
-    private static final int DEFAULT_VEL = 1072;
-    private static final int DEFAULT_ACCEL = 2144;
     private static final int DEFAULT_VEL = 500;
-    private static final int DEFAULT_ACCEL = 500;
+    private static final int DEFAULT_ACCEL = 1000;
 
     private double currentAngle;
     private double currentAngularRate;
@@ -62,18 +61,25 @@ public class AutoDrive {
      * @param targetPos the target encoder position to move the robot to
      */
     public void moveStraight(int targetPos) {
-        autoStraight();
-        rightMotor.configMotionCruiseVelocity(DEFAULT_VEL + (int) autoStraightModifier,
+        // autoStraight();
+        rightMotor.configMotionCruiseVelocity(DEFAULT_VEL + 0 * (int) autoStraightModifier,
             MotorSettings.TIMEOUT);
-        rightMotor.configMotionAcceleration(DEFAULT_ACCEL + (int) autoStraightModifier,
+        rightMotor.configMotionAcceleration(DEFAULT_ACCEL + 0 * (int) autoStraightModifier,
             MotorSettings.TIMEOUT);
-        leftMotor.configMotionCruiseVelocity(DEFAULT_VEL + (int) autoStraightModifier,
+        leftMotor.configMotionCruiseVelocity(DEFAULT_VEL + 0 * (int) autoStraightModifier,
             MotorSettings.TIMEOUT);
-        leftMotor.configMotionAcceleration(DEFAULT_ACCEL + (int) autoStraightModifier,
+        leftMotor.configMotionAcceleration(DEFAULT_ACCEL + 0 * (int) autoStraightModifier,
             MotorSettings.TIMEOUT);
 
         rightMotor.set(ControlMode.MotionMagic, targetPos);
         leftMotor.set(ControlMode.MotionMagic, targetPos);
+
+        System.out.println(leftMotor.getMotorOutputPercent() + "\t"
+                + leftMotor.getClosedLoopError(MotorSettings.PID_IDX) + "\t"
+                + leftMotor.getSelectedSensorPosition(MotorSettings.PID_IDX) + "\t"
+                + rightMotor.getMotorOutputPercent() + "\t"
+            + rightMotor.getClosedLoopError(MotorSettings.PID_IDX) + "\t"
+            + rightMotor.getSelectedSensorPosition(MotorSettings.PID_IDX));
     }
 
     /**
@@ -87,14 +93,26 @@ public class AutoDrive {
         int[] currentTargets = convertToMotorValues(current.getPercentDifference(), targetPos);
         autoAngle(current.getAngle());
 
-        leftMotor.configMotionCruiseVelocity(currentTargets[0] + (int) autoAngleModifier,
+        autoAngleModifier *= 10;
+        leftMotor.configMotionCruiseVelocity(DEFAULT_VEL + (int) autoAngleModifier,
             MotorSettings.TIMEOUT);
-        rightMotor.configMotionCruiseVelocity(currentTargets[1] + (int) autoAngleModifier,
+        rightMotor.configMotionCruiseVelocity(DEFAULT_VEL - (int) autoAngleModifier,
             MotorSettings.TIMEOUT);
-        leftMotor.configMotionAcceleration(currentTargets[2] + (int) autoAngleModifier,
+        leftMotor.configMotionAcceleration(DEFAULT_ACCEL + (int) autoAngleModifier,
             MotorSettings.TIMEOUT);
-        rightMotor.configMotionAcceleration(currentTargets[3] + (int) autoAngleModifier,
+        rightMotor.configMotionAcceleration(DEFAULT_ACCEL - (int) autoAngleModifier,
             MotorSettings.TIMEOUT);
+
+        // leftMotor.configMotionCruiseVelocity(currentTargets[0] + (int) autoAngleModifier,
+        // MotorSettings.TIMEOUT);
+        // rightMotor.configMotionCruiseVelocity(currentTargets[1] - (int) autoAngleModifier,
+        // MotorSettings.TIMEOUT);
+        // leftMotor.configMotionAcceleration(currentTargets[2] + (int) autoAngleModifier,
+        // MotorSettings.TIMEOUT);
+        // rightMotor.configMotionAcceleration(currentTargets[3] - (int) autoAngleModifier,
+        // MotorSettings.TIMEOUT);
+        SmartDashboard.putNumber("LTargetVel", currentTargets[0]);
+        SmartDashboard.putNumber("RTargetVel", currentTargets[1]);
 
         rightMotor.set(ControlMode.MotionMagic, targetPos);
         leftMotor.set(ControlMode.MotionMagic, targetPos);
@@ -132,13 +150,13 @@ public class AutoDrive {
         pigeon.getRawGyro(xyz_dps);
         pigeon.getFusedHeading(fusionStatus);
 
-        currentAngle = fusionStatus.heading;
+        currentAngle = -fusionStatus.heading;
         currentAngularRate = xyz_dps[2];
 
         autoAngleModifier =
             (targetAngle - currentAngle) * AUTO_ANGLE_P - currentAngularRate * AUTO_ANGLE_D;
-        autoAngleModifier = limit(autoAngleModifier);
-        autoAngleModifier = 0 * limit(autoAngleModifier);
+        System.out.println("autoAngleModifier: " + autoAngleModifier);
+        // autoAngleModifier = limit(autoAngleModifier);
     }
 
     /**
@@ -154,6 +172,7 @@ public class AutoDrive {
      * @return the array containing motor targets
      */
     private int[] convertToMotorValues(double percentDiff, int targetPos) {
+        SmartDashboard.putNumber("Pdiff", percentDiff);
         return new int[] {
             (int) ((1 + percentDiff) * DEFAULT_VEL),
             (int) ((1 - percentDiff) * DEFAULT_VEL),
@@ -174,15 +193,20 @@ public class AutoDrive {
             + rightMotor.getSelectedSensorPosition(MotorSettings.PID_IDX)) / 2;
 
         if (currentPos <= 0) {
+            System.out.println("currentPos <= 0");
             return data[0];
-        }
-        if (currentPos >= targetPos) {
-            return data[data.length - 1];
         }
 
         double progress = currentPos * data.length / targetPos;
         int prevIndex = (int) progress;
         int nextIndex = prevIndex + 1;
+
+        if (nextIndex >= data.length) {
+            System.out.println("nextIndex >= data.length");
+            return data[data.length - 1];
+        }
+
+        System.out.println("index: " + prevIndex);
 
         double prevAngle = data[prevIndex].getAngle();
         double nextAngle = data[nextIndex].getAngle();

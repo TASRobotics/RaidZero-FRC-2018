@@ -22,9 +22,9 @@ public class Components {
      */
     public static void initialize() {
         drive = new Drive(1, 2, 3, 4, 0, 1);
-        intake = new Intake(8, 9, 2, 3);
-        lift = new Lift(10, 11); // placeholder numbers
-        climb = new Climb(12, 13, 4, 5);
+        // intake = new Intake(8, 9, 2, 3);
+        // lift = new Lift(10, 11); // placeholder numbers
+        // climb = new Climb(12, 13, 4, 5);
     }
 
     /**

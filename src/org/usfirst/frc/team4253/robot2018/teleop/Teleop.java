@@ -6,6 +6,7 @@ import static edu.wpi.first.wpilibj.GenericHID.Hand.kLeft;
 import static edu.wpi.first.wpilibj.GenericHID.Hand.kRight;
 
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * Teleop specific code for the robot.
@@ -66,6 +67,14 @@ public class Teleop {
             // for scale target position for the lift
             Components.getLift().move(SCALE_POS + controller.getY(kLeft) * AXIS_TO_LIFT);
         }
+        System.out.println("Pigeon: " + Components.getDrive().getPigeon().getFusedHeading());
+        System.out.println(
+            "Left Enc: " + Components.getDrive().getLeftMotor().getSelectedSensorPosition(0));
+        System.out.println("Right Enc: " + Components.getDrive().getRightMotor().getSelectedSensorPosition(0));
+        SmartDashboard.putNumber("Left Speed:",
+            Components.getDrive().getLeftMotor().getSelectedSensorVelocity(0));
+        SmartDashboard.putNumber("Right Speed:",
+            Components.getDrive().getRightMotor().getSelectedSensorVelocity(0));
     }
 
 }
