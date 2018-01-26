@@ -61,12 +61,19 @@ public class Teleop {
 
         // Intake
         if (controller.getBButton()) {
-            Components.getIntake().grab();
+            Components.getIntake().runIntakeWheelsIn();
         } else if (controller.getAButton()) {
-            Components.getIntake().release();
+            Components.getIntake().runIntakeWheelsOut();
         } else {
-            Components.getIntake().idle();
+            Components.getIntake().stopWheels();
         }
+        if (controller.getYButton()) {
+            Components.getIntake().openClaw();
+        }
+        if (controller.getXButton()) {
+            Components.getIntake().closeClaw();
+        }
+
         // Climb
         if (controller.getPOV() == 180) {
             Components.getClimb().up(0.5);

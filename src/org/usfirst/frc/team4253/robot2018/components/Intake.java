@@ -37,6 +37,41 @@ public class Intake {
     }
 
     /**
+     * Opens the claw.
+     */
+    public void openClaw() {
+        claw.set(OPEN_POSITION);
+    }
+
+    /**
+     * Closes the claw.
+     */
+    public void closeClaw() {
+        claw.set(CLOSED_POSITION);
+    }
+
+    /**
+     * Runs the wheels in.
+     */
+    public void runIntakeWheelsIn() {
+        leaderMotor.set(ControlMode.PercentOutput, 1);
+    }
+
+    /**
+     * Runs the wheels out.
+     */
+    public void runIntakeWheelsOut() {
+        leaderMotor.set(ControlMode.PercentOutput, -1);
+    }
+
+    /**
+     * 
+     */
+    public void stopWheels() {
+        leaderMotor.set(ControlMode.PercentOutput, 0);
+    }
+
+    /**
      * Grabs the cube.
      */
     public void grab() {

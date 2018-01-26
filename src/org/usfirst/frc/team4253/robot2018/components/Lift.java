@@ -55,6 +55,6 @@ public class Lift {
      * @param percentPower the percent power the run the motor.
      */
     public void movePWM(double percentPower) {
-        lift.set(ControlMode.PercentOutput, percentPower / 2);
+        lift.set(ControlMode.PercentOutput, percentPower);
     }
 }
