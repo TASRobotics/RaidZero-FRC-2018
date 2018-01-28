@@ -39,6 +39,12 @@ public class Auto {
      */
     public static void initialize() {
         autoDrive = new AutoDrive(Components.getDrive());
+        autonChoose = new SendableChooser<String>();
+        autonChoose.addDefault("Do Nothing", "Do Nothing");
+        autonChoose.addObject("Left", "Left");
+        autonChoose.addObject("Center", "Center");
+        autonChoose.addObject("Right", "Right");
+        SmartDashboard.putData("Auton Starting Chooser", autonChoose);
     }
 
     /**
@@ -49,12 +55,6 @@ public class Auto {
      */
     public static void setup() {
         autoDrive.setUp();
-        autonChoose = new SendableChooser<String>();
-        autonChoose.addDefault("Do Nothing", "Do Nothing");
-        autonChoose.addObject("Left", "Left");
-        autonChoose.addObject("Center", "Center");
-        autonChoose.addObject("Right", "Right");
-        SmartDashboard.putData(autonChoose);
         geoGebraData = GeoGebraReader.readFile();
         sections = Sections.Switches;
         gameData = DriverStation.getInstance().getGameSpecificMessage();
@@ -95,10 +95,10 @@ public class Auto {
                 } else if (gameData.charAt(0) == 'R') {
                     switch (sections) {
                         case Switches:
-                            // Run center left
+                            // Run center right
                             break;
                         case CrossLine:
-                            // Run Left Switch to Cross Line
+                            // Run right Switch to Cross Line
                             break;
                         case PickUpCube:
                             // Pick Up Cube
@@ -119,11 +119,11 @@ public class Auto {
         }
 
         geoGebraData.ifPresent(data -> {
-            autoDrive.moveCurve(data, 10500);
+            autoDrive.moveCurve(data);
         });
 
         if (autoDrive.check()) {
-            sections.next();
+            sections = sections.next();
         }
     }
 }
