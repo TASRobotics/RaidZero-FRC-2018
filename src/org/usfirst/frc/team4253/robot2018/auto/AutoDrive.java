@@ -160,6 +160,23 @@ public class AutoDrive {
     }
 
     /**
+     * Checks if the robot has finished movement;
+     * 
+     * @return Returns true if robot has finished. Else, false.
+     */
+    public boolean check() {
+        // @formatter:off
+        if (Math.abs((leftMotor.getSelectedSensorVelocity(MotorSettings.PID_IDX)
+                + rightMotor.getSelectedSensorVelocity(MotorSettings.PID_IDX)) / 2) <= 5
+            && Math.abs((leftMotor.getClosedLoopError(MotorSettings.PID_IDX)
+                + rightMotor.getClosedLoopError(MotorSettings.PID_IDX)) / 2) <= 10) {
+            return true;
+        }
+        // @formatter:on
+        return false;
+    }
+
+    /**
      * Converts the geogebra data to targets for motors.
      * 
      * <p>The returned array contains:
