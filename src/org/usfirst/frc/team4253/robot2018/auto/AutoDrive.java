@@ -14,6 +14,7 @@ public class AutoDrive {
     private static final double AUTO_STRIAGHT_D = 0.0004;
     private static final double AUTO_ANGLE_P = 0.6; // 0.08;
     private static final double AUTO_ANGLE_D = 0.0004;
+    private static final double INCH_TO_TICKS = 10500 / 133;
 
     private static final int PIGEON_TIMEOUT = 100;
     private static final int MAX_MODIFIER = 200;
@@ -88,7 +89,8 @@ public class AutoDrive {
      * @param targets the geogebra data containing percent difference and angle
      * @param targetPos the target encoder position to move the robot to
      */
-    public void moveCurve(GeoGebraEntry[] targets, int targetPos) {
+    public void moveCurve(GeoGebraEntry[] targets) {
+        int targetPos = (int) (targets.length * INCH_TO_TICKS);
         GeoGebraEntry current = interpolate(targets, targetPos);
         int[] currentTargets = convertToMotorValues(current.getPercentDifference(), targetPos);
         autoAngle(current.getAngle());
