@@ -12,7 +12,7 @@ public class AutoDrive {
 
     private static final double AUTO_STRAIGHT_P = 0.08;
     private static final double AUTO_STRIAGHT_D = 0.0004;
-    private static final double AUTO_ANGLE_P = 0.6; // 0.08;
+    private static final double AUTO_ANGLE_P = 4; // 0.08;
     private static final double AUTO_ANGLE_D = 0.0004;
     private static final double INCH_TO_TICKS = 10500 / 133;
 
@@ -89,32 +89,35 @@ public class AutoDrive {
      * @param targets the geogebra data containing percent difference and angle
      * @param targetPos the target encoder position to move the robot to
      */
-    public void moveCurve(GeoGebraEntry[] targets) {
-        int targetPos = (int) (targets.length * INCH_TO_TICKS);
+    public void moveCurve(GeoGebraEntry[] targets, boolean reverse) {
+        int targetPos = (int) ((targets.length - 1) * INCH_TO_TICKS);
         GeoGebraEntry current = interpolate(targets, targetPos);
-        int[] currentTargets = convertToMotorValues(current.getPercentDifference(), targetPos);
-        autoAngle(current.getAngle());
-
-        autoAngleModifier *= 10;
-        leftMotor.configMotionCruiseVelocity(DEFAULT_VEL + (int) autoAngleModifier,
-            MotorSettings.TIMEOUT);
-        rightMotor.configMotionCruiseVelocity(DEFAULT_VEL - (int) autoAngleModifier,
-            MotorSettings.TIMEOUT);
-        leftMotor.configMotionAcceleration(DEFAULT_ACCEL + (int) autoAngleModifier,
-            MotorSettings.TIMEOUT);
-        rightMotor.configMotionAcceleration(DEFAULT_ACCEL - (int) autoAngleModifier,
-            MotorSettings.TIMEOUT);
-
-        // leftMotor.configMotionCruiseVelocity(currentTargets[0] + (int) autoAngleModifier,
+        if (reverse) {
+            targetPos = -targetPos;
+        }
+        int[] currentTargets = convertToMotorValues(current.getPercentDifference(), reverse);
+        autoAngle(current.getAngle(), reverse);
+        System.out.println(autoAngleModifier);
+        // leftMotor.configMotionCruiseVelocity(DEFAULT_VEL - (int) autoAngleModifier,
         // MotorSettings.TIMEOUT);
-        // rightMotor.configMotionCruiseVelocity(currentTargets[1] - (int) autoAngleModifier,
+        // rightMotor.configMotionCruiseVelocity(DEFAULT_VEL + (int) autoAngleModifier,
         // MotorSettings.TIMEOUT);
-        // leftMotor.configMotionAcceleration(currentTargets[2] + (int) autoAngleModifier,
+        // leftMotor.configMotionAcceleration(DEFAULT_ACCEL - (int) autoAngleModifier,
         // MotorSettings.TIMEOUT);
-        // rightMotor.configMotionAcceleration(currentTargets[3] - (int) autoAngleModifier,
+        // rightMotor.configMotionAcceleration(DEFAULT_ACCEL + (int) autoAngleModifier,
         // MotorSettings.TIMEOUT);
+        leftMotor.configMotionCruiseVelocity(currentTargets[0] - (int) autoAngleModifier,
+            MotorSettings.TIMEOUT);
+        rightMotor.configMotionCruiseVelocity(currentTargets[1] + (int) autoAngleModifier,
+            MotorSettings.TIMEOUT);
+        leftMotor.configMotionAcceleration(currentTargets[2] - (int) autoAngleModifier,
+            MotorSettings.TIMEOUT);
+        rightMotor.configMotionAcceleration(currentTargets[3] + (int) autoAngleModifier,
+            MotorSettings.TIMEOUT);
         SmartDashboard.putNumber("LTargetVel", currentTargets[0]);
         SmartDashboard.putNumber("RTargetVel", currentTargets[1]);
+        System.out.println(leftMotor.getClosedLoopError(0));
+        System.out.println(rightMotor.getClosedLoopError(0));
 
         rightMotor.set(ControlMode.MotionMagic, targetPos);
         leftMotor.set(ControlMode.MotionMagic, targetPos);
@@ -146,17 +149,26 @@ public class AutoDrive {
      * 
      * @param targetAngle the angle to try to reach
      */
-    private void autoAngle(double targetAngle) {
+    private void autoAngle(double targetAngle, boolean reverse) {
         PigeonIMU.FusionStatus fusionStatus = new PigeonIMU.FusionStatus();
         double[] xyz_dps = new double[3];
         pigeon.getRawGyro(xyz_dps);
         pigeon.getFusedHeading(fusionStatus);
 
-        currentAngle = -fusionStatus.heading;
+        currentAngle = fusionStatus.heading;
         currentAngularRate = xyz_dps[2];
 
+        if (reverse) {
+            targetAngle += 180;
+            if (targetAngle > 180) {
+                targetAngle -= 360;
+            }
+        }
         autoAngleModifier =
             (targetAngle - currentAngle) * AUTO_ANGLE_P - currentAngularRate * AUTO_ANGLE_D;
+        if (reverse) {
+            autoAngleModifier = -autoAngleModifier;
+        }
         System.out.println("autoAngleModifier: " + autoAngleModifier);
         // autoAngleModifier = limit(autoAngleModifier);
     }
@@ -166,15 +178,17 @@ public class AutoDrive {
      * 
      * @return Returns true if robot has finished. Else, false.
      */
-    public boolean check() {
-        // @formatter:off
+    public boolean check(GeoGebraEntry[] targets) {
+        int targetPos = Math.abs((int) ((targets.length - 1) * INCH_TO_TICKS));
+        int averageCurrentPos = Math.abs((leftMotor.getSelectedSensorPosition(MotorSettings.PID_IDX)
+            + rightMotor.getSelectedSensorPosition(MotorSettings.PID_IDX)) / 2);
         if (Math.abs((leftMotor.getSelectedSensorVelocity(MotorSettings.PID_IDX)
                 + rightMotor.getSelectedSensorVelocity(MotorSettings.PID_IDX)) / 2) <= 5
-            && Math.abs((leftMotor.getClosedLoopError(MotorSettings.PID_IDX)
-                + rightMotor.getClosedLoopError(MotorSettings.PID_IDX)) / 2) <= 10) {
+            && Math.abs(targetPos - averageCurrentPos) <= 10) {
+            rightMotor.setSelectedSensorPosition(0, MotorSettings.PID_IDX, MotorSettings.TIMEOUT);
+            leftMotor.setSelectedSensorPosition(0, MotorSettings.PID_IDX, MotorSettings.TIMEOUT);
             return true;
         }
-        // @formatter:on
         return false;
     }
 
@@ -190,13 +204,14 @@ public class AutoDrive {
      * @param targetPos the target position for the robot to go to
      * @return the array containing motor targets
      */
-    private int[] convertToMotorValues(double percentDiff, int targetPos) {
+    private int[] convertToMotorValues(double percentDiff, boolean reverse) {
         SmartDashboard.putNumber("Pdiff", percentDiff);
+        int sign = reverse ? -1 : 1;
         return new int[] {
-            (int) ((1 + percentDiff) * DEFAULT_VEL),
-            (int) ((1 - percentDiff) * DEFAULT_VEL),
-            (int) ((1 + percentDiff) * DEFAULT_ACCEL),
-            (int) ((1 - percentDiff) * DEFAULT_ACCEL) };
+            (int) ((1 - sign * percentDiff) * DEFAULT_VEL),
+            (int) ((1 + sign * percentDiff) * DEFAULT_VEL),
+            (int) ((1 - sign * percentDiff) * DEFAULT_ACCEL),
+            (int) ((1 + sign * percentDiff) * DEFAULT_ACCEL) };
     }
 
     /**
@@ -208,8 +223,8 @@ public class AutoDrive {
      * @return the current angle and percent difference
      */
     private GeoGebraEntry interpolate(GeoGebraEntry[] data, int targetPos) {
-        double currentPos = (leftMotor.getSelectedSensorPosition(MotorSettings.PID_IDX)
-            + rightMotor.getSelectedSensorPosition(MotorSettings.PID_IDX)) / 2;
+        double currentPos = Math.abs((leftMotor.getSelectedSensorPosition(MotorSettings.PID_IDX)
+            + rightMotor.getSelectedSensorPosition(MotorSettings.PID_IDX)) / 2);
 
         if (currentPos <= 0) {
             System.out.println("currentPos <= 0");

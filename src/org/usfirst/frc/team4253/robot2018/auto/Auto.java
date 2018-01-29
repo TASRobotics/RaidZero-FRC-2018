@@ -16,12 +16,13 @@ public class Auto {
     private static AutoDrive autoDrive;
     private static SendableChooser<String> autonChoose;
     private static Optional<GeoGebraEntry[]> geoGebraData;
+    private static Optional<GeoGebraEntry[]> geoGebraData2;
 
     /**
      * The enum for auton sections.
      */
     private enum Sections {
-        Switches, CrossLine, PickUpCube, Scale;
+        Switches, CrossLine, PickUpCube, Scale, Stop;
 
         private static Sections[] vals = values();
 
@@ -55,7 +56,8 @@ public class Auto {
      */
     public static void setup() {
         autoDrive.setUp();
-        geoGebraData = GeoGebraReader.readFile();
+        geoGebraData = GeoGebraReader.readFile("/home/lvuser/data.csv");
+        geoGebraData2 = GeoGebraReader.readFile("/home/lvuser/centerright.csv");
         sections = Sections.Switches;
         gameData = DriverStation.getInstance().getGameSpecificMessage();
     }
@@ -96,9 +98,21 @@ public class Auto {
                     switch (sections) {
                         case Switches:
                             // Run center right
+                            geoGebraData2.ifPresent(centerright -> {
+                                autoDrive.moveCurve(centerright, false);
+                                if (autoDrive.check(centerright)) {
+                                    sections = sections.next();
+                                }
+                            });
                             break;
                         case CrossLine:
                             // Run right Switch to Cross Line
+                            geoGebraData.ifPresent(data -> {
+                                autoDrive.moveCurve(data, true);
+                                if (autoDrive.check(data)) {
+                                    sections = sections.next();
+                                }
+                            });
                             break;
                         case PickUpCube:
                             // Pick Up Cube
@@ -117,13 +131,7 @@ public class Auto {
             case "Right":
                 break;
         }
+        System.out.println(sections);
 
-        geoGebraData.ifPresent(data -> {
-            autoDrive.moveCurve(data);
-        });
-
-        if (autoDrive.check()) {
-            sections = sections.next();
-        }
     }
 }

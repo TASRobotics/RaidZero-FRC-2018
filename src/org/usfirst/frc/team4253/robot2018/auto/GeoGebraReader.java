@@ -20,9 +20,9 @@ public class GeoGebraReader {
      * 
      * @return the data from the CSV file
      */
-    public static Optional<GeoGebraEntry[]> readFile() {
+    public static Optional<GeoGebraEntry[]> readFile(String filename) {
         try {
-            return Optional.of(Files.lines(Paths.get(FILENAME)).map(line -> {
+            return Optional.of(Files.lines(Paths.get(filename)).map(line -> {
                 String[] nums = line.split(",");
                 return new GeoGebraEntry(Double.parseDouble(nums[1]), Double.parseDouble(nums[0]));
             }).toArray(GeoGebraEntry[]::new));
