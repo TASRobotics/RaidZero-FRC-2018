@@ -17,8 +17,6 @@ console.assert(headerCells.indexOf('') > 3, 'Data for robot has less than 3 colu
 const header = headerCells.slice(2, headerCells.indexOf('')).map(x => x.toLowerCase());
 console.assert(header.includes('angle'), 'Could not find angle');
 console.assert(header.includes('percent difference'), 'Could not find percent difference');
-console.assert(header.includes('left distance'), 'Could not find left distance');
-console.assert(header.includes('right distance'), 'Could not find right distance');
 
 const pathInfo = {};
 const rowInfo = [];
@@ -46,12 +44,6 @@ for (let i = 0; i < rows.length; i++) {
 
 const pathData = [];
 
-console.assert(pathInfo['total distance'] !== undefined,
-    `Could not find total distance`);
-console.assert(!Number.isNaN(parseFloat(pathInfo['total distance'])),
-    `Total distance "${pathInfo['total distance']}" is not a number`);
-pathData.push(pathInfo['total distance']);
-
 console.assert(pathInfo.stage !== undefined, `Could not find stage`);
 const stage = parseFloat(pathInfo.stage);
 console.assert(!Number.isNaN(stage) && stage >= 0,
@@ -75,8 +67,7 @@ console.assert(['left', 'right'].includes(end1),
     `End "${pathInfo.end}" should be left or right`);
 pathData.push(end1);
 
-const rowData = rowInfo.map(x =>
-    [x.angle, x['percent difference'], x['left distance'], x['right distance']]);
+const rowData = rowInfo.map(x => [x.angle, x['percent difference']]);
 
 const data = pathData.concat(rowData).join('\n');
 const filename =
