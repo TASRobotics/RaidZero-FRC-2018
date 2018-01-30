@@ -105,7 +105,7 @@ public class Auto {
                             // Run center right
                             geoGebraData2.ifPresent(centerright -> {
                                 autoDrive.moveCurve(centerright, false);
-                                if (autoDrive.check(centerright)) {
+                                if (autoDrive.checkFinished(centerright)) {
                                     sections = sections.next();
                                 }
                             });
@@ -114,7 +114,7 @@ public class Auto {
                             // Run right Switch to Cross Line
                             geoGebraData.ifPresent(data -> {
                                 autoDrive.moveCurve(data, true);
-                                if (autoDrive.check(data)) {
+                                if (autoDrive.checkFinished(data)) {
                                     sections = sections.next();
                                 }
                             });

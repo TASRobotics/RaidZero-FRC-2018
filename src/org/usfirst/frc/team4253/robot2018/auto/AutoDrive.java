@@ -154,7 +154,7 @@ public class AutoDrive {
      * 
      * @return Returns true if robot has finished. Else, false.
      */
-    public boolean check(GeoGebraEntry[] targets) {
+    public boolean checkFinished(GeoGebraEntry[] targets) {
         int targetPos = Math.abs((int) ((targets.length - 1) * INCH_TO_TICKS));
         int averageCurrentPos = Math.abs((leftMotor.getSelectedSensorPosition(MotorSettings.PID_IDX)
             + rightMotor.getSelectedSensorPosition(MotorSettings.PID_IDX)) / 2);
