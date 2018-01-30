@@ -22,7 +22,7 @@ public class Robot extends IterativeRobot {
     }
 
     /**
-     * Starts autonomous code setup.
+     * Runs setup code for autonomous mode.
      * 
      * <p>This is called once when autonomous mode begins.
      */
@@ -32,9 +32,9 @@ public class Robot extends IterativeRobot {
     }
 
     /**
-     * Starts the autonomous procedures.
+     * Runs periodic code for autonomous mode.
      * 
-     * <p> This is constantly repeated.
+     * <p>This is called repeatedly during autonomous mode.
      */
     @Override
     public void autonomousPeriodic() {
@@ -54,7 +54,7 @@ public class Robot extends IterativeRobot {
     /**
      * Runs periodic code for teleop mode.
      * 
-     * <p>This method is called repeatedly in a loop during teleop mode.
+     * <p>This is called repeatedly during teleop mode.
      */
     @Override
     public void teleopPeriodic() {
