@@ -55,7 +55,7 @@ public class Auto {
      * calling {@link #run()}.
      */
     public static void setup() {
-        autoDrive.setUp();
+        autoDrive.setup();
         geoGebraData = GeoGebraReader.readFile("/home/lvuser/data.csv");
         geoGebraData2 = GeoGebraReader.readFile("/home/lvuser/centerright.csv");
         sections = Sections.Switches;

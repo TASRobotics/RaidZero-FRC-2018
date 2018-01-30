@@ -38,7 +38,7 @@ public class AutoDrive {
         leftMotor = drive.getLeftMotor();
         pigeon = drive.getPigeon();
         // Reset Encoder At Init
-        setUp();
+        setup();
     }
 
     /**
@@ -48,7 +48,7 @@ public class AutoDrive {
      * 
      * <p>TODO: Add anything else that's need in the future.
      */
-    public void setUp() {
+    public void setup() {
         pigeon.setFusedHeading(0, PIGEON_TIMEOUT);
         rightMotor.setSelectedSensorPosition(0, MotorSettings.PID_IDX, MotorSettings.TIMEOUT);
         leftMotor.setSelectedSensorPosition(0, MotorSettings.PID_IDX, MotorSettings.TIMEOUT);
