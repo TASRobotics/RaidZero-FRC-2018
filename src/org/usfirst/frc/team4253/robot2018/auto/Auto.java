@@ -21,7 +21,7 @@ public class Auto {
     /**
      * The enum for auton sections.
      */
-    private enum Sections {
+    private static enum Sections {
         Switches, CrossLine, PickUpCube, Scale, Stop;
 
         private static Sections[] vals = values();
@@ -93,6 +93,9 @@ public class Auto {
                                 // Score Right Scale
                             }
                             break;
+                        case Stop:
+                            // Run stuff when it stops
+                            break;
                     }
                 } else if (gameData.charAt(0) == 'R') {
                     switch (sections) {
@@ -124,6 +127,9 @@ public class Auto {
                                 // Score Right Scale
                             }
                             break;
+                        case Stop:
+                            // Run stuff when it stops
+                            break;
                     }
                 }
                 break;
@@ -131,7 +137,5 @@ public class Auto {
             case "Right":
                 break;
         }
-        System.out.println(sections);
-
     }
 }

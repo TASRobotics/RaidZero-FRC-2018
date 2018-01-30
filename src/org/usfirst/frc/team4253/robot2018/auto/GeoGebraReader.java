@@ -18,6 +18,7 @@ public class GeoGebraReader {
      * <p>This returns an Optional object because there may be a failure when trying to read the
      * file.
      * 
+     * @param filename the filename to check for
      * @return the data from the CSV file
      */
     public static Optional<GeoGebraEntry[]> readFile(String filename) {

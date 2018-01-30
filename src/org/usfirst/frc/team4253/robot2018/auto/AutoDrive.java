@@ -6,18 +6,16 @@ import org.usfirst.frc.team4253.robot2018.components.MotorSettings;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.sensors.PigeonIMU;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class AutoDrive {
 
     private static final double AUTO_STRAIGHT_P = 0.08;
     private static final double AUTO_STRIAGHT_D = 0.0004;
-    private static final double AUTO_ANGLE_P = 4; // 0.08;
+    private static final double AUTO_ANGLE_P = 4;
     private static final double AUTO_ANGLE_D = 0.0004;
     private static final double INCH_TO_TICKS = 10500 / 133;
 
     private static final int PIGEON_TIMEOUT = 100;
-    private static final int MAX_MODIFIER = 200;
     private static final int DEFAULT_VEL = 500;
     private static final int DEFAULT_ACCEL = 1000;
 
@@ -62,7 +60,7 @@ public class AutoDrive {
      * @param targetPos the target encoder position to move the robot to
      */
     public void moveStraight(int targetPos) {
-        // autoStraight();
+        autoStraight();
         rightMotor.configMotionCruiseVelocity(DEFAULT_VEL + 0 * (int) autoStraightModifier,
             MotorSettings.TIMEOUT);
         rightMotor.configMotionAcceleration(DEFAULT_ACCEL + 0 * (int) autoStraightModifier,
@@ -74,20 +72,13 @@ public class AutoDrive {
 
         rightMotor.set(ControlMode.MotionMagic, targetPos);
         leftMotor.set(ControlMode.MotionMagic, targetPos);
-
-        System.out.println(leftMotor.getMotorOutputPercent() + "\t"
-                + leftMotor.getClosedLoopError(MotorSettings.PID_IDX) + "\t"
-                + leftMotor.getSelectedSensorPosition(MotorSettings.PID_IDX) + "\t"
-                + rightMotor.getMotorOutputPercent() + "\t"
-            + rightMotor.getClosedLoopError(MotorSettings.PID_IDX) + "\t"
-            + rightMotor.getSelectedSensorPosition(MotorSettings.PID_IDX));
     }
 
     /**
      * Moves the robot in a curve.
      * 
      * @param targets the geogebra data containing percent difference and angle
-     * @param targetPos the target encoder position to move the robot to
+     * @param reverse the boolean to reverse calculations
      */
     public void moveCurve(GeoGebraEntry[] targets, boolean reverse) {
         int targetPos = (int) ((targets.length - 1) * INCH_TO_TICKS);
@@ -97,15 +88,6 @@ public class AutoDrive {
         }
         int[] currentTargets = convertToMotorValues(current.getPercentDifference(), reverse);
         autoAngle(current.getAngle(), reverse);
-        System.out.println(autoAngleModifier);
-        // leftMotor.configMotionCruiseVelocity(DEFAULT_VEL - (int) autoAngleModifier,
-        // MotorSettings.TIMEOUT);
-        // rightMotor.configMotionCruiseVelocity(DEFAULT_VEL + (int) autoAngleModifier,
-        // MotorSettings.TIMEOUT);
-        // leftMotor.configMotionAcceleration(DEFAULT_ACCEL - (int) autoAngleModifier,
-        // MotorSettings.TIMEOUT);
-        // rightMotor.configMotionAcceleration(DEFAULT_ACCEL + (int) autoAngleModifier,
-        // MotorSettings.TIMEOUT);
         leftMotor.configMotionCruiseVelocity(currentTargets[0] - (int) autoAngleModifier,
             MotorSettings.TIMEOUT);
         rightMotor.configMotionCruiseVelocity(currentTargets[1] + (int) autoAngleModifier,
@@ -114,10 +96,6 @@ public class AutoDrive {
             MotorSettings.TIMEOUT);
         rightMotor.configMotionAcceleration(currentTargets[3] + (int) autoAngleModifier,
             MotorSettings.TIMEOUT);
-        SmartDashboard.putNumber("LTargetVel", currentTargets[0]);
-        SmartDashboard.putNumber("RTargetVel", currentTargets[1]);
-        System.out.println(leftMotor.getClosedLoopError(0));
-        System.out.println(rightMotor.getClosedLoopError(0));
 
         rightMotor.set(ControlMode.MotionMagic, targetPos);
         leftMotor.set(ControlMode.MotionMagic, targetPos);
@@ -139,7 +117,6 @@ public class AutoDrive {
 
         autoStraightModifier =
             (0 - currentAngle) * AUTO_STRAIGHT_P - currentAngularRate * AUTO_STRIAGHT_D;
-        autoStraightModifier = limit(autoStraightModifier);
     }
 
     /**
@@ -148,6 +125,7 @@ public class AutoDrive {
      * <p>This changes the {@link #autoAngleModifier} so that the robot moves straight.
      * 
      * @param targetAngle the angle to try to reach
+     * @param reverse the boolean to tell to reverse
      */
     private void autoAngle(double targetAngle, boolean reverse) {
         PigeonIMU.FusionStatus fusionStatus = new PigeonIMU.FusionStatus();
@@ -169,8 +147,6 @@ public class AutoDrive {
         if (reverse) {
             autoAngleModifier = -autoAngleModifier;
         }
-        System.out.println("autoAngleModifier: " + autoAngleModifier);
-        // autoAngleModifier = limit(autoAngleModifier);
     }
 
     /**
@@ -201,11 +177,10 @@ public class AutoDrive {
      * acceleration. Fourth index is right acceleration
      * 
      * @param percentDiff the percentDiff from geogebra
-     * @param targetPos the target position for the robot to go to
+     * @param reverse the boolean to reverse
      * @return the array containing motor targets
      */
     private int[] convertToMotorValues(double percentDiff, boolean reverse) {
-        SmartDashboard.putNumber("Pdiff", percentDiff);
         int sign = reverse ? -1 : 1;
         return new int[] {
             (int) ((1 - sign * percentDiff) * DEFAULT_VEL),
@@ -250,29 +225,5 @@ public class AutoDrive {
 
         return new GeoGebraEntry((nextAngle - prevAngle) * x + prevAngle,
             (nextPercentDifference - prevPercentDifference) * x + prevPercentDifference);
-    }
-
-    /**
-     * Limits the modifier from being too big.
-     * 
-     * <p>This compares the modifier with {@link #MAX_MODIFIER} and returns the one closer to zero.
-     * 
-     * <p>This is used instead of Math.min or Math.max because you don't have to worry about
-     * negatives.
-     * 
-     * @param value the value to compare with the {@link #MAX_MODIFIER} and select which ever is
-     *            less
-     * @return the number to modify the velocity or acceleration
-     */
-    private double limit(double value) {
-        if (value < -MAX_MODIFIER) {
-            return -MAX_MODIFIER;
-        }
-
-        if (value > +MAX_MODIFIER) {
-            return +MAX_MODIFIER;
-        }
-
-        return value;
     }
 }
