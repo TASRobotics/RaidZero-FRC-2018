@@ -63,7 +63,9 @@ public class Auto {
     }
 
     /**
-     * Runs the autonomous code once.
+     * Runs the autonomous code.
+     * 
+     * <p>This should be called repeatedly during autonomous mode.
      */
     public static void run() {
         String position = autonChoose.getSelected();
