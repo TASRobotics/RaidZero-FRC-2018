@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.XboxController;
 public class Teleop {
 
     private static XboxController controller;
+    private static XboxController controller2;
     private static TeleopDrive teleopDrive;
 
     // Note that the constants below should be fine tuned through testing
@@ -27,6 +28,7 @@ public class Teleop {
      */
     public static void initialize() {
         controller = new XboxController(0);
+        controller2 = new XboxController(1);
         teleopDrive = new TeleopDrive(Components.getDrive());
     }
 
@@ -56,13 +58,19 @@ public class Teleop {
         teleopDrive.drive(controller.getY(kLeft), controller.getY(kRight));
 
         // Lift
-        Components.getLift().movePWM(controller.getTriggerAxis(kRight));
-        Components.getLift().movePWM(-controller.getTriggerAxis(kLeft));
+        double rightTriggerAxis = controller.getTriggerAxis(kRight);
+        double leftTriggerAxis = controller.getTriggerAxis(kLeft);
+
+        if (rightTriggerAxis > leftTriggerAxis) {
+            Components.getLift().movePWM(controller.getTriggerAxis(kRight));
+        } else {
+            Components.getLift().movePWM(-controller.getTriggerAxis(kLeft) / 2);
+        }
 
         // Intake
-        if (controller.getBButton()) {
+        if (controller.getBButton() || controller2.getBumper(kRight)) {
             Components.getIntake().runIntakeWheelsIn();
-        } else if (controller.getAButton()) {
+        } else if (controller.getAButton() || controller2.getTriggerAxis(kRight) >= 0.8) {
             Components.getIntake().runIntakeWheelsOut();
         } else {
             Components.getIntake().stopWheels();
@@ -74,16 +82,23 @@ public class Teleop {
             Components.getIntake().closeClaw();
         }
 
-        // Climb
-        if (controller.getPOV() == 90) {
-            Components.getLeftClimb().move(0.5);
-        } else {
-            Components.getLeftClimb().stop();
+        if (controller2.getBumper(kLeft)) {
+            Components.getIntake().openClaw();
         }
-        if (controller.getPOV() == 270) {
+        if (controller2.getTriggerAxis(kLeft) >= 0.8) {
+            Components.getIntake().closeClaw();
+        }
+
+        // Climb
+        if (controller2.getBButton()) {
             Components.getRightClimb().move(0.5);
         } else {
             Components.getRightClimb().stop();
+        }
+        if (controller2.getXButton()) {
+            Components.getLeftClimb().move(0.5);
+        } else {
+            Components.getLeftClimb().stop();
         }
 
         /* This if for motion magic in the future for the lift

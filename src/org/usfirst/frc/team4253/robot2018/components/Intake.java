@@ -54,14 +54,14 @@ public class Intake {
      * Runs the wheels in.
      */
     public void runIntakeWheelsIn() {
-        leaderMotor.set(ControlMode.PercentOutput, 0.33);
+        leaderMotor.set(ControlMode.PercentOutput, 0.9);
     }
 
     /**
      * Runs the wheels out.
      */
     public void runIntakeWheelsOut() {
-        leaderMotor.set(ControlMode.PercentOutput, -0.33);
+        leaderMotor.set(ControlMode.PercentOutput, -0.9);
     }
 
     /**

@@ -23,7 +23,7 @@ public class Components {
      */
     public static void initialize() {
         drive = new Drive(1, 2, 3, 4, 0, 1);
-        intake = new Intake(10, 11, 2, 3);
+        intake = new Intake(10, 11, 4, 5);
         lift = new Lift(12);
         leftClimb = new Climb(13);
         rightClimb = new Climb(14);
