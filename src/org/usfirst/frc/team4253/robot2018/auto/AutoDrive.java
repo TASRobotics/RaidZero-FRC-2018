@@ -61,13 +61,13 @@ public class AutoDrive {
      */
     public void moveStraight(int targetPos) {
         autoStraight();
-        rightMotor.configMotionCruiseVelocity(DEFAULT_VEL + 0 * (int) autoStraightModifier,
+        rightMotor.configMotionCruiseVelocity(DEFAULT_VEL + (int) autoStraightModifier,
             MotorSettings.TIMEOUT);
-        rightMotor.configMotionAcceleration(DEFAULT_ACCEL + 0 * (int) autoStraightModifier,
+        rightMotor.configMotionAcceleration(DEFAULT_ACCEL + (int) autoStraightModifier,
             MotorSettings.TIMEOUT);
-        leftMotor.configMotionCruiseVelocity(DEFAULT_VEL + 0 * (int) autoStraightModifier,
+        leftMotor.configMotionCruiseVelocity(DEFAULT_VEL + (int) autoStraightModifier,
             MotorSettings.TIMEOUT);
-        leftMotor.configMotionAcceleration(DEFAULT_ACCEL + 0 * (int) autoStraightModifier,
+        leftMotor.configMotionAcceleration(DEFAULT_ACCEL + (int) autoStraightModifier,
             MotorSettings.TIMEOUT);
 
         rightMotor.set(ControlMode.MotionMagic, targetPos);
