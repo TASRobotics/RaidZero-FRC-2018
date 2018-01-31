@@ -18,13 +18,14 @@ public class GeoGebraReader {
      * <p>This returns an Optional object because there may be a failure when trying to read the
      * file.
      * 
+     * @param filename the filename to check for
      * @return the data from the CSV file
      */
-    public static Optional<GeoGebraEntry[]> readFile() {
+    public static Optional<GeoGebraEntry[]> readFile(String filename) {
         try {
-            return Optional.of(Files.lines(Paths.get(FILENAME)).map(line -> {
+            return Optional.of(Files.lines(Paths.get(filename)).map(line -> {
                 String[] nums = line.split(",");
-                return new GeoGebraEntry(Double.parseDouble(nums[0]), Double.parseDouble(nums[1]));
+                return new GeoGebraEntry(Double.parseDouble(nums[1]), Double.parseDouble(nums[0]));
             }).toArray(GeoGebraEntry[]::new));
         } catch (IOException e) {
             System.err.println("Error reading CSV file: " + e);
