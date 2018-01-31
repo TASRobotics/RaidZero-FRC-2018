@@ -13,7 +13,7 @@ public class AutoDrive {
     private static final double AUTO_STRIAGHT_D = 0.0004;
     private static final double AUTO_ANGLE_P = 4;
     private static final double AUTO_ANGLE_D = 0.0004;
-    private static final double INCH_TO_TICKS = 10500 / 133;
+    private static final double INCH_TO_TICKS = 2542 / 32;
 
     private static final int PIGEON_TIMEOUT = 100;
     private static final int DEFAULT_VEL = 500;
