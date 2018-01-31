@@ -82,9 +82,20 @@ function checkSame(format, actual, name) {
 
 function verifyFormat(format, obj, nameFunc = name => name) {
     const result = {};
-    for (const prop in obj) {
-        result[prop] = format[prop](obj[prop], nameFunc(prop), obj);
-    }
+    let defer;
+    do {
+        defer = false;
+        for (const prop in obj) {
+            if (result[prop] === undefined) {
+                const x = format[prop](obj[prop], nameFunc(prop), result);
+                if (x === null) {
+                    defer = true;
+                } else {
+                    result[prop] = x;
+                }
+            }
+        }
+    } while (defer);
     return result;
 }
 
@@ -145,5 +156,5 @@ function oneOf(...xs) {
 }
 
 function dependsOn(prop, f) {
-    return (x, name, obj) => f(obj[prop])(x, name);
+    return (x, name, obj) => obj[prop] !== undefined ? f(obj[prop])(x, name) : null;
 }
