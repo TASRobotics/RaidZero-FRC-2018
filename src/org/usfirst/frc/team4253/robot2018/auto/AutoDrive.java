@@ -11,13 +11,13 @@ public class AutoDrive {
 
     private static final double AUTO_STRAIGHT_P = 0.08;
     private static final double AUTO_STRIAGHT_D = 0.0004;
-    private static final double AUTO_ANGLE_P = 0.08;
+    private static final double AUTO_ANGLE_P = 4;
     private static final double AUTO_ANGLE_D = 0.0004;
+    private static final double INCH_TO_TICKS = 2542 / 32;
 
     private static final int PIGEON_TIMEOUT = 100;
-    private static final int MAX_MODIFIER = 200;
-    private static final int DEFAULT_VEL = 1072;
-    private static final int DEFAULT_ACCEL = 2144;
+    private static final int DEFAULT_VEL = 500;
+    private static final int DEFAULT_ACCEL = 1000;
 
     private double currentAngle;
     private double currentAngularRate;
@@ -37,6 +37,8 @@ public class AutoDrive {
         rightMotor = drive.getRightMotor();
         leftMotor = drive.getLeftMotor();
         pigeon = drive.getPigeon();
+        // Reset Encoder At Init
+        setup();
     }
 
     /**
@@ -46,7 +48,7 @@ public class AutoDrive {
      * 
      * <p>TODO: Add anything else that's need in the future.
      */
-    public void setUp() {
+    public void setup() {
         pigeon.setFusedHeading(0, PIGEON_TIMEOUT);
         rightMotor.setSelectedSensorPosition(0, MotorSettings.PID_IDX, MotorSettings.TIMEOUT);
         leftMotor.setSelectedSensorPosition(0, MotorSettings.PID_IDX, MotorSettings.TIMEOUT);
@@ -76,18 +78,21 @@ public class AutoDrive {
      * Moves the robot in a curve.
      * 
      * @param targets the geogebra data containing percent difference and angle
-     * @param targetPos the target encoder position to move the robot to
+     * @param reverse the boolean to reverse calculations
      */
-    public void moveCurve(GeoGebraEntry[] targets, int targetPos) {
+    public void moveCurve(GeoGebraEntry[] targets, boolean reverse) {
+        int targetPos = (int) ((targets.length - 1) * INCH_TO_TICKS);
         GeoGebraEntry current = interpolate(targets, targetPos);
-        int[] currentTargets = convertToMotorValues(current.getPercentDifference(), targetPos);
-        autoAngle(current.getAngle());
-
-        leftMotor.configMotionCruiseVelocity(currentTargets[0] + (int) autoAngleModifier,
+        if (reverse) {
+            targetPos = -targetPos;
+        }
+        int[] currentTargets = convertToMotorValues(current.getPercentDifference(), reverse);
+        autoAngle(current.getAngle(), reverse);
+        leftMotor.configMotionCruiseVelocity(currentTargets[0] - (int) autoAngleModifier,
             MotorSettings.TIMEOUT);
         rightMotor.configMotionCruiseVelocity(currentTargets[1] + (int) autoAngleModifier,
             MotorSettings.TIMEOUT);
-        leftMotor.configMotionAcceleration(currentTargets[2] + (int) autoAngleModifier,
+        leftMotor.configMotionAcceleration(currentTargets[2] - (int) autoAngleModifier,
             MotorSettings.TIMEOUT);
         rightMotor.configMotionAcceleration(currentTargets[3] + (int) autoAngleModifier,
             MotorSettings.TIMEOUT);
@@ -112,7 +117,6 @@ public class AutoDrive {
 
         autoStraightModifier =
             (0 - currentAngle) * AUTO_STRAIGHT_P - currentAngularRate * AUTO_STRIAGHT_D;
-        autoStraightModifier = limit(autoStraightModifier);
     }
 
     /**
@@ -121,8 +125,9 @@ public class AutoDrive {
      * <p>This changes the {@link #autoAngleModifier} so that the robot moves straight.
      * 
      * @param targetAngle the angle to try to reach
+     * @param reverse the boolean to tell to reverse
      */
-    private void autoAngle(double targetAngle) {
+    private void autoAngle(double targetAngle, boolean reverse) {
         PigeonIMU.FusionStatus fusionStatus = new PigeonIMU.FusionStatus();
         double[] xyz_dps = new double[3];
         pigeon.getRawGyro(xyz_dps);
@@ -131,9 +136,36 @@ public class AutoDrive {
         currentAngle = fusionStatus.heading;
         currentAngularRate = xyz_dps[2];
 
+        if (reverse) {
+            targetAngle += 180;
+            if (targetAngle > 180) {
+                targetAngle -= 360;
+            }
+        }
         autoAngleModifier =
             (targetAngle - currentAngle) * AUTO_ANGLE_P - currentAngularRate * AUTO_ANGLE_D;
-        autoAngleModifier = limit(autoAngleModifier);
+        if (reverse) {
+            autoAngleModifier = -autoAngleModifier;
+        }
+    }
+
+    /**
+     * Checks if the robot has finished movement;
+     * 
+     * @return Returns true if robot has finished. Else, false.
+     */
+    public boolean checkFinished(GeoGebraEntry[] targets) {
+        int targetPos = Math.abs((int) ((targets.length - 1) * INCH_TO_TICKS));
+        int averageCurrentPos = Math.abs((leftMotor.getSelectedSensorPosition(MotorSettings.PID_IDX)
+            + rightMotor.getSelectedSensorPosition(MotorSettings.PID_IDX)) / 2);
+        if (Math.abs((leftMotor.getSelectedSensorVelocity(MotorSettings.PID_IDX)
+                + rightMotor.getSelectedSensorVelocity(MotorSettings.PID_IDX)) / 2) <= 5
+            && Math.abs(targetPos - averageCurrentPos) <= 10) {
+            rightMotor.setSelectedSensorPosition(0, MotorSettings.PID_IDX, MotorSettings.TIMEOUT);
+            leftMotor.setSelectedSensorPosition(0, MotorSettings.PID_IDX, MotorSettings.TIMEOUT);
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -145,15 +177,16 @@ public class AutoDrive {
      * acceleration. Fourth index is right acceleration
      * 
      * @param percentDiff the percentDiff from geogebra
-     * @param targetPos the target position for the robot to go to
+     * @param reverse the boolean to reverse
      * @return the array containing motor targets
      */
-    private int[] convertToMotorValues(double percentDiff, int targetPos) {
+    private int[] convertToMotorValues(double percentDiff, boolean reverse) {
+        int sign = reverse ? -1 : 1;
         return new int[] {
-            (int) ((1 + percentDiff) * DEFAULT_VEL),
-            (int) ((1 - percentDiff) * DEFAULT_VEL),
-            (int) ((1 + percentDiff) * DEFAULT_ACCEL),
-            (int) ((1 - percentDiff) * DEFAULT_ACCEL) };
+            (int) ((1 - sign * percentDiff) * DEFAULT_VEL),
+            (int) ((1 + sign * percentDiff) * DEFAULT_VEL),
+            (int) ((1 - sign * percentDiff) * DEFAULT_ACCEL),
+            (int) ((1 + sign * percentDiff) * DEFAULT_ACCEL) };
     }
 
     /**
@@ -165,19 +198,24 @@ public class AutoDrive {
      * @return the current angle and percent difference
      */
     private GeoGebraEntry interpolate(GeoGebraEntry[] data, int targetPos) {
-        double currentPos = (leftMotor.getSelectedSensorPosition(MotorSettings.PID_IDX)
-            + rightMotor.getSelectedSensorPosition(MotorSettings.PID_IDX)) / 2;
+        double currentPos = Math.abs((leftMotor.getSelectedSensorPosition(MotorSettings.PID_IDX)
+            + rightMotor.getSelectedSensorPosition(MotorSettings.PID_IDX)) / 2);
 
         if (currentPos <= 0) {
+            System.out.println("currentPos <= 0");
             return data[0];
-        }
-        if (currentPos >= targetPos) {
-            return data[data.length - 1];
         }
 
         double progress = currentPos * data.length / targetPos;
         int prevIndex = (int) progress;
         int nextIndex = prevIndex + 1;
+
+        if (nextIndex >= data.length) {
+            System.out.println("nextIndex >= data.length");
+            return data[data.length - 1];
+        }
+
+        System.out.println("index: " + prevIndex);
 
         double prevAngle = data[prevIndex].getAngle();
         double nextAngle = data[nextIndex].getAngle();
@@ -187,29 +225,5 @@ public class AutoDrive {
 
         return new GeoGebraEntry((nextAngle - prevAngle) * x + prevAngle,
             (nextPercentDifference - prevPercentDifference) * x + prevPercentDifference);
-    }
-
-    /**
-     * Limits the modifier from being too big.
-     * 
-     * <p>This compares the modifier with {@link #MAX_MODIFIER} and returns the one closer to zero.
-     * 
-     * <p>This is used instead of Math.min or Math.max because you don't have to worry about
-     * negatives.
-     * 
-     * @param value the value to compare with the {@link #MAX_MODIFIER} and select which ever is
-     *            less
-     * @return the number to modify the velocity or acceleration
-     */
-    private double limit(double value) {
-        if (value < -MAX_MODIFIER) {
-            return -MAX_MODIFIER;
-        }
-
-        if (value > +MAX_MODIFIER) {
-            return +MAX_MODIFIER;
-        }
-
-        return value;
     }
 }

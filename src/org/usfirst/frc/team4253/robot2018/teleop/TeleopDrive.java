@@ -18,6 +18,7 @@ public class TeleopDrive {
     public TeleopDrive(Drive drive) {
         this.drive = drive;
         differentialDrive = new DifferentialDrive(drive.getLeftMotor(), drive.getRightMotor());
+        differentialDrive.setSafetyEnabled(false);
     }
 
     /**
@@ -36,7 +37,7 @@ public class TeleopDrive {
      * @param rightInput right input of the joystick from -1 to 1
      */
     public void drive(double leftInput, double rightInput) {
-        differentialDrive.tankDrive(-leftInput, -rightInput);
+        differentialDrive.tankDrive(-leftInput, rightInput);
     }
 
 }
