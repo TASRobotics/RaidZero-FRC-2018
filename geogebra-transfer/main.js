@@ -1,6 +1,7 @@
 'use strict';
 
 const directory = '/home/lvuser/';
+const robotNumber = '3333';
 
 const pathInfoFormat = {
     stage: nonNegativeNumber,
@@ -129,7 +130,7 @@ function upload(filename, data) {
             });
         });
     }).connect({
-        host: 'roboRIO-4253-FRC.local',
+        host: `roboRIO-${robotNumber}-FRC.local`,
         port: 22,
         username: 'lvuser',
         password: ''
