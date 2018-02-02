@@ -18,6 +18,13 @@ Now you can launch the script from the taskbar.
 
 ## Running
 
-1. Copy the columns you want to transfer in GeoGebra. You can select the columns quickly by clicking and dragging on the column names (the letters) and highlighting the ones you want.
-2. Make sure you are connected to the robot.
-3. Run the script. It should automatically read from the clipboard, convert the data, and upload it to the robot.
+Note: Make sure the data is in the new format.
+
+1. Press Ctrl+A or click the top-left square to select all cells.
+2. Press Ctrl+C to copy.
+3. Make sure you are connected to the robot.
+4. Run the script. It should automatically read from the clipboard, convert the data, and upload it to the robot.
+
+## Accessing the RoboRIO filesystem
+
+You can access the RoboRIO filesystem using File Explorer. Type `ftp://roborio-XXXX-frc.local` where `XXXX` is the robot number. The robot program and the geogebra data are stored in `/home/lvuser/`.
