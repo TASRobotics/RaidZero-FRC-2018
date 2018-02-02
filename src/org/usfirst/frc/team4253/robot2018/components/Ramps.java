@@ -31,14 +31,14 @@ public class Ramps {
     }
 
     /**
-     * Moves the left ramp down.
+     * Moves the left ramp up.
      */
     public void moveLeftRamp() {
         leftRamp.set(ControlMode.PercentOutput, MOTORPOWER);
     }
 
     /**
-     * Moves the right ramp down.
+     * Moves the right ramp up.
      */
     public void moveRightRamp() {
         rightRamp.set(ControlMode.PercentOutput, MOTORPOWER);
@@ -59,9 +59,9 @@ public class Ramps {
     }
 
     /**
-     * Releases the ramp
+     * Releases the ramps.
      */
-    public void releaseRamp() {
+    public void releaseRamps() {
         releaser.set(true);
     }
 }

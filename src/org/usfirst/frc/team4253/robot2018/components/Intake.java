@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 public class Intake {
 
     private static final double IDLE_POWER = 0.1;
-    private static final double WHEEl_POWER = 0.9;
+    private static final double WHEEL_POWER = 0.9;
     private static DoubleSolenoid.Value OPEN_POSITION = DoubleSolenoid.Value.kForward;
     private static DoubleSolenoid.Value CLOSED_POSITION = DoubleSolenoid.Value.kReverse;
 
@@ -55,14 +55,14 @@ public class Intake {
      * Runs the wheels in.
      */
     public void runWheelsIn() {
-        leaderMotor.set(ControlMode.PercentOutput, WHEEl_POWER);
+        leaderMotor.set(ControlMode.PercentOutput, WHEEL_POWER);
     }
 
     /**
      * Runs the wheels out.
      */
     public void runWheelsOut() {
-        leaderMotor.set(ControlMode.PercentOutput, -WHEEl_POWER);
+        leaderMotor.set(ControlMode.PercentOutput, -WHEEL_POWER);
     }
 
     /**
