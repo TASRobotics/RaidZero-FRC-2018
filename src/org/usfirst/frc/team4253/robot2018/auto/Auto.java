@@ -15,8 +15,8 @@ public class Auto {
     private static String gameData;
     private static AutoDrive autoDrive;
     private static SendableChooser<String> autonChoose;
-    private static Optional<GeoGebraEntry[]> geoGebraData;
-    private static Optional<GeoGebraEntry[]> geoGebraData2;
+    private static Optional<Path> stage0;
+    private static Optional<Path> stage1;
 
     /**
      * The enum for auton sections.
@@ -56,8 +56,8 @@ public class Auto {
      */
     public static void setup() {
         autoDrive.setup();
-        geoGebraData = GeoGebraReader.readFile("/home/lvuser/data.csv");
-        geoGebraData2 = GeoGebraReader.readFile("/home/lvuser/centerright.csv");
+        stage1 = GeoGebraReader.readFile("/home/lvuser/data.csv");
+        stage0 = GeoGebraReader.readFile("/home/lvuser/centerright.csv");
         sections = Sections.Switches;
         gameData = DriverStation.getInstance().getGameSpecificMessage();
     }
@@ -103,18 +103,18 @@ public class Auto {
                     switch (sections) {
                         case Switches:
                             // Run center right
-                            geoGebraData2.ifPresent(centerright -> {
-                                autoDrive.moveCurve(centerright, false);
-                                if (autoDrive.checkFinished(centerright)) {
+                            stage0.ifPresent(centerright -> {
+                                autoDrive.moveCurve(centerright.getMotorData(), false);
+                                if (autoDrive.checkFinished(centerright.getMotorData())) {
                                     sections = sections.next();
                                 }
                             });
                             break;
                         case CrossLine:
                             // Run right Switch to Cross Line
-                            geoGebraData.ifPresent(data -> {
-                                autoDrive.moveCurve(data, true);
-                                if (autoDrive.checkFinished(data)) {
+                            stage1.ifPresent(data -> {
+                                autoDrive.moveCurve(data.getMotorData(), true);
+                                if (autoDrive.checkFinished(data.getMotorData())) {
                                     sections = sections.next();
                                 }
                             });
