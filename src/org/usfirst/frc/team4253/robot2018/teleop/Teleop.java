@@ -88,9 +88,9 @@ public class Teleop {
 
         // Intake
         if (controller2.getTriggerAxis(kRight) >= 0.8) {
-            Components.getIntake().runIntakeWheelsIn();
+            Components.getIntake().runWheelsIn();
         } else if (controller.getBumperPressed(kLeft) || controller2.getTriggerAxis(kLeft) >= 0.8) {
-            Components.getIntake().runIntakeWheelsOut();
+            Components.getIntake().runWheelsOut();
         } else {
             Components.getIntake().stopWheels();
         }
@@ -103,17 +103,17 @@ public class Teleop {
 
         // Climb
         if (controller2.getBumperPressed(kRight)) {
-            Components.getRightRamp().move(0.5);
+            Components.getRamps().moveRightRamp();
         } else {
-            Components.getRightRamp().stop();
+            Components.getRamps().stopRightRamp();
         }
         if (controller2.getBumperPressed(kLeft)) {
-            Components.getLeftRamp().move(0.5);
+            Components.getRamps().moveLeftRamp();
         } else {
-            Components.getLeftRamp().stop();
+            Components.getRamps().stopLeftRamp();
         }
         if (controller.getBackButtonPressed() && controller.getStartButtonPressed()) {
-            Components.getLeftRamp().releaseRamp();
+            Components.getRamps().releaseRamp();
         }
 
     }
