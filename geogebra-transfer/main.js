@@ -1,6 +1,6 @@
 'use strict';
 
-const directory = '/home/lvuser/';
+const directory = '/home/lvuser/paths/';
 const robotNumber = '4253';
 
 const pathInfoFormat = {
@@ -18,6 +18,7 @@ const motorDataFormat = {
 
 const clip = require('clipboardy');
 const conn = require('ssh2').Client();
+const SFTPStream = require('ssh2-streams').SFTPStream;
 
 console.log('Reading data...');
 const [header, bodyLines] = readData(clip.readSync());
@@ -113,7 +114,25 @@ function upload(filename, data) {
             const filepath = directory + filename;
             console.log(`Opening file ${filepath}...`);
             sftp.open(filepath, 'w', (err, handle) => {
-                if (err) throw err;
+                if (err) {
+                    if (err.code === SFTPStream.STATUS_CODE.NO_SUCH_FILE) {
+                        console.log(`Directory ${directory} does not exist. Creating directory...`);
+                        sftp.mkdir(directory, err => {
+                            if (err) throw err;
+                            console.log('Opening file again...');
+                            sftp.open(filepath, 'w', (err, handle) => {
+                                if (err) throw err;
+                                writeData(handle);
+                            });
+                        });
+                    } else {
+                        throw err;
+                    }
+                } else {
+                    writeData(handle);
+                }
+            });
+            function writeData(handle) {
                 const buffer = Buffer.from(data);
                 console.log('Writing data...');
                 sftp.write(handle, buffer, 0, buffer.length, 0, err => {
@@ -127,7 +146,7 @@ function upload(filename, data) {
                         console.log('Successfully transferred data to robot');
                     });
                 });
-            });
+            }
         });
     }).connect({
         host: `roboRIO-${robotNumber}-FRC.local`,
