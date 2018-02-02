@@ -12,8 +12,8 @@ public class Components {
     private static Drive drive;
     private static Intake intake;
     private static Lift lift;
-    private static Climb leftClimb;
-    private static Climb rightClimb;
+    private static Ramp leftRamp;
+    private static Ramp rightRamp;
 
     /**
      * Initializes each component by calling its constructor.
@@ -25,8 +25,8 @@ public class Components {
         drive = new Drive(1, 2, 3, 4, 0, 1);
         intake = new Intake(10, 11, 4, 5);
         lift = new Lift(12);
-        leftClimb = new Climb(13);
-        rightClimb = new Climb(14);
+        leftRamp = new Ramp(13, 2);
+        rightRamp = new Ramp(14);
     }
 
     /**
@@ -61,8 +61,8 @@ public class Components {
      * 
      * @return the left side climb component
      */
-    public static Climb getLeftClimb() {
-        return leftClimb;
+    public static Ramp getLeftRamp() {
+        return leftRamp;
     }
 
     /**
@@ -70,8 +70,8 @@ public class Components {
      * 
      * @return the right side climb component
      */
-    public static Climb getRightClimb() {
-        return rightClimb;
+    public static Ramp getRightRamp() {
+        return rightRamp;
     }
 
 }
