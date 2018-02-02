@@ -136,12 +136,6 @@ public class AutoDrive {
         currentAngle = fusionStatus.heading;
         currentAngularRate = xyz_dps[2];
 
-        if (reverse) {
-            targetAngle += 180;
-            if (targetAngle > 180) {
-                targetAngle -= 360;
-            }
-        }
         autoAngleModifier =
             (targetAngle - currentAngle) * AUTO_ANGLE_P - currentAngularRate * AUTO_ANGLE_D;
         if (reverse) {
