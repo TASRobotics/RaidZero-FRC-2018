@@ -2,12 +2,11 @@ package org.usfirst.frc.team4253.robot2018.teleop;
 
 import org.usfirst.frc.team4253.robot2018.components.Drive;
 
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import com.ctre.phoenix.motorcontrol.ControlMode;
 
 public class TeleopDrive {
 
     private Drive drive;
-    private DifferentialDrive differentialDrive;
 
     /**
      * Constructs a TeleopDrive object and assigns the motors from the drive param to
@@ -17,8 +16,6 @@ public class TeleopDrive {
      */
     public TeleopDrive(Drive drive) {
         this.drive = drive;
-        differentialDrive = new DifferentialDrive(drive.getLeftMotor(), drive.getRightMotor());
-        differentialDrive.setSafetyEnabled(false);
     }
 
     /**
@@ -37,7 +34,8 @@ public class TeleopDrive {
      * @param rightInput right input of the joystick from -1 to 1
      */
     public void drive(double leftInput, double rightInput) {
-        differentialDrive.tankDrive(-leftInput, rightInput);
+        drive.getLeftMotor().set(ControlMode.PercentOutput, -leftInput);
+        drive.getRightMotor().set(ControlMode.PercentOutput, -rightInput);
     }
 
 }

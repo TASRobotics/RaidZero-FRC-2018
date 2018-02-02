@@ -12,7 +12,7 @@ public class Components {
     private static Drive drive;
     private static Intake intake;
     private static Lift lift;
-    private static Climb climb;
+    private static Ramps ramps;
 
     /**
      * Initializes each component by calling its constructor.
@@ -22,9 +22,9 @@ public class Components {
      */
     public static void initialize() {
         drive = new Drive(1, 2, 3, 4, 0, 1);
-        intake = new Intake(8, 9, 2, 3);
-        lift = new Lift(10, 11); // placeholder numbers
-        climb = new Climb(12, 13, 4, 5);
+        intake = new Intake(10, 11, 4, 5);
+        lift = new Lift(12);
+        ramps = new Ramps(13, 14, 2);
     }
 
     /**
@@ -55,12 +55,11 @@ public class Components {
     }
 
     /**
-     * Returns the climb component.
+     * Returns the ramps component.
      * 
-     * @return the climb component
+     * @return the ramps component
      */
-    public static Climb getClimb() {
-        return climb;
+    public static Ramps getRamps() {
+        return ramps;
     }
-
 }

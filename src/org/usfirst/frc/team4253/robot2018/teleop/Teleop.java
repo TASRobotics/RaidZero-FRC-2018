@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.XboxController;
 public class Teleop {
 
     private static XboxController controller;
+    private static XboxController controller2;
     private static TeleopDrive teleopDrive;
 
     // Note that the constants below should be fine tuned through testing
@@ -27,6 +28,7 @@ public class Teleop {
      */
     public static void initialize() {
         controller = new XboxController(0);
+        controller2 = new XboxController(1);
         teleopDrive = new TeleopDrive(Components.getDrive());
     }
 
@@ -46,6 +48,7 @@ public class Teleop {
      * <p>This should be called repeatedly during teleop mode.
      */
     public static void run() {
+        // Drive
         if (controller.getBumperPressed(kRight)) {
             Components.getDrive().setHighGear();
         }
@@ -54,18 +57,65 @@ public class Teleop {
         }
         teleopDrive.drive(controller.getY(kLeft), controller.getY(kRight));
 
-        if (controller.getAButton()) {
+        // Lift
+        double rightTriggerAxis = controller.getTriggerAxis(kRight);
+        double leftTriggerAxis = controller.getTriggerAxis(kLeft);
+
+        double control2YAxis = controller2.getY(kRight);
+        if (controller2.getY(kRight) < 0) {
+            control2YAxis = controller2.getY(kRight) / 2;
+        }
+
+        if (rightTriggerAxis > leftTriggerAxis) {
+            Components.getLift().movePWM(controller.getTriggerAxis(kRight) + control2YAxis);
+        } else {
+            Components.getLift().movePWM(-controller.getTriggerAxis(kLeft) / 2 + control2YAxis);
+        }
+
+        // Motion Magic Lift
+        if (controller2.getXButton()) {
             // for lowest target position for the lift
             Components.getLift().move(0 + controller.getY(kLeft) * AXIS_TO_LIFT);
         }
-        if (controller.getBButton()) {
+        if (controller2.getYButton()) {
             // for switch target position for the lift
             Components.getLift().move(SWITCH_POS + controller.getY(kLeft) * AXIS_TO_LIFT);
         }
-        if (controller.getXButton()) {
+        if (controller2.getBButton()) {
             // for scale target position for the lift
             Components.getLift().move(SCALE_POS + controller.getY(kLeft) * AXIS_TO_LIFT);
         }
+
+        // Intake
+        if (controller2.getTriggerAxis(kRight) >= 0.8) {
+            Components.getIntake().runWheelsIn();
+        } else if (controller.getBumperPressed(kLeft) || controller2.getTriggerAxis(kLeft) >= 0.8) {
+            Components.getIntake().runWheelsOut();
+        } else {
+            Components.getIntake().stopWheels();
+        }
+        if (controller2.getY(kLeft) <= -0.8) {
+            Components.getIntake().openClaw();
+        }
+        if (controller2.getY(kLeft) >= 0.8) {
+            Components.getIntake().closeClaw();
+        }
+
+        // Climb
+        if (controller2.getBumperPressed(kRight)) {
+            Components.getRamps().moveRightRamp();
+        } else {
+            Components.getRamps().stopRightRamp();
+        }
+        if (controller2.getBumperPressed(kLeft)) {
+            Components.getRamps().moveLeftRamp();
+        } else {
+            Components.getRamps().stopLeftRamp();
+        }
+        if (controller.getBackButtonPressed() && controller.getStartButtonPressed()) {
+            Components.getRamps().releaseRamps();
+        }
+
     }
 
 }
