@@ -20,7 +20,6 @@ public class Drive {
     private PigeonIMU pigeon;
 
     private static final double[] FPID = { 0.717, 2.2, 0.004, 15, 50 };
-    private static final double PEAK_OUTPUT_PERCENT = 0.965;
 
     /**
      * Constructs a Drive object and sets up the motors and gear shift.
@@ -36,15 +35,17 @@ public class Drive {
     public Drive(
         int leftLeaderID, int rightLeaderID,
         int leftFollowerID, int rightFollowerID,
-        int gearShiftForward, int gearShiftReverse
+        int gearShiftForward, int gearShiftReverse,
+        PigeonIMU pigeon
     ) {
         //@formatter:on
-        leftMotor = initSide(leftLeaderID, leftFollowerID, false);
-        rightMotor = initSide(rightLeaderID, rightFollowerID, true);
-        gearShift = new DoubleSolenoid(gearShiftForward, gearShiftReverse);
+        leftMotor = initSide(leftLeaderID, leftFollowerID, false, false);
+        // rightMotor = initSide(rightLeaderID, rightFollowerID, true, true);
 
-        // rightMotor.configPeakOutputForward(PEAK_OUTPUT_PERCENT, MotorSettings.TIMEOUT);
-        // rightMotor.configPeakOutputReverse(-PEAK_OUTPUT_PERCENT, MotorSettings.TIMEOUT);
+        rightMotor = initSide(rightLeaderID, rightFollowerID, true, false); // build error so not
+                                                                            // inverted
+        gearShift = new DoubleSolenoid(gearShiftForward, gearShiftReverse);
+        this.pigeon = pigeon;
     }
 
     /**
@@ -57,7 +58,8 @@ public class Drive {
      * @param followerID the ID of the follower motor
      * @return the newly constructed leader motor object
      */
-    private WPI_TalonSRX initSide(int leaderID, int followerID, boolean invert) {
+    private WPI_TalonSRX initSide(int leaderID, int followerID, boolean invertMotor,
+        boolean invertSensor) {
         WPI_TalonSRX leader = new WPI_TalonSRX(leaderID);
         WPI_TalonSRX follower = new WPI_TalonSRX(followerID);
 
@@ -69,16 +71,13 @@ public class Drive {
 
         follower.set(ControlMode.Follower, leaderID);
 
-        leader.setSensorPhase(invert);
-        leader.setInverted(invert);
+        leader.setSensorPhase(invertSensor);
+        leader.setInverted(invertMotor);
         leader.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 10,
             MotorSettings.TIMEOUT);
         leader.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 10,
             MotorSettings.TIMEOUT);
-        follower.setInverted(invert);
-        if (invert) {
-            pigeon = new PigeonIMU(follower);
-        }
+        follower.setInverted(invertMotor);
 
         setPID(leader);
 

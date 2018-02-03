@@ -37,6 +37,10 @@ public class Intake {
         follower.set(ControlMode.Follower, leaderID);
     }
 
+    public TalonSRX getLeaderMotor() {
+        return leaderMotor;
+    }
+
     /**
      * Opens the claw.
      */
