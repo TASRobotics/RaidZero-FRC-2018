@@ -1,5 +1,7 @@
 'use strict';
 
+// CONFIG
+
 const directory = '/home/lvuser/paths/';
 const robotNumber = '4253';
 
@@ -11,10 +13,16 @@ const pathInfoFormat = {
     direction: oneOf('forward', 'backward')
 };
 
+function getFilename(pathInfo) {
+    return `${pathInfo.stage}-${pathInfo.start}-${pathInfo.end}.csv`;
+}
+
 const motorDataFormat = {
     angle: number,
     'percent difference': number
 };
+
+// END CONFIG
 
 const clip = require('clipboardy');
 const conn = require('ssh2').Client();
@@ -69,10 +77,6 @@ function convertData(header, lines) {
         .map(prop => pathInfoMap1[prop]).concat(motorDataOutput).join('\n')]
 }
 
-function getFilename(pathInfo) {
-    return `${pathInfo.stage}-${pathInfo.start}-${pathInfo.end}.csv`;
-}
-
 function checkSame(format, actual, name) {
     for (const x of format) {
         console.assert(actual.includes(x), `Could not find ${name} ${x}`);
@@ -106,11 +110,6 @@ function upload(filename, data) {
         console.log('Initializing SFTP...');
         conn.sftp((err, sftp) => {
             if (err) throw err;
-            // sftp.mkdir('/home/lvuser/paths', err => {
-            //     if (err) throw err;
-            //     console.log('success');
-            //     conn.end();
-            // });
             const filepath = directory + filename;
             console.log(`Opening file ${filepath}...`);
             sftp.open(filepath, 'w', (err, handle) => {
