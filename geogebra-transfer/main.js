@@ -68,7 +68,7 @@ function convertData(header, lines) {
             motorDataMap[header[j]] = x;
         });
         const motorDataMap1 =
-            verifyFormat(motorDataFormat, motorDataMap, p => `row ${i + 1} of ${p}`);
+            verifyFormat(motorDataFormat, motorDataMap, p => `row ${i + 2} of ${p}`);
         motorDataOutput.push(Object.keys(motorDataFormat).map(p => motorDataMap1[p]).join());
     }
     checkSame(Object.keys(pathInfoFormat), Object.keys(pathInfoMap), 'path info');
