@@ -60,7 +60,7 @@ function convertData(header, lines) {
             console.assert(value !== '', `${prop} has no value`);
             pathInfoMap[prop] = value;
         }
-        if (motorData[0] === '?') {
+        if (motorData[0] === '?' || motorData.every(x => x === '')) {
             break;
         }
         const motorDataMap = {};
