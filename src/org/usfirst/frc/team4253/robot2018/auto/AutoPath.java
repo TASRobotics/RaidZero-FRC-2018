@@ -1,15 +1,15 @@
 package org.usfirst.frc.team4253.robot2018.auto;
 
-
-public class Path {
+public class AutoPath {
 
     private int stage;
-    private Side start;
+    private StartingSide start; // can only be center when stage == 0
     private Side end;
     private boolean reverse;
     private GeoGebraEntry[] motorData;
 
-    public Path(int stage, Side start, Side end, boolean reverse, GeoGebraEntry[] motorData) {
+    public AutoPath(int stage, StartingSide start, Side end, boolean reverse,
+        GeoGebraEntry[] motorData) {
         this.stage = stage;
         this.start = start;
         this.end = end;
@@ -21,7 +21,7 @@ public class Path {
         return stage;
     }
 
-    public Side getStart() {
+    public StartingSide getStart() {
         return start;
     }
 
