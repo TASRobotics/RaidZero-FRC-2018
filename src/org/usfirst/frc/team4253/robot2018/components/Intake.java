@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 public class Intake {
 
     private static final double IDLE_POWER = 0.1;
+    private static final double WHEEL_POWER = 0.9;
     private static DoubleSolenoid.Value OPEN_POSITION = DoubleSolenoid.Value.kForward;
     private static DoubleSolenoid.Value CLOSED_POSITION = DoubleSolenoid.Value.kReverse;
 
@@ -31,7 +32,48 @@ public class Intake {
         leaderMotor.setNeutralMode(NeutralMode.Brake);
         follower.setNeutralMode(NeutralMode.Brake);
 
+        follower.setInverted(true);
+
         follower.set(ControlMode.Follower, leaderID);
+    }
+
+    public TalonSRX getLeaderMotor() {
+        return leaderMotor;
+    }
+
+    /**
+     * Opens the claw.
+     */
+    public void openClaw() {
+        claw.set(OPEN_POSITION);
+    }
+
+    /**
+     * Closes the claw.
+     */
+    public void closeClaw() {
+        claw.set(CLOSED_POSITION);
+    }
+
+    /**
+     * Runs the wheels in.
+     */
+    public void runWheelsIn() {
+        leaderMotor.set(ControlMode.PercentOutput, WHEEL_POWER);
+    }
+
+    /**
+     * Runs the wheels out.
+     */
+    public void runWheelsOut() {
+        leaderMotor.set(ControlMode.PercentOutput, -WHEEL_POWER);
+    }
+
+    /**
+     * 
+     */
+    public void stopWheels() {
+        leaderMotor.set(ControlMode.PercentOutput, 0);
     }
 
     /**
