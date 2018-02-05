@@ -152,14 +152,14 @@ public class AutoDrive {
         int targetPos = Math.abs((int) ((targets.length - 1) * INCH_TO_TICKS));
         int averageCurrentPos = Math.abs((leftMotor.getSelectedSensorPosition(MotorSettings.PID_IDX)
             + rightMotor.getSelectedSensorPosition(MotorSettings.PID_IDX)) / 2);
-        if (Math.abs((leftMotor.getSelectedSensorVelocity(MotorSettings.PID_IDX)
-                + rightMotor.getSelectedSensorVelocity(MotorSettings.PID_IDX)) / 2) <= 5
-            && Math.abs(targetPos - averageCurrentPos) <= 10) {
-            rightMotor.setSelectedSensorPosition(0, MotorSettings.PID_IDX, MotorSettings.TIMEOUT);
-            leftMotor.setSelectedSensorPosition(0, MotorSettings.PID_IDX, MotorSettings.TIMEOUT);
-            return true;
-        }
-        return false;
+        return Math.abs((leftMotor.getSelectedSensorVelocity(MotorSettings.PID_IDX)
+            + rightMotor.getSelectedSensorVelocity(MotorSettings.PID_IDX)) / 2) <= 5
+            && Math.abs(targetPos - averageCurrentPos) <= 10;
+    }
+
+    public void resetEncoders() {
+        rightMotor.setSelectedSensorPosition(0, MotorSettings.PID_IDX, MotorSettings.TIMEOUT);
+        leftMotor.setSelectedSensorPosition(0, MotorSettings.PID_IDX, MotorSettings.TIMEOUT);
     }
 
     /**
