@@ -63,6 +63,11 @@ public class Lift {
         lift.set(ControlMode.PercentOutput, percentPower);
     }
     
+    public boolean checkFinished(double targetPos) {
+        return Math.abs(lift.getSelectedSensorVelocity(MotorSettings.PID_IDX)) <= 5
+            && Math.abs(targetPos - lift.getSelectedSensorPosition(MotorSettings.PID_IDX)) <= 10;
+    }
+
     public TalonSRX lift() {
         return lift;
     }

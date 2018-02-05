@@ -1,6 +1,7 @@
 package org.usfirst.frc.team4253.robot2018.auto;
 
 import org.usfirst.frc.team4253.robot2018.components.Components;
+import org.usfirst.frc.team4253.robot2018.components.Lift;
 
 import java.util.List;
 
@@ -32,6 +33,7 @@ public class Auto {
      */
     public static void setup() {
         autoDrive.setup();
+        Components.getLift().resetEnc();
         mode = AutoChooser.getMode();
         paths = GeoGebraReader.getPaths(AutoChooser.getStartingSide(), MatchData.getPlateData());
         stage = 0;
@@ -57,9 +59,20 @@ public class Auto {
         if (stage < paths.size()) {
             AutoPath currentPath = paths.get(stage);
             autoDrive.moveCurve(currentPath.getMotorData(), currentPath.getReverse());
-            if (autoDrive.checkFinished(currentPath.getMotorData())) {
+            if (autoDrive.checkFinished(currentPath.getMotorData()) && transition()) {
                 stage++;
+                autoDrive.resetEncoders();
             }
+        }
+    }
+
+    private static boolean transition() {
+        switch (stage) {
+            case 0:
+                Components.getLift().move(Lift.SWITCH_HEIGHT);
+                return Components.getLift().checkFinished(Lift.SWITCH_HEIGHT);
+            default:
+                return true;
         }
     }
 
