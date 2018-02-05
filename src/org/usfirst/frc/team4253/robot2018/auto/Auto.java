@@ -56,8 +56,8 @@ public class Auto {
      */
     public static void setup() {
         autoDrive.setup();
-        stage1 = GeoGebraReader.readFile("/home/lvuser/data.csv");
-        stage0 = GeoGebraReader.readFile("/home/lvuser/centerright.csv");
+        stage1 = GeoGebraReader.readFile("/home/lvuser/1-right-right.csv");
+        stage0 = GeoGebraReader.readFile("/home/lvuser/0-center-right.csv");
         sections = Sections.Switches;
         gameData = DriverStation.getInstance().getGameSpecificMessage();
     }
