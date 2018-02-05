@@ -7,7 +7,8 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 public class Lift {
 
-    private TalonSRX lift;
+    public static final int SWITCH_HEIGHT = 15000;
+    public static final int SCALE_HEIGHT = 32500;
 
     private static final int TARGET_VEL = 1000; // can be changed
     private static final int TARGET_ACCEL = 1000;
@@ -16,6 +17,8 @@ public class Lift {
     private static final double I_VALUE = 0.0;
     private static final double D_VALUE = 0.0;
     private static final double F_VALUE = 0.3593609487;
+
+    private TalonSRX lift;
 
     // # of motors can be changed by adding more slave motors
 
