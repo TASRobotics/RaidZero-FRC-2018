@@ -28,7 +28,7 @@ End must always be Left or Right.
 That's all that's required to run the program, but if you want to run the script easily, you can pin it to the taskbar. (Note: Windows only)
 
 3. On your desktop, right click and go to `New > Shortcut`.
-4. For the location, put `cmd /k node "path\to\repository\RaidZero-FRC-2018\geogebra-transfer\main.js"` where `path\to\repository` is the path to this repository, and click next.
+4. For the location, put `cmd /c "path\to\repository\RaidZero-FRC-2018\geogebra-transfer\geogebra-transfer.cmd"` where `path\to\repository` is the path to this repository, and click next.
 5. Name the shortcut something like `geogebra transfer`, and click finish.
 6. If you want, you can right click on the shortcut and go to `Properties` and change the icon.
 7. Right click on the shortcut and click `Pin to taskbar`.
