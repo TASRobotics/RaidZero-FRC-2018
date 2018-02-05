@@ -44,6 +44,6 @@ Note: Make sure the data is in the new format.
 3. Make sure you are connected to the robot.
 4. Run the script. It should automatically read from the clipboard, convert the data, and upload it to the robot.
 
-## Accessing the RoboRIO filesystem
+# Accessing the RoboRIO filesystem
 
 You can access the RoboRIO filesystem using File Explorer. Type `ftp://roborio-XXXX-frc.local` where `XXXX` is the robot number. The robot program and the geogebra data are stored in `/home/lvuser/`.
