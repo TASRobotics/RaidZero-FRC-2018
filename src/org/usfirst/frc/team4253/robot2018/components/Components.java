@@ -1,5 +1,7 @@
 package org.usfirst.frc.team4253.robot2018.components;
 
+import com.ctre.phoenix.sensors.PigeonIMU;
+
 /**
  * The components of the robot.
  * 
@@ -21,8 +23,8 @@ public class Components {
      * null before this method is called.
      */
     public static void initialize() {
-        drive = new Drive(1, 2, 3, 4, 0, 1);
         intake = new Intake(10, 11, 4, 5);
+        drive = new Drive(1, 2, 3, 4, 0, 1, new PigeonIMU(intake.getLeaderMotor()));
         lift = new Lift(12);
         ramps = new Ramps(13, 14, 2);
     }

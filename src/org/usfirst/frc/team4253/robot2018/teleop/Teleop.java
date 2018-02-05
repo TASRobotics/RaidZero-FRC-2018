@@ -17,9 +17,10 @@ public class Teleop {
     private static TeleopDrive teleopDrive;
 
     // Note that the constants below should be fine tuned through testing
-    private static final int SWITCH_POS = 3000;
-    private static final int SCALE_POS = 6000;
-    private static final double AXIS_TO_LIFT = 3000;
+    private static final int GRAB_CUBE_POS = -3000;
+    private static final int SWITCH_POS = 15000;
+    private static final int SCALE_POS = 32500;
+    private static final double AXIS_TO_LIFT = 1000;
 
     /**
      * Initializes the teleop-specific components.
@@ -40,6 +41,7 @@ public class Teleop {
      */
     public static void setup() {
         teleopDrive.setup();
+        Components.getLift().resetEnc();
     }
 
     /**

@@ -1,6 +1,7 @@
 package org.usfirst.frc.team4253.robot2018.components;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
@@ -8,13 +9,13 @@ public class Lift {
 
     private TalonSRX lift;
 
-    private static final int TARGET_VEL = 1515; // can be changed
-    private static final int TARGET_ACCEL = 6060;
+    private static final int TARGET_VEL = 1000; // can be changed
+    private static final int TARGET_ACCEL = 1000;
 
-    private static final double P_VALUE = 0.0;
+    private static final double P_VALUE = 3;
     private static final double I_VALUE = 0.0;
     private static final double D_VALUE = 0.0;
-    private static final double F_VALUE = 0.0;
+    private static final double F_VALUE = 0.3593609487;
 
     // # of motors can be changed by adding more slave motors
 
@@ -27,6 +28,8 @@ public class Lift {
         lift = new TalonSRX(motorID);
 
         lift.setNeutralMode(NeutralMode.Brake);
+        lift.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, MotorSettings.PID_IDX,
+            MotorSettings.TIMEOUT);
 
         lift.configMotionCruiseVelocity(TARGET_VEL, MotorSettings.TIMEOUT);
         lift.configMotionAcceleration(TARGET_ACCEL, MotorSettings.TIMEOUT);
@@ -55,5 +58,13 @@ public class Lift {
      */
     public void movePWM(double percentPower) {
         lift.set(ControlMode.PercentOutput, percentPower);
+    }
+    
+    public TalonSRX lift() {
+        return lift;
+    }
+
+    public void resetEnc() {
+        lift.setSelectedSensorPosition(0, 0, MotorSettings.TIMEOUT);
     }
 }
