@@ -1,3 +1,22 @@
+# GeoGebra format
+
+`Path info` | `Path info` | `Angle` | `Percent difference` | (empty) | other cells for calculation
+--- | --- | --- | --- | --- | ---
+`Stage` | number | number | number | (empty) | ...
+`Start` | `Center` or `Left` or `Right` | number | number | (empty) | ...
+`End` | `Left` or `Right` | number | number | (empty) | ...
+`Direction` | `Forward` or `Backward` | number | number | (empty) | ...
+(empty) | (empty) | ... | ... | (empty) | ...
+
+If Stage == 0 then it is the path from start to switch.
+If Stage == 1 then it is the path from switch to the place in the middle.
+If Stage == 2 then it is the path from the place in the middle to the scale.
+
+If Stage == 0 then Start can be Center, Left, or Right.
+Else Start must be Left or Right.
+
+End must always be Left or Right.
+
 # How to use GeoGebra transfer script
 
 ## Setup
