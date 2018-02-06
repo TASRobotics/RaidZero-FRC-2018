@@ -21,7 +21,7 @@ public class TeleopDrive {
     /**
      * Sets up the TeleopDrive settings.
      * 
-     * <p> This should be called when teleop starts.
+     * <p>This should be called when teleop starts.
      */
     public void setup() {
         drive.setLowGear();

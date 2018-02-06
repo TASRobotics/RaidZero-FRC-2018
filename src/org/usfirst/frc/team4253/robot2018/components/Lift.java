@@ -5,12 +5,15 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
+/**
+ * The lift.
+ */
 public class Lift {
 
     public static final int SWITCH_HEIGHT = 15000;
     public static final int SCALE_HEIGHT = 32500;
 
-    private static final int TARGET_VEL = 1000; // can be changed
+    private static final int TARGET_VEL = 1000;
     private static final int TARGET_ACCEL = 1000;
 
     private static final double P_VALUE = 3;
@@ -19,8 +22,6 @@ public class Lift {
     private static final double F_VALUE = 0.3593609487;
 
     private TalonSRX lift;
-
-    // # of motors can be changed by adding more slave motors
 
     /**
      * Constructs a Lift object and sets up the lift motor.
@@ -65,10 +66,9 @@ public class Lift {
         lift.set(ControlMode.PercentOutput, percentPower);
     }
 
-    public TalonSRX lift() {
-        return lift;
-    }
-
+    /**
+     * Resets the lift motor encoder.
+     */
     public void resetEnc() {
         lift.setSelectedSensorPosition(0, 0, MotorSettings.TIMEOUT);
     }

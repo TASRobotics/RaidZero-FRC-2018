@@ -5,6 +5,9 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 
+/**
+ * The intake (claw and wheels).
+ */
 public class Intake {
 
     private static final double IDLE_POWER = 0.1;
@@ -70,7 +73,7 @@ public class Intake {
     }
 
     /**
-     * 
+     * Stops the wheels.
      */
     public void stopWheels() {
         leaderMotor.set(ControlMode.PercentOutput, 0);
