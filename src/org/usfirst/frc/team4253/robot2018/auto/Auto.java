@@ -61,7 +61,7 @@ public class Auto {
     private static void runSwitchScale() {
         if (stage < paths.size()) {
             AutoPath path = paths.get(stage);
-            if (autoDrive.moveCurve(path.getMotorData(), path.getReverse()) && transition()) {
+            if (autoDrive.moveCurve(path) && transition()) {
                 stage++;
                 autoDrive.resetEncoders();
             }

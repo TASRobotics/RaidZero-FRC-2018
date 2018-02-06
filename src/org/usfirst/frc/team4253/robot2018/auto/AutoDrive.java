@@ -80,18 +80,18 @@ public class AutoDrive {
     /**
      * Moves the robot in a curve.
      * 
-     * @param targets the geogebra data containing percent difference and angle
-     * @param reverse the boolean to reverse calculations
+     * @param path the path to move
      * @return whether the robot has finished moving
      */
-    public boolean moveCurve(GeoGebraEntry[] targets, boolean reverse) {
-        int targetPos = (int) ((targets.length - 1) * INCH_TO_TICKS);
-        GeoGebraEntry current = interpolate(targets, targetPos);
-        if (reverse) {
+    public boolean moveCurve(AutoPath path) {
+        int targetPos = (int) ((path.getMotorData().length - 1) * INCH_TO_TICKS);
+        GeoGebraEntry current = interpolate(path.getMotorData(), targetPos);
+        if (path.getReverse()) {
             targetPos = -targetPos;
         }
-        int[] currentTargets = convertToMotorValues(current.getPercentDifference(), reverse);
-        autoAngle(current.getAngle(), reverse);
+        int[] currentTargets =
+            convertToMotorValues(current.getPercentDifference(), path.getReverse());
+        autoAngle(current.getAngle(), path.getReverse());
         leftMotor.configMotionCruiseVelocity(currentTargets[0] - (int) autoAngleModifier,
             MotorSettings.TIMEOUT);
         rightMotor.configMotionCruiseVelocity(currentTargets[1] + (int) autoAngleModifier,
