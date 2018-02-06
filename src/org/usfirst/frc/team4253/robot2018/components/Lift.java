@@ -50,8 +50,10 @@ public class Lift {
      * 
      * @param targetPos the target position for the lift
      */
-    public void move(double targetPos) {
+    public boolean move(double targetPos) {
         lift.set(ControlMode.MotionMagic, targetPos);
+        return Math.abs(lift.getSelectedSensorVelocity(MotorSettings.PID_IDX)) <= 5
+            && Math.abs(targetPos - lift.getSelectedSensorPosition(MotorSettings.PID_IDX)) <= 10;
     }
 
     /**
@@ -61,11 +63,6 @@ public class Lift {
      */
     public void movePWM(double percentPower) {
         lift.set(ControlMode.PercentOutput, percentPower);
-    }
-    
-    public boolean checkFinished(double targetPos) {
-        return Math.abs(lift.getSelectedSensorVelocity(MotorSettings.PID_IDX)) <= 5
-            && Math.abs(targetPos - lift.getSelectedSensorPosition(MotorSettings.PID_IDX)) <= 10;
     }
 
     public TalonSRX lift() {

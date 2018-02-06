@@ -57,9 +57,8 @@ public class Auto {
 
     private static void runSwitchScale() {
         if (stage < paths.size()) {
-            AutoPath currentPath = paths.get(stage);
-            autoDrive.moveCurve(currentPath.getMotorData(), currentPath.getReverse());
-            if (autoDrive.checkFinished(currentPath.getMotorData()) && transition()) {
+            AutoPath path = paths.get(stage);
+            if (autoDrive.moveCurve(path.getMotorData(), path.getReverse()) && transition()) {
                 stage++;
                 autoDrive.resetEncoders();
             }
@@ -69,8 +68,7 @@ public class Auto {
     private static boolean transition() {
         switch (stage) {
             case 0:
-                Components.getLift().move(Lift.SWITCH_HEIGHT);
-                return Components.getLift().checkFinished(Lift.SWITCH_HEIGHT);
+                return Components.getLift().move(Lift.SWITCH_HEIGHT);
             default:
                 return true;
         }

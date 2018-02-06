@@ -80,7 +80,7 @@ public class AutoDrive {
      * @param targets the geogebra data containing percent difference and angle
      * @param reverse the boolean to reverse calculations
      */
-    public void moveCurve(GeoGebraEntry[] targets, boolean reverse) {
+    public boolean moveCurve(GeoGebraEntry[] targets, boolean reverse) {
         int targetPos = (int) ((targets.length - 1) * INCH_TO_TICKS);
         GeoGebraEntry current = interpolate(targets, targetPos);
         if (reverse) {
@@ -99,6 +99,12 @@ public class AutoDrive {
 
         rightMotor.set(ControlMode.MotionMagic, targetPos);
         leftMotor.set(ControlMode.MotionMagic, targetPos);
+
+        int averageCurrentPos = Math.abs((leftMotor.getSelectedSensorPosition(MotorSettings.PID_IDX)
+            + rightMotor.getSelectedSensorPosition(MotorSettings.PID_IDX)) / 2);
+        int averageCurrentVel = Math.abs((leftMotor.getSelectedSensorVelocity(MotorSettings.PID_IDX)
+                + rightMotor.getSelectedSensorVelocity(MotorSettings.PID_IDX)) / 2);
+        return averageCurrentVel <= 5 && Math.abs(targetPos - averageCurrentPos) <= 10;
     }
 
     /**
@@ -141,20 +147,6 @@ public class AutoDrive {
         if (reverse) {
             autoAngleModifier = -autoAngleModifier;
         }
-    }
-
-    /**
-     * Checks if the robot has finished movement;
-     * 
-     * @return Returns true if robot has finished. Else, false.
-     */
-    public boolean checkFinished(GeoGebraEntry[] targets) {
-        int targetPos = Math.abs((int) ((targets.length - 1) * INCH_TO_TICKS));
-        int averageCurrentPos = Math.abs((leftMotor.getSelectedSensorPosition(MotorSettings.PID_IDX)
-            + rightMotor.getSelectedSensorPosition(MotorSettings.PID_IDX)) / 2);
-        return Math.abs((leftMotor.getSelectedSensorVelocity(MotorSettings.PID_IDX)
-            + rightMotor.getSelectedSensorVelocity(MotorSettings.PID_IDX)) / 2) <= 5
-            && Math.abs(targetPos - averageCurrentPos) <= 10;
     }
 
     public void resetEncoders() {
