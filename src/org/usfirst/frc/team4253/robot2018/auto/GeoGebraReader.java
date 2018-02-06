@@ -2,6 +2,7 @@ package org.usfirst.frc.team4253.robot2018.auto;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,6 +11,8 @@ import java.util.List;
  * Reader for CSV files generated from GeoGebra data.
  */
 public class GeoGebraReader {
+
+    private static final Path DIRECTORY = Paths.get("/home", "lvuser", "paths");
 
     public static List<AutoPath> getPaths(StartingSide startingSide, PlateData plateData) {
         ArrayList<AutoPath> paths = new ArrayList<>();
@@ -54,7 +57,7 @@ public class GeoGebraReader {
     }
 
     private static AutoPath readFile(String filename) throws IOException {
-        List<String> lines = Files.readAllLines(Paths.get(filename));
+        List<String> lines = Files.readAllLines(DIRECTORY.resolve(filename));
         int stage = Integer.parseInt(lines.get(0));
         StartingSide start = parseStartingSide(lines.get(1));
         Side end = parseSide(lines.get(2));
