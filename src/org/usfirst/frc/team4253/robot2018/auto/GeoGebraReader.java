@@ -14,6 +14,16 @@ public class GeoGebraReader {
 
     private static final Path DIRECTORY = Paths.get("/home", "lvuser", "paths");
 
+    /**
+     * Reads the necessary CSV files and returns the autonomous paths.
+     * 
+     * <p>If there is any error reading a file, then the returned list will simply not contain the
+     * data from that file and any subsequent files.
+     * 
+     * @param startingSide the starting position of the robot
+     * @param plateData the plate assignment data
+     * @return the paths in a list ordered by stage
+     */
     public static List<AutoPath> getPaths(StartingSide startingSide, PlateData plateData) {
         ArrayList<AutoPath> paths = new ArrayList<>();
         try {

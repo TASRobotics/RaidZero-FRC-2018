@@ -7,6 +7,9 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.sensors.PigeonIMU;
 
+/**
+ * Autonomous-specific functionality for the drive.
+ */
 public class AutoDrive {
 
     private static final double AUTO_STRAIGHT_P = 0.08;
@@ -79,6 +82,7 @@ public class AutoDrive {
      * 
      * @param targets the geogebra data containing percent difference and angle
      * @param reverse the boolean to reverse calculations
+     * @return whether the robot has finished moving
      */
     public boolean moveCurve(GeoGebraEntry[] targets, boolean reverse) {
         int targetPos = (int) ((targets.length - 1) * INCH_TO_TICKS);
@@ -149,6 +153,9 @@ public class AutoDrive {
         }
     }
 
+    /**
+     * Resets the drive encoders.
+     */
     public void resetEncoders() {
         rightMotor.setSelectedSensorPosition(0, MotorSettings.PID_IDX, MotorSettings.TIMEOUT);
         leftMotor.setSelectedSensorPosition(0, MotorSettings.PID_IDX, MotorSettings.TIMEOUT);

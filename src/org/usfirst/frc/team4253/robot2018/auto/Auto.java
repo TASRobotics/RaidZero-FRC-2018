@@ -55,6 +55,9 @@ public class Auto {
         }
     }
 
+    /**
+     * Runs the standard switch and scale autonomous.
+     */
     private static void runSwitchScale() {
         if (stage < paths.size()) {
             AutoPath path = paths.get(stage);
@@ -65,6 +68,11 @@ public class Auto {
         }
     }
 
+    /**
+     * Runs a transition action after a stage has been completed.
+     * 
+     * @return whether the transition is done and we can move on to the next stage
+     */
     private static boolean transition() {
         switch (stage) {
             case 0:
