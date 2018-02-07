@@ -136,8 +136,6 @@ function upload(filename, data) {
                 console.log('Writing data...');
                 sftp.write(handle, buffer, 0, buffer.length, 0, err => {
                     if (err) throw err;
-                    console.log('Successfully wrote data:');
-                    console.log(data);
                     console.log('Closing file...');
                     sftp.close(handle, err => {
                         if (err) throw err;
