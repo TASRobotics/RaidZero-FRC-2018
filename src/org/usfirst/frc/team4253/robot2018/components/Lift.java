@@ -5,11 +5,16 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
+/**
+ * The lift.
+ */
 public class Lift {
 
-    private TalonSRX lift;
+    public static final int GRAB_CUBE_HEIGHT = 0;
+    public static final int SWITCH_HEIGHT = 15000;
+    public static final int SCALE_HEIGHT = 32500;
 
-    private static final int TARGET_VEL = 1000; // can be changed
+    private static final int TARGET_VEL = 1000;
     private static final int TARGET_ACCEL = 1000;
 
     private static final double P_VALUE = 3;
@@ -17,7 +22,7 @@ public class Lift {
     private static final double D_VALUE = 0.0;
     private static final double F_VALUE = 0.3593609487;
 
-    // # of motors can be changed by adding more slave motors
+    private TalonSRX lift;
 
     /**
      * Constructs a Lift object and sets up the lift motor.
@@ -47,8 +52,10 @@ public class Lift {
      * 
      * @param targetPos the target position for the lift
      */
-    public void move(double targetPos) {
+    public boolean move(double targetPos) {
         lift.set(ControlMode.MotionMagic, targetPos);
+        return Math.abs(lift.getSelectedSensorVelocity(MotorSettings.PID_IDX)) <= 5
+            && Math.abs(targetPos - lift.getSelectedSensorPosition(MotorSettings.PID_IDX)) <= 10;
     }
 
     /**
@@ -59,11 +66,10 @@ public class Lift {
     public void movePWM(double percentPower) {
         lift.set(ControlMode.PercentOutput, percentPower);
     }
-    
-    public TalonSRX lift() {
-        return lift;
-    }
 
+    /**
+     * Resets the lift motor encoder.
+     */
     public void resetEnc() {
         lift.setSelectedSensorPosition(0, 0, MotorSettings.TIMEOUT);
     }

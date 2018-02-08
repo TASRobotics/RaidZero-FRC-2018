@@ -1,6 +1,8 @@
 'use strict';
 
-const directory = '/home/lvuser/';
+// CONFIG
+
+const directory = '/home/lvuser/paths/';
 const robotNumber = '4253';
 
 const pathInfoFormat = {
@@ -11,13 +13,20 @@ const pathInfoFormat = {
     direction: oneOf('forward', 'backward')
 };
 
+function getFilename(pathInfo) {
+    return `${pathInfo.stage}-${pathInfo.start}-${pathInfo.end}.csv`;
+}
+
 const motorDataFormat = {
     angle: number,
     'percent difference': number
 };
 
+// END CONFIG
+
 const clip = require('clipboardy');
 const conn = require('ssh2').Client();
+const SFTPStream = require('ssh2-streams').SFTPStream;
 
 console.log('Reading data...');
 const [header, bodyLines] = readData(clip.readSync());
@@ -51,7 +60,7 @@ function convertData(header, lines) {
             console.assert(value !== '', `${prop} has no value`);
             pathInfoMap[prop] = value;
         }
-        if (motorData[0] === '?') {
+        if (motorData[0] === '?' || motorData.every(x => x === '')) {
             break;
         }
         const motorDataMap = {};
@@ -59,17 +68,13 @@ function convertData(header, lines) {
             motorDataMap[header[j]] = x;
         });
         const motorDataMap1 =
-            verifyFormat(motorDataFormat, motorDataMap, p => `row ${i + 1} of ${p}`);
+            verifyFormat(motorDataFormat, motorDataMap, p => `row ${i + 2} of ${p}`);
         motorDataOutput.push(Object.keys(motorDataFormat).map(p => motorDataMap1[p]).join());
     }
     checkSame(Object.keys(pathInfoFormat), Object.keys(pathInfoMap), 'path info');
     const pathInfoMap1 = verifyFormat(pathInfoFormat, pathInfoMap);
     return [getFilename(pathInfoMap1), Object.keys(pathInfoFormat)
         .map(prop => pathInfoMap1[prop]).concat(motorDataOutput).join('\n')]
-}
-
-function getFilename(pathInfo) {
-    return `${pathInfo.stage}-${pathInfo.start}-${pathInfo.end}.csv`;
 }
 
 function checkSame(format, actual, name) {
@@ -105,21 +110,32 @@ function upload(filename, data) {
         console.log('Initializing SFTP...');
         conn.sftp((err, sftp) => {
             if (err) throw err;
-            // sftp.mkdir('/home/lvuser/paths', err => {
-            //     if (err) throw err;
-            //     console.log('success');
-            //     conn.end();
-            // });
             const filepath = directory + filename;
             console.log(`Opening file ${filepath}...`);
             sftp.open(filepath, 'w', (err, handle) => {
-                if (err) throw err;
+                if (err) {
+                    if (err.code === SFTPStream.STATUS_CODE.NO_SUCH_FILE) {
+                        console.log(`Directory ${directory} does not exist. Creating directory...`);
+                        sftp.mkdir(directory, err => {
+                            if (err) throw err;
+                            console.log('Opening file again...');
+                            sftp.open(filepath, 'w', (err, handle) => {
+                                if (err) throw err;
+                                writeData(handle);
+                            });
+                        });
+                    } else {
+                        throw err;
+                    }
+                } else {
+                    writeData(handle);
+                }
+            });
+            function writeData(handle) {
                 const buffer = Buffer.from(data);
                 console.log('Writing data...');
                 sftp.write(handle, buffer, 0, buffer.length, 0, err => {
                     if (err) throw err;
-                    console.log('Successfully wrote data:');
-                    console.log(data);
                     console.log('Closing file...');
                     sftp.close(handle, err => {
                         if (err) throw err;
@@ -127,7 +143,7 @@ function upload(filename, data) {
                         console.log('Successfully transferred data to robot');
                     });
                 });
-            });
+            }
         });
     }).connect({
         host: `roboRIO-${robotNumber}-FRC.local`,

@@ -1,6 +1,7 @@
 package org.usfirst.frc.team4253.robot2018.teleop;
 
 import org.usfirst.frc.team4253.robot2018.components.Components;
+import org.usfirst.frc.team4253.robot2018.components.Lift;
 
 import static edu.wpi.first.wpilibj.GenericHID.Hand.kLeft;
 import static edu.wpi.first.wpilibj.GenericHID.Hand.kRight;
@@ -16,10 +17,6 @@ public class Teleop {
     private static XboxController controller2;
     private static TeleopDrive teleopDrive;
 
-    // Note that the constants below should be fine tuned through testing
-    private static final int GRAB_CUBE_POS = -3000;
-    private static final int SWITCH_POS = 15000;
-    private static final int SCALE_POS = 32500;
     private static final double AXIS_TO_LIFT = 1000;
 
     /**
@@ -77,15 +74,16 @@ public class Teleop {
         // Motion Magic Lift
         if (controller2.getXButton()) {
             // for lowest target position for the lift
-            Components.getLift().move(0 + controller.getY(kLeft) * AXIS_TO_LIFT);
+            Components.getLift()
+                .move(Lift.GRAB_CUBE_HEIGHT + controller.getY(kLeft) * AXIS_TO_LIFT);
         }
         if (controller2.getYButton()) {
             // for switch target position for the lift
-            Components.getLift().move(SWITCH_POS + controller.getY(kLeft) * AXIS_TO_LIFT);
+            Components.getLift().move(Lift.SWITCH_HEIGHT + controller.getY(kLeft) * AXIS_TO_LIFT);
         }
         if (controller2.getBButton()) {
             // for scale target position for the lift
-            Components.getLift().move(SCALE_POS + controller.getY(kLeft) * AXIS_TO_LIFT);
+            Components.getLift().move(Lift.SCALE_HEIGHT + controller.getY(kLeft) * AXIS_TO_LIFT);
         }
 
         // Intake

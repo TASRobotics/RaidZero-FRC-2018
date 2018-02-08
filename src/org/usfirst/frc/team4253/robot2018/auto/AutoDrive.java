@@ -7,6 +7,9 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.sensors.PigeonIMU;
 
+/**
+ * Autonomous-specific functionality for the drive.
+ */
 public class AutoDrive {
 
     private static final double AUTO_STRAIGHT_P = 0.08;
@@ -77,17 +80,18 @@ public class AutoDrive {
     /**
      * Moves the robot in a curve.
      * 
-     * @param targets the geogebra data containing percent difference and angle
-     * @param reverse the boolean to reverse calculations
+     * @param path the path to move
+     * @return whether the robot has finished moving
      */
-    public void moveCurve(GeoGebraEntry[] targets, boolean reverse) {
-        int targetPos = (int) ((targets.length - 1) * INCH_TO_TICKS);
-        GeoGebraEntry current = interpolate(targets, targetPos);
-        if (reverse) {
+    public boolean moveCurve(AutoPath path) {
+        int targetPos = (int) ((path.getMotorData().length - 1) * INCH_TO_TICKS);
+        GeoGebraEntry current = interpolate(path.getMotorData(), targetPos);
+        if (path.getReverse()) {
             targetPos = -targetPos;
         }
-        int[] currentTargets = convertToMotorValues(current.getPercentDifference(), reverse);
-        autoAngle(current.getAngle(), reverse);
+        int[] currentTargets =
+            convertToMotorValues(current.getPercentDifference(), path.getReverse());
+        autoAngle(current.getAngle(), path.getReverse());
         leftMotor.configMotionCruiseVelocity(currentTargets[0] - (int) autoAngleModifier,
             MotorSettings.TIMEOUT);
         rightMotor.configMotionCruiseVelocity(currentTargets[1] + (int) autoAngleModifier,
@@ -99,6 +103,12 @@ public class AutoDrive {
 
         rightMotor.set(ControlMode.MotionMagic, targetPos);
         leftMotor.set(ControlMode.MotionMagic, targetPos);
+
+        int averageCurrentPos = Math.abs((leftMotor.getSelectedSensorPosition(MotorSettings.PID_IDX)
+            + rightMotor.getSelectedSensorPosition(MotorSettings.PID_IDX)) / 2);
+        int averageCurrentVel = Math.abs((leftMotor.getSelectedSensorVelocity(MotorSettings.PID_IDX)
+                + rightMotor.getSelectedSensorVelocity(MotorSettings.PID_IDX)) / 2);
+        return averageCurrentVel <= 5 && Math.abs(targetPos - averageCurrentPos) <= 10;
     }
 
     /**
@@ -144,22 +154,11 @@ public class AutoDrive {
     }
 
     /**
-     * Checks if the robot has finished movement;
-     * 
-     * @return Returns true if robot has finished. Else, false.
+     * Resets the drive encoders.
      */
-    public boolean checkFinished(GeoGebraEntry[] targets) {
-        int targetPos = Math.abs((int) ((targets.length - 1) * INCH_TO_TICKS));
-        int averageCurrentPos = Math.abs((leftMotor.getSelectedSensorPosition(MotorSettings.PID_IDX)
-            + rightMotor.getSelectedSensorPosition(MotorSettings.PID_IDX)) / 2);
-        if (Math.abs((leftMotor.getSelectedSensorVelocity(MotorSettings.PID_IDX)
-                + rightMotor.getSelectedSensorVelocity(MotorSettings.PID_IDX)) / 2) <= 5
-            && Math.abs(targetPos - averageCurrentPos) <= 10) {
-            rightMotor.setSelectedSensorPosition(0, MotorSettings.PID_IDX, MotorSettings.TIMEOUT);
-            leftMotor.setSelectedSensorPosition(0, MotorSettings.PID_IDX, MotorSettings.TIMEOUT);
-            return true;
-        }
-        return false;
+    public void resetEncoders() {
+        rightMotor.setSelectedSensorPosition(0, MotorSettings.PID_IDX, MotorSettings.TIMEOUT);
+        leftMotor.setSelectedSensorPosition(0, MotorSettings.PID_IDX, MotorSettings.TIMEOUT);
     }
 
     /**

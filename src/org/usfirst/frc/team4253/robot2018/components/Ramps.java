@@ -5,6 +5,9 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.Solenoid;
 
+/**
+ * The ramps (both sides).
+ */
 public class Ramps {
 
     private static final double MOTORPOWER = 0.5;
