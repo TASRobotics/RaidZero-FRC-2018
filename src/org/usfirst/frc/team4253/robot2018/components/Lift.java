@@ -10,6 +10,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
  */
 public class Lift {
 
+    public static final int GRAB_CUBE_HEIGHT = 0;
     public static final int SWITCH_HEIGHT = 15000;
     public static final int SCALE_HEIGHT = 32500;
 

@@ -17,8 +17,6 @@ public class Teleop {
     private static XboxController controller2;
     private static TeleopDrive teleopDrive;
 
-    // Note that the constants below should be fine tuned through testing
-    private static final int GRAB_CUBE_POS = -3000;
     private static final double AXIS_TO_LIFT = 1000;
 
     /**
@@ -76,7 +74,8 @@ public class Teleop {
         // Motion Magic Lift
         if (controller2.getXButton()) {
             // for lowest target position for the lift
-            Components.getLift().move(0 + controller.getY(kLeft) * AXIS_TO_LIFT);
+            Components.getLift()
+                .move(Lift.GRAB_CUBE_HEIGHT + controller.getY(kLeft) * AXIS_TO_LIFT);
         }
         if (controller2.getYButton()) {
             // for switch target position for the lift
