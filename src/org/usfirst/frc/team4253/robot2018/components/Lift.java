@@ -22,6 +22,9 @@ public class Lift {
     private static final double D_VALUE = 0.0;
     private static final double F_VALUE = 0.3593609487;
 
+    private static final int VEL_TOLERANCE = 5;
+    private static final int POS_TOLERANCE = 10;
+
     private TalonSRX lift;
 
     /**
@@ -54,8 +57,10 @@ public class Lift {
      */
     public boolean move(double targetPos) {
         lift.set(ControlMode.MotionMagic, targetPos);
-        return Math.abs(lift.getSelectedSensorVelocity(MotorSettings.PID_IDX)) <= 5
-            && Math.abs(targetPos - lift.getSelectedSensorPosition(MotorSettings.PID_IDX)) <= 10;
+        int currentVel = lift.getSelectedSensorVelocity(MotorSettings.PID_IDX);
+        int currentPos = lift.getSelectedSensorPosition(MotorSettings.PID_IDX);
+        return Math.abs(currentVel) <= VEL_TOLERANCE
+            && Math.abs(targetPos - currentPos) <= POS_TOLERANCE;
     }
 
     /**
