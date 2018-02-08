@@ -18,6 +18,7 @@ public class Teleop {
     private static TeleopDrive teleopDrive;
 
     private static final double AXIS_TO_LIFT = 1000;
+    private static final double ANALOG_THRESHOLD = 0.8;
 
     /**
      * Initializes the teleop-specific components.
@@ -89,15 +90,16 @@ public class Teleop {
         // Intake
         if (controller2.getTriggerAxis(kRight) >= 0.8) {
             Components.getIntake().runWheelsIn();
-        } else if (controller.getBumper(kLeft) || controller2.getTriggerAxis(kLeft) >= 0.8) {
+        } else if (controller.getBumper(kLeft)
+            || controller2.getTriggerAxis(kLeft) >= ANALOG_THRESHOLD) {
             Components.getIntake().runWheelsOut();
         } else {
             Components.getIntake().stopWheels();
         }
-        if (controller2.getY(kLeft) <= -0.8) {
+        if (controller2.getY(kLeft) <= -ANALOG_THRESHOLD) {
             Components.getIntake().openClaw();
         }
-        if (controller2.getY(kLeft) >= 0.8) {
+        if (controller2.getY(kLeft) >= ANALOG_THRESHOLD) {
             Components.getIntake().closeClaw();
         }
 
