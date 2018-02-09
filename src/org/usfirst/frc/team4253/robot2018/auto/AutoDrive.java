@@ -16,11 +16,16 @@ public class AutoDrive {
     private static final double AUTO_STRIAGHT_D = 0.0004;
     private static final double AUTO_ANGLE_P = 4;
     private static final double AUTO_ANGLE_D = 0.0004;
+
     private static final double INCH_TO_TICKS = 2542 / 32;
 
-    private static final int PIGEON_TIMEOUT = 100;
     private static final int DEFAULT_VEL = 500;
     private static final int DEFAULT_ACCEL = 1000;
+
+    private static final int VEL_TOLERANCE = 5;
+    private static final int POS_TOLERANCE = 10;
+
+    private static final int PIGEON_TIMEOUT = 100;
 
     private double currentAngle;
     private double currentAngularRate;
@@ -108,7 +113,8 @@ public class AutoDrive {
             + rightMotor.getSelectedSensorPosition(MotorSettings.PID_IDX)) / 2);
         int averageCurrentVel = Math.abs((leftMotor.getSelectedSensorVelocity(MotorSettings.PID_IDX)
                 + rightMotor.getSelectedSensorVelocity(MotorSettings.PID_IDX)) / 2);
-        return averageCurrentVel <= 5 && Math.abs(targetPos - averageCurrentPos) <= 10;
+        return averageCurrentVel <= VEL_TOLERANCE
+            && Math.abs(targetPos - averageCurrentPos) <= POS_TOLERANCE;
     }
 
     /**
