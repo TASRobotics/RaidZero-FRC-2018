@@ -26,7 +26,7 @@ public class Components {
         intake = new Intake(10, 11, 4, 5);
         drive = new Drive(1, 2, 3, 4, 0, 1, new PigeonIMU(intake.getLeaderMotor()));
         lift = new Lift(12);
-        ramps = new Ramps(13, 14, 2);
+        ramps = new Ramps(13, 14, 2, 3);
     }
 
     /**

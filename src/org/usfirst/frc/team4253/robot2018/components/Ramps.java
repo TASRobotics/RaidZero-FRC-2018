@@ -3,7 +3,7 @@ package org.usfirst.frc.team4253.robot2018.components;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 
 /**
  * The ramps (both sides).
@@ -13,24 +13,25 @@ public class Ramps {
     private static final double MOTORPOWER = 0.5;
     private TalonSRX leftRamp;
     private TalonSRX rightRamp;
-    private Solenoid releaser;
+    private DoubleSolenoid releaser;
 
     /**
      * Constructs a ramp object and sets up the ramp motors and piston releaser.
      * 
      * @param leftRampID the ID of the left ramp motor
      * @param rightRampID the ID of the right ramp motor
-     * @param channel the channel of the piston
+     * @param pullChannel kReverse aka pin in
+     * @param nothing kForward aka pin out
      */
-    public Ramps(int leftRampID, int rightRampID, int channel) {
+    public Ramps(int leftRampID, int rightRampID, int pullChannel, int nothing) {
         leftRamp = new TalonSRX(leftRampID);
         rightRamp = new TalonSRX(rightRampID);
-        releaser = new Solenoid(channel);
+        releaser = new DoubleSolenoid(nothing, pullChannel);
 
         leftRamp.setNeutralMode(NeutralMode.Brake);
         rightRamp.setNeutralMode(NeutralMode.Brake);
 
-        releaser.set(false);
+        releaser.set(DoubleSolenoid.Value.kForward);
     }
 
     /**
@@ -65,6 +66,6 @@ public class Ramps {
      * Releases the ramps.
      */
     public void releaseRamps() {
-        releaser.set(true);
+        releaser.set(DoubleSolenoid.Value.kReverse);
     }
 }

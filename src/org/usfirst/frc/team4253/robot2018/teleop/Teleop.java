@@ -117,7 +117,5 @@ public class Teleop {
         if (controller.getBackButton() && controller.getStartButton()) {
             Components.getRamps().releaseRamps();
         }
-
     }
-
 }
