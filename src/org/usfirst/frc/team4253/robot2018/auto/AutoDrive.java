@@ -86,10 +86,9 @@ public class AutoDrive {
      * Moves the robot in a curve.
      * 
      * @param path the path to move
-     * @return whether the robot has finished moving
      */
-    public boolean moveCurve(AutoPath path) {
-        int targetPos = (int) ((path.getMotorData().length - 1) * INCH_TO_TICKS);
+    public void moveCurve(AutoPath path) {
+        int targetPos = getTargetPos(path);
         GeoGebraEntry current = interpolate(path.getMotorData(), targetPos);
         if (path.getReverse()) {
             targetPos = -targetPos;
@@ -108,13 +107,18 @@ public class AutoDrive {
 
         rightMotor.set(ControlMode.MotionMagic, targetPos);
         leftMotor.set(ControlMode.MotionMagic, targetPos);
+    }
 
-        int averageCurrentPos = Math.abs((leftMotor.getSelectedSensorPosition(MotorSettings.PID_IDX)
-            + rightMotor.getSelectedSensorPosition(MotorSettings.PID_IDX)) / 2);
+    public double getProgress(AutoPath path) {
+        return getEncoderPos() / Math.abs(getTargetPos(path));
+    }
+
+    public boolean checkFinished(AutoPath path) {
+        int targetPos = Math.abs(getTargetPos(path));
         int averageCurrentVel = Math.abs((leftMotor.getSelectedSensorVelocity(MotorSettings.PID_IDX)
-                + rightMotor.getSelectedSensorVelocity(MotorSettings.PID_IDX)) / 2);
+            + rightMotor.getSelectedSensorVelocity(MotorSettings.PID_IDX)) / 2);
         return averageCurrentVel <= VEL_TOLERANCE
-            && Math.abs(targetPos - averageCurrentPos) <= POS_TOLERANCE;
+            && Math.abs(targetPos - getEncoderPos()) <= POS_TOLERANCE;
     }
 
     /**
@@ -197,8 +201,7 @@ public class AutoDrive {
      * @return the current angle and percent difference
      */
     private GeoGebraEntry interpolate(GeoGebraEntry[] data, int targetPos) {
-        double currentPos = Math.abs((leftMotor.getSelectedSensorPosition(MotorSettings.PID_IDX)
-            + rightMotor.getSelectedSensorPosition(MotorSettings.PID_IDX)) / 2);
+        double currentPos = getEncoderPos();
 
         if (currentPos <= 0) {
             System.out.println("currentPos <= 0");
@@ -224,5 +227,14 @@ public class AutoDrive {
 
         return new GeoGebraEntry((nextAngle - prevAngle) * x + prevAngle,
             (nextPercentDifference - prevPercentDifference) * x + prevPercentDifference);
+    }
+
+    public double getEncoderPos() {
+        return Math.abs((leftMotor.getSelectedSensorPosition(MotorSettings.PID_IDX)
+            + rightMotor.getSelectedSensorPosition(MotorSettings.PID_IDX)) / 2.0);
+    }
+
+    private int getTargetPos(AutoPath path) {
+        return (int) ((path.getMotorData().length - 1) * INCH_TO_TICKS);
     }
 }
