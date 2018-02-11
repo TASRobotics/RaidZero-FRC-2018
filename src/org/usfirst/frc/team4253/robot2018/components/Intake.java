@@ -12,8 +12,8 @@ public class Intake {
 
     private static final double IDLE_POWER = 0.1;
     private static final double WHEEL_POWER = 0.9;
-    private static DoubleSolenoid.Value OPEN_POSITION = DoubleSolenoid.Value.kForward;
-    private static DoubleSolenoid.Value CLOSED_POSITION = DoubleSolenoid.Value.kReverse;
+    private static DoubleSolenoid.Value OPEN_POSITION = DoubleSolenoid.Value.kReverse;
+    private static DoubleSolenoid.Value CLOSED_POSITION = DoubleSolenoid.Value.kForward;
 
     private TalonSRX leaderMotor;
     private TalonSRX follower;
@@ -38,6 +38,7 @@ public class Intake {
         follower.setInverted(true);
 
         follower.set(ControlMode.Follower, leaderID);
+        closeClaw();
     }
 
     public TalonSRX getLeaderMotor() {
@@ -61,15 +62,15 @@ public class Intake {
     /**
      * Runs the wheels in.
      */
-    public void runWheelsIn() {
-        leaderMotor.set(ControlMode.PercentOutput, WHEEL_POWER);
+    public void runWheelsIn(double power) {
+        leaderMotor.set(ControlMode.PercentOutput, power);
     }
 
     /**
      * Runs the wheels out.
      */
-    public void runWheelsOut() {
-        leaderMotor.set(ControlMode.PercentOutput, -WHEEL_POWER);
+    public void runWheelsOut(double power) {
+        leaderMotor.set(ControlMode.PercentOutput, -power);
     }
 
     /**

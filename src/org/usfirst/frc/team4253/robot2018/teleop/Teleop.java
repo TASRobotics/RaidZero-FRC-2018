@@ -19,6 +19,7 @@ public class Teleop {
     private static TeleopDrive teleopDrive;
 
     private static final double AXIS_TO_LIFT = 1000;
+    private static final double INTAKE_WHEEL_POWER = 0.9;
     private static final double ANALOG_THRESHOLD = 0.8;
     private static boolean released = false;
 
@@ -65,15 +66,12 @@ public class Teleop {
         double rightTriggerAxis = controller.getTriggerAxis(kRight);
         double leftTriggerAxis = controller.getTriggerAxis(kLeft);
 
-        double control2YAxis = controller2.getY(kRight);
-        if (controller2.getY(kRight) < 0) {
-            control2YAxis = controller2.getY(kRight) / 2;
-        }
-
         if (rightTriggerAxis > leftTriggerAxis) {
-            Components.getLift().movePWM(controller.getTriggerAxis(kRight) + control2YAxis);
+            Components.getLift()
+                .movePWM(controller.getTriggerAxis(kRight) + controller2.getY(kRight));
         } else {
-            Components.getLift().movePWM(-controller.getTriggerAxis(kLeft) / 2 + control2YAxis);
+            Components.getLift()
+                .movePWM(-controller.getTriggerAxis(kLeft) + controller2.getY(kRight));
         }
 
         // Motion Magic Lift
@@ -93,10 +91,10 @@ public class Teleop {
 
         // Intake
         if (controller2.getTriggerAxis(kRight) >= 0.8) {
-            Components.getIntake().runWheelsIn();
+            Components.getIntake().runWheelsIn(INTAKE_WHEEL_POWER);
         } else if (controller.getBumper(kLeft)
             || controller2.getTriggerAxis(kLeft) >= ANALOG_THRESHOLD) {
-            Components.getIntake().runWheelsOut();
+            Components.getIntake().runWheelsOut(INTAKE_WHEEL_POWER);
         } else {
             Components.getIntake().stopWheels();
         }

@@ -6,6 +6,7 @@ import org.usfirst.frc.team4253.robot2018.components.MotorSettings;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.sensors.PigeonIMU;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * Autonomous-specific functionality for the drive.
@@ -117,6 +118,7 @@ public class AutoDrive {
         int targetPos = Math.abs(getTargetPos(path));
         int averageCurrentVel = Math.abs((leftMotor.getSelectedSensorVelocity(MotorSettings.PID_IDX)
             + rightMotor.getSelectedSensorVelocity(MotorSettings.PID_IDX)) / 2);
+        SmartDashboard.putNumber("Pos Difference", targetPos - getEncoderPos());
         return averageCurrentVel <= VEL_TOLERANCE
             && Math.abs(targetPos - getEncoderPos()) <= POS_TOLERANCE;
     }
