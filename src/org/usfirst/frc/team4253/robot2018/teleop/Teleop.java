@@ -7,6 +7,7 @@ import static edu.wpi.first.wpilibj.GenericHID.Hand.kLeft;
 import static edu.wpi.first.wpilibj.GenericHID.Hand.kRight;
 
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * Teleop specific code for the robot.
@@ -19,6 +20,7 @@ public class Teleop {
 
     private static final double AXIS_TO_LIFT = 1000;
     private static final double ANALOG_THRESHOLD = 0.8;
+    private static boolean released = false;
 
     /**
      * Initializes the teleop-specific components.
@@ -40,6 +42,8 @@ public class Teleop {
     public static void setup() {
         teleopDrive.setup();
         Components.getLift().resetEnc();
+        Components.getRamps().setup();
+        released = false;
     }
 
     /**
@@ -96,26 +100,28 @@ public class Teleop {
         } else {
             Components.getIntake().stopWheels();
         }
-        if (controller2.getY(kLeft) <= -ANALOG_THRESHOLD) {
+        if (controller2.getY(kLeft) >= ANALOG_THRESHOLD) {
             Components.getIntake().openClaw();
         }
-        if (controller2.getY(kLeft) >= ANALOG_THRESHOLD) {
+        if (controller2.getY(kLeft) <= -ANALOG_THRESHOLD) {
             Components.getIntake().closeClaw();
         }
 
         // Climb
-        if (controller2.getBumper(kRight)) {
+        if (controller2.getBumper(kRight) && released) {
             Components.getRamps().moveRightRamp();
         } else {
             Components.getRamps().stopRightRamp();
         }
-        if (controller2.getBumper(kLeft)) {
+        if (controller2.getBumper(kLeft) && released) {
             Components.getRamps().moveLeftRamp();
         } else {
             Components.getRamps().stopLeftRamp();
         }
         if (controller.getBackButton() && controller.getStartButton()) {
             Components.getRamps().releaseRamps();
+            released = true;
         }
+        SmartDashboard.putNumber("Lift Pos", Components.getLift().getEncoderPos());
     }
 }

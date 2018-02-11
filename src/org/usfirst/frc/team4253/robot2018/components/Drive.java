@@ -35,8 +35,7 @@ public class Drive {
     public Drive(
         int leftLeaderID, int rightLeaderID,
         int leftFollowerID, int rightFollowerID,
-        int gearShiftForward, int gearShiftReverse,
-        PigeonIMU pigeon
+        int gearShiftForward, int gearShiftReverse
     ) {
         //@formatter:on
         leftMotor = initSide(leftLeaderID, leftFollowerID, false, false);
@@ -45,7 +44,6 @@ public class Drive {
         rightMotor = initSide(rightLeaderID, rightFollowerID, true, false); // build error so not
                                                                             // inverted
         gearShift = new DoubleSolenoid(gearShiftForward, gearShiftReverse);
-        this.pigeon = pigeon;
     }
 
     /**
@@ -78,6 +76,9 @@ public class Drive {
         leader.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 10,
             MotorSettings.TIMEOUT);
         follower.setInverted(invertMotor);
+        if (invertMotor) {
+            pigeon = new PigeonIMU(follower);
+        }
 
         setPID(leader);
 

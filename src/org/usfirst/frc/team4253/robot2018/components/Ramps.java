@@ -31,6 +31,9 @@ public class Ramps {
         leftRamp.setNeutralMode(NeutralMode.Brake);
         rightRamp.setNeutralMode(NeutralMode.Brake);
 
+        leftRamp.setInverted(true);
+        rightRamp.setInverted(true);
+
         releaser.set(DoubleSolenoid.Value.kForward);
     }
 
@@ -67,5 +70,12 @@ public class Ramps {
      */
     public void releaseRamps() {
         releaser.set(DoubleSolenoid.Value.kReverse);
+    }
+
+    /**
+     * Setup the ramp releaser
+     */
+    public void setup() {
+        releaser.set(DoubleSolenoid.Value.kForward);
     }
 }
