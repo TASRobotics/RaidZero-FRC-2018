@@ -61,22 +61,54 @@ public class Auto {
     private static void runSwitchScale() {
         if (stage < paths.size()) {
             AutoPath path = paths.get(stage);
-            if (autoDrive.moveCurve(path) && transition()) {
+            autoDrive.moveCurve(path);
+            moveOtherComponents(path);
+            if (autoDrive.checkFinished(path) && transition()) {
                 stage++;
                 autoDrive.resetEncoders();
             }
         }
     }
 
-    /**
-     * Runs a transition action after a stage has been completed.
-     * 
-     * @return whether the transition is done and we can move on to the next stage
-     */
+    private static void moveOtherComponents(AutoPath path) {
+        switch (stage) {
+            case 0:
+                if (autoDrive.getProgress(path) > 0.5) {
+                    Components.getLift().move(Lift.SWITCH_HEIGHT);
+                }
+                break;
+            case 1:
+                Components.getLift().move(Lift.GRAB_CUBE_HEIGHT);
+                break;
+            case 2:
+                if (autoDrive.getEncoderPos() > 7000) {
+                    Components.getIntake().idle();
+                }
+                if (autoDrive.getProgress(path) > 0.7) {
+                    Components.getLift().move(Lift.SCALE_HEIGHT);
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
     private static boolean transition() {
         switch (stage) {
             case 0:
-                return Components.getLift().move(Lift.SWITCH_HEIGHT);
+                if (Components.getLift().checkFinished(Lift.SWITCH_HEIGHT)) {
+                    Components.getIntake().release();
+                    return true;
+                }
+                return false;
+            case 1:
+                return Components.getLift().checkFinished(Lift.GRAB_CUBE_HEIGHT);
+            case 2:
+                if (Components.getLift().checkFinished(Lift.SCALE_HEIGHT)) {
+                    Components.getIntake().release();
+                    return true;
+                }
+                return false;
             default:
                 return true;
         }

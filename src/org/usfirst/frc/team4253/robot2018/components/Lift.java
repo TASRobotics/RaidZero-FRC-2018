@@ -56,8 +56,11 @@ public class Lift {
      * 
      * @param targetPos the target position for the lift
      */
-    public boolean move(double targetPos) {
+    public void move(double targetPos) {
         lift.set(ControlMode.MotionMagic, targetPos);
+    }
+
+    public boolean checkFinished(double targetPos) {
         int currentVel = lift.getSelectedSensorVelocity(MotorSettings.PID_IDX);
         int currentPos = lift.getSelectedSensorPosition(MotorSettings.PID_IDX);
         return Math.abs(currentVel) <= VEL_TOLERANCE
