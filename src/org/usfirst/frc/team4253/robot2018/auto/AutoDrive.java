@@ -96,7 +96,7 @@ public class AutoDrive {
         }
         int[] currentTargets =
             convertToMotorValues(current.getPercentDifference(), path.getReverse());
-        autoAngle(current.getAngle(), path.getReverse());
+        autoAngle(current.getAngle());
         leftMotor.configMotionCruiseVelocity(currentTargets[0] - (int) autoAngleModifier,
             MotorSettings.TIMEOUT);
         rightMotor.configMotionCruiseVelocity(currentTargets[1] + (int) autoAngleModifier,
@@ -149,7 +149,7 @@ public class AutoDrive {
      * @param targetAngle the angle to try to reach
      * @param reverse the boolean to tell to reverse
      */
-    private void autoAngle(double targetAngle, boolean reverse) {
+    private void autoAngle(double targetAngle) {
         PigeonIMU.FusionStatus fusionStatus = new PigeonIMU.FusionStatus();
         double[] xyz_dps = new double[3];
         pigeon.getRawGyro(xyz_dps);
@@ -160,9 +160,6 @@ public class AutoDrive {
 
         autoAngleModifier =
             (targetAngle - currentAngle) * AUTO_ANGLE_P - currentAngularRate * AUTO_ANGLE_D;
-        if (reverse) {
-            autoAngleModifier = -autoAngleModifier;
-        }
     }
 
     /**
