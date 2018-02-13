@@ -23,6 +23,7 @@ public class AutoChooser {
 
         modeChooser = new SendableChooser<>();
         modeChooser.addDefault("Switch and scale", Mode.SwitchScale);
+        modeChooser.addObject("Cross Line", Mode.CrossLine);
         modeChooser.addObject("Do nothing", Mode.DoNothing);
         SmartDashboard.putData("Auto mode", modeChooser);
     }

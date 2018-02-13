@@ -3,6 +3,7 @@ package org.usfirst.frc.team4253.robot2018.auto;
 import org.usfirst.frc.team4253.robot2018.components.Components;
 import org.usfirst.frc.team4253.robot2018.components.Lift;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.List;
 
 /**
@@ -36,6 +37,7 @@ public class Auto {
         Components.getLift().resetEnc();
         mode = AutoChooser.getMode();
         paths = GeoGebraReader.getPaths(AutoChooser.getStartingSide(), MatchData.getPlateData());
+        Components.getIntake().closeClaw();
         stage = 0;
     }
 
@@ -49,10 +51,19 @@ public class Auto {
             case SwitchScale:
                 runSwitchScale();
                 break;
+            case CrossLine:
+                crossLine();
+                break;
             case DoNothing:
             default:
                 break;
         }
+        SmartDashboard.putNumber("Left Drive Pos",
+            Components.getDrive().getLeftMotor().getSelectedSensorPosition(0));
+        SmartDashboard.putNumber("Right Drive Pos",
+            Components.getDrive().getRightMotor().getSelectedSensorPosition(0));
+        SmartDashboard.putNumber("Lift Pos", Components.getLift().getEncoderPos());
+        SmartDashboard.putNumber("Angle", Components.getDrive().getPigeon().getFusedHeading());
     }
 
     /**
@@ -73,8 +84,11 @@ public class Auto {
     private static void moveOtherComponents(AutoPath path) {
         switch (stage) {
             case 0:
-                if (autoDrive.getProgress(path) > 0.5) {
+                if (autoDrive.getProgress(path) > 0.3) {
                     Components.getLift().move(Lift.SWITCH_HEIGHT);
+                }
+                if (autoDrive.getProgress(path) > 0.98) {
+                    Components.getIntake().runWheelsOut(0.4);
                 }
                 break;
             case 1:
@@ -96,11 +110,8 @@ public class Auto {
     private static boolean transition() {
         switch (stage) {
             case 0:
-                if (Components.getLift().checkFinished(Lift.SWITCH_HEIGHT)) {
-                    Components.getIntake().release();
-                    return true;
-                }
-                return false;
+                Components.getIntake().openClaw();
+                return true;
             case 1:
                 return Components.getLift().checkFinished(Lift.GRAB_CUBE_HEIGHT);
             case 2:
@@ -114,4 +125,7 @@ public class Auto {
         }
     }
 
+    private static void crossLine() {
+        autoDrive.moveStraight(11000);
+    }
 }
