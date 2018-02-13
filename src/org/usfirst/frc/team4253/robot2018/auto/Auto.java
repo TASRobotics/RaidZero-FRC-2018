@@ -54,6 +54,9 @@ public class Auto {
             case CrossLine:
                 crossLine();
                 break;
+            case ScaleOnly:
+                runScaleOnly();
+                break;
             case DoNothing:
             default:
                 break;
@@ -81,6 +84,11 @@ public class Auto {
         }
     }
 
+    /**
+     * Runs other components that are not the drive.
+     * 
+     * @param path the geogebra path.
+     */
     private static void moveOtherComponents(AutoPath path) {
         switch (stage) {
             case 0:
@@ -95,8 +103,14 @@ public class Auto {
                 Components.getLift().move(Lift.GRAB_CUBE_HEIGHT);
                 break;
             case 2:
-                if (autoDrive.getEncoderPos() > 7000) {
-                    Components.getIntake().idle();
+                if (autoDrive.getProgress(path) > 0.6) {
+                    Components.getIntake().stopWheels();
+                } else if (autoDrive.getProgress(path) > 0.5) {
+                    Components.getIntake().closeClaw();
+                    Components.getIntake().runWheelsIn(0.2);
+                } else {
+                    Components.getIntake().openClaw();
+                    Components.getIntake().runWheelsIn(1.0);
                 }
                 if (autoDrive.getProgress(path) > 0.7) {
                     Components.getLift().move(Lift.SCALE_HEIGHT);
@@ -107,6 +121,11 @@ public class Auto {
         }
     }
 
+    /**
+     * Runs the transition phase between stages.
+     * 
+     * @return true if transition is done.
+     */
     private static boolean transition() {
         switch (stage) {
             case 0:
@@ -116,7 +135,7 @@ public class Auto {
                 return Components.getLift().checkFinished(Lift.GRAB_CUBE_HEIGHT);
             case 2:
                 if (Components.getLift().checkFinished(Lift.SCALE_HEIGHT)) {
-                    Components.getIntake().release();
+                    Components.getIntake().openClaw();
                     return true;
                 }
                 return false;
@@ -125,7 +144,17 @@ public class Auto {
         }
     }
 
+    /**
+     * Runs the cross line autonomous.
+     */
     private static void crossLine() {
         autoDrive.moveStraight(11000);
+    }
+
+    /**
+     * Runs the switch only autonomous.
+     */
+    private static void runScaleOnly() {
+
     }
 }
