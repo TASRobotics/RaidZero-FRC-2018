@@ -69,7 +69,8 @@ public class AutoDrive {
      * @param targetPos the target encoder position to move the robot to
      */
     public void moveStraight(int targetPos) {
-        autoStraight();
+        // autoStraight();
+        autoStraightModifier = 0;
         rightMotor.configMotionCruiseVelocity(DEFAULT_VEL + (int) autoStraightModifier,
             MotorSettings.TIMEOUT);
         rightMotor.configMotionAcceleration(DEFAULT_ACCEL + (int) autoStraightModifier,
@@ -96,7 +97,7 @@ public class AutoDrive {
         }
         int[] currentTargets =
             convertToMotorValues(current.getPercentDifference(), path.getReverse());
-        autoAngle(current.getAngle());
+        autoAngle(current.getAngle(), path.getReverse());
         leftMotor.configMotionCruiseVelocity(currentTargets[0] - (int) autoAngleModifier,
             MotorSettings.TIMEOUT);
         rightMotor.configMotionCruiseVelocity(currentTargets[1] + (int) autoAngleModifier,
@@ -149,7 +150,7 @@ public class AutoDrive {
      * @param targetAngle the angle to try to reach
      * @param reverse the boolean to tell to reverse
      */
-    private void autoAngle(double targetAngle) {
+    private void autoAngle(double targetAngle, boolean reverse) {
         PigeonIMU.FusionStatus fusionStatus = new PigeonIMU.FusionStatus();
         double[] xyz_dps = new double[3];
         pigeon.getRawGyro(xyz_dps);
@@ -160,6 +161,10 @@ public class AutoDrive {
 
         autoAngleModifier =
             (targetAngle - currentAngle) * AUTO_ANGLE_P - currentAngularRate * AUTO_ANGLE_D;
+        if (reverse) {
+            autoAngleModifier = 0;
+            // autoAngleModifier = -autoAngleModifier;
+        }
     }
 
     /**

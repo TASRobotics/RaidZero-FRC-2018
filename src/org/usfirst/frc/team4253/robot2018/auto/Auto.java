@@ -51,6 +51,9 @@ public class Auto {
             case SwitchScale:
                 runSwitchScale();
                 break;
+            case CrossLine:
+                crossLine();
+                break;
             case DoNothing:
             default:
                 break;
@@ -122,4 +125,7 @@ public class Auto {
         }
     }
 
+    private static void crossLine() {
+        autoDrive.moveStraight(11000);
+    }
 }
