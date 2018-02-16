@@ -37,7 +37,7 @@ const pathInfoFormat = {
 };
 
 function getFilename(pathInfo) {
-    return `${pathInfo.stage}-${pathInfo.start}-${pathInfo.end}.csv`;
+    return `${pathInfo.mode}-${pathInfo.stage}-${pathInfo.start}-${pathInfo.end}.csv`;
 }
 
 const motorDataFormat = {
