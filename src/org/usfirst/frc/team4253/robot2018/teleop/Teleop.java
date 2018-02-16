@@ -22,6 +22,7 @@ public class Teleop {
     private static final double INTAKE_WHEEL_POWER = 0.9;
     private static final double ANALOG_THRESHOLD = 0.8;
     private static boolean released = false;
+    private static boolean timeToClimb = false;
 
     /**
      * Initializes the teleop-specific components.
@@ -43,8 +44,9 @@ public class Teleop {
     public static void setup() {
         teleopDrive.setup();
         Components.getLift().resetEnc();
-        Components.getRamps().setup();
+        Components.getClimb().setup();
         released = false;
+        timeToClimb = false;
     }
 
     /**
@@ -65,13 +67,19 @@ public class Teleop {
         // Lift
         double rightTriggerAxis = controller.getTriggerAxis(kRight);
         double leftTriggerAxis = controller.getTriggerAxis(kLeft);
+        double player2LiftInput = 0;
+        if (!timeToClimb) {
+            player2LiftInput = controller2.getY(kRight);
+        } else {
+            player2LiftInput = 0;
+        }
 
         if (rightTriggerAxis > leftTriggerAxis) {
             Components.getLift()
-                .movePWM(controller.getTriggerAxis(kRight) + controller2.getY(kRight));
+                .movePWM(controller.getTriggerAxis(kRight) + player2LiftInput);
         } else {
             Components.getLift()
-                .movePWM(-controller.getTriggerAxis(kLeft) + controller2.getY(kRight));
+                .movePWM(-controller.getTriggerAxis(kLeft) + player2LiftInput);
         }
 
         // Motion Magic Lift
@@ -105,20 +113,31 @@ public class Teleop {
             Components.getIntake().closeClaw();
         }
 
-        // Climb
+        // Winch
         if (controller2.getBumper(kRight) && released) {
-            Components.getRamps().moveRightRamp();
+            Components.getClimb().moveWinch();
         } else {
-            Components.getRamps().stopRightRamp();
+            Components.getClimb().stopWinch();
         }
-        if (controller2.getBumper(kLeft) && released) {
-            Components.getRamps().moveLeftRamp();
+
+        // Arm
+        if (released && timeToClimb) {
+            if (Math.abs(controller2.getY(kRight)) <= 0.1) {
+                Components.getClimb().stopArm();
+            } else {
+                Components.getClimb().moveArm(controller2.getY(kRight));
+            }
         } else {
-            Components.getRamps().stopLeftRamp();
+            Components.getClimb().stopArm();
         }
         if (controller.getBackButton() && controller.getStartButton()) {
-            Components.getRamps().releaseRamps();
+            Components.getClimb().releaseArm();
             released = true;
+        }
+
+        // Switch between lift or arm
+        if (controller2.getBackButtonPressed() && controller2.getStartButtonPressed()) {
+            timeToClimb = !timeToClimb;
         }
         SmartDashboard.putNumber("Lift Pos", Components.getLift().getEncoderPos());
     }
