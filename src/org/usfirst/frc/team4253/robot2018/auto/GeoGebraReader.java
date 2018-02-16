@@ -29,7 +29,7 @@ public class GeoGebraReader {
         try {
             paths.add(read(0, startingSide, plateData.getNearSwitchSide()));
             paths.add(read(1, plateData.getNearSwitchSide(), plateData.getNearSwitchSide()));
-            // paths.add(read(2, plateData.getNearSwitchSide(), plateData.getScaleSide()));
+            paths.add(read(2, plateData.getNearSwitchSide(), plateData.getScaleSide()));
         } catch (Exception andrew) {
             System.err.println("Failed reading file: " + andrew.getMessage());
             andrew.printStackTrace();
