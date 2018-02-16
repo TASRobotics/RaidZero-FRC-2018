@@ -6,11 +6,34 @@ const directory = '/home/lvuser/paths/';
 const robotNumber = '4253';
 
 const pathInfoFormat = {
-    stage: nonNegativeNumber,
-    start: dependsOn('stage', stage =>
-        stage === 0 ? oneOf('left', 'center', 'right') : oneOf('left', 'right')),
-    end: oneOf('left', 'right'),
-    direction: oneOf('forward', 'backward')
+    mode: oneOf('switch and scale', 'scale only'),
+    stage: dependsOn('mode', mode => {
+        switch (mode) {
+            case 'switch and scale':
+                return numberAnd(stage => stage >= 0 && stage <= 2);
+            case 'scale only':
+                return is('0');
+        }
+    }),
+    start: dependsOn(['mode', 'stage'], ([mode, stage]) => {
+        if (mode === 'switch and scale' && stage === 0) {
+            return oneOf('left', 'center', 'right');
+        }
+        return oneOf('left', 'right');
+    }),
+    end: dependsOn(['mode', 'stage', 'start'], ([mode, stage, start]) => {
+        if (mode === 'switch and scale'
+            && (stage === 0 && start !== 'center' || stage === 1)) {
+            return is(start);
+        }
+        return oneOf('left', 'right');
+    }),
+    direction: dependsOn('stage', stage => {
+        if (stage % 2 === 0) {
+            return is('forward');
+        }
+        return is('backward');
+    })
 };
 
 function getFilename(pathInfo) {
@@ -159,10 +182,20 @@ function number(x, name) {
     return n;
 }
 
-function nonNegativeNumber(x, name) {
-    const n = number(x, name);
-    console.assert(n >= 0, `${name} should be a positive number`);
-    return n;
+function numberAnd(pred) {
+    return (x, name) => {
+        const n = number(x, name);
+        console.assert(pred(n), `${name} did not meet the condition:
+        ${pred}`);
+        return n;
+    };
+}
+
+function is(a) {
+    return (x, name) => {
+        console.assert(x === a, `${name} = ${x} but should be ${a}`);
+        return x;
+    }
 }
 
 function oneOf(...xs) {
@@ -173,5 +206,16 @@ function oneOf(...xs) {
 }
 
 function dependsOn(prop, f) {
-    return (x, name, obj) => obj[prop] !== undefined ? f(obj[prop])(x, name) : null;
+    return (x, name, obj) => {
+        if (Array.isArray(prop)) {
+            if (prop.every(p => obj[p] !== undefined)) {
+                return f(prop.map(p => obj[p]))(x, name);
+            }
+            return null;
+        }
+        if (obj[prop] !== undefined) {
+            return f(obj[prop])(x, name);
+        }
+        return null;
+    };
 }
