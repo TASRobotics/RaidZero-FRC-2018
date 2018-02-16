@@ -36,7 +36,8 @@ public class Auto {
         autoDrive.setup();
         Components.getLift().resetEnc();
         mode = AutoChooser.getMode();
-        paths = GeoGebraReader.getPaths(AutoChooser.getStartingSide(), MatchData.getPlateData());
+        paths =
+            GeoGebraReader.getPaths(mode, AutoChooser.getStartingSide(), MatchData.getPlateData());
         Components.getIntake().closeClaw();
         stage = 0;
     }
@@ -49,13 +50,11 @@ public class Auto {
     public static void run() {
         switch (mode) {
             case SwitchScale:
-                runSwitchScale();
+            case ScaleOnly:
+                runPathAuto();
                 break;
             case CrossLine:
                 crossLine();
-                break;
-            case ScaleOnly:
-                runScaleOnly();
                 break;
             case DoNothing:
             default:
@@ -70,14 +69,15 @@ public class Auto {
     }
 
     /**
-     * Runs the standard switch and scale autonomous.
+     * Runs autonomous with paths.
      */
-    private static void runSwitchScale() {
+    private static void runPathAuto() {
         if (stage < paths.size()) {
             AutoPath path = paths.get(stage);
             autoDrive.moveCurve(path);
             moveOtherComponents(path);
-            if (autoDrive.checkFinished(path) && transition()) {
+            if (autoDrive.checkFinished(path)) {
+                transition();
                 stage++;
                 autoDrive.resetEncoders();
             }
@@ -90,30 +90,47 @@ public class Auto {
      * @param path the geogebra path.
      */
     private static void moveOtherComponents(AutoPath path) {
-        switch (stage) {
-            case 0:
-                if (autoDrive.getProgress(path) > 0.3) {
-                    Components.getLift().move(Lift.SWITCH_HEIGHT);
-                }
-                if (autoDrive.getProgress(path) > 0.98) {
-                    Components.getIntake().runWheelsOut(0.4);
+        switch (mode) {
+            case SwitchScale:
+                switch (stage) {
+                    case 0:
+                        if (autoDrive.getProgress(path) > 0.3) {
+                            Components.getLift().move(Lift.SWITCH_HEIGHT);
+                        }
+                        if (autoDrive.getProgress(path) > 0.98) {
+                            Components.getIntake().runWheelsOut(0.4);
+                        }
+                        break;
+                    case 1:
+                        Components.getLift().move(Lift.GRAB_CUBE_HEIGHT);
+                        break;
+                    case 2:
+                        if (autoDrive.getProgress(path) > 0.6) {
+                            Components.getIntake().stopWheels();
+                        } else if (autoDrive.getProgress(path) > 0.5) {
+                            Components.getIntake().closeClaw();
+                            Components.getIntake().runWheelsIn(0.2);
+                        } else {
+                            Components.getIntake().openClaw();
+                            Components.getIntake().runWheelsIn(1.0);
+                        }
+                        if (autoDrive.getProgress(path) > 0.7) {
+                            Components.getLift().move(Lift.SCALE_HEIGHT);
+                        }
+                        break;
+                    default:
+                        break;
                 }
                 break;
-            case 1:
-                Components.getLift().move(Lift.GRAB_CUBE_HEIGHT);
-                break;
-            case 2:
-                if (autoDrive.getProgress(path) > 0.6) {
-                    Components.getIntake().stopWheels();
-                } else if (autoDrive.getProgress(path) > 0.5) {
-                    Components.getIntake().closeClaw();
-                    Components.getIntake().runWheelsIn(0.2);
-                } else {
-                    Components.getIntake().openClaw();
-                    Components.getIntake().runWheelsIn(1.0);
-                }
-                if (autoDrive.getProgress(path) > 0.7) {
-                    Components.getLift().move(Lift.SCALE_HEIGHT);
+            case ScaleOnly:
+                switch (stage) {
+                    case 0:
+                        if (autoDrive.getProgress(path) > 0.5) {
+                            Components.getLift().move(Lift.SCALE_HEIGHT);
+                        }
+                        break;
+                    default:
+                        break;
                 }
                 break;
             default:
@@ -123,24 +140,27 @@ public class Auto {
 
     /**
      * Runs the transition phase between stages.
-     * 
-     * @return true if transition is done.
      */
-    private static boolean transition() {
-        switch (stage) {
-            case 0:
-                Components.getIntake().openClaw();
-                return true;
-            case 1:
-                return Components.getLift().checkFinished(Lift.GRAB_CUBE_HEIGHT);
-            case 2:
-                if (Components.getLift().checkFinished(Lift.SCALE_HEIGHT)) {
-                    Components.getIntake().openClaw();
-                    return true;
+    private static void transition() {
+        switch (mode) {
+            case SwitchScale:
+                switch (stage) {
+                    case 0:
+                        Components.getIntake().openClaw();
+                        break;
+                    case 1:
+                        break;
+                    case 2:
+                        Components.getIntake().openClaw();
+                        break;
+                    default:
+                        break;
                 }
-                return false;
+                break;
+            case ScaleOnly:
+                break;
             default:
-                return true;
+                break;
         }
     }
 
@@ -151,10 +171,4 @@ public class Auto {
         autoDrive.moveStraight(11000);
     }
 
-    /**
-     * Runs the switch only autonomous.
-     */
-    private static void runScaleOnly() {
-
-    }
 }
