@@ -69,7 +69,7 @@ public class Teleop {
         double leftTriggerAxis = controller.getTriggerAxis(kLeft);
         double player2LiftInput = 0;
         if (!timeToClimb) {
-            player2LiftInput = controller2.getY(kRight);
+            player2LiftInput = -controller2.getY(kRight);
         } else {
             player2LiftInput = 0;
         }
@@ -136,9 +136,12 @@ public class Teleop {
         }
 
         // Switch between lift or arm
-        if (controller2.getBackButtonPressed() && controller2.getStartButtonPressed()) {
+        if (controller2.getStartButtonPressed()) {
             timeToClimb = !timeToClimb;
         }
+        SmartDashboard.putBoolean("Climb Mode", timeToClimb);
         SmartDashboard.putNumber("Lift Pos", Components.getLift().getEncoderPos());
+        SmartDashboard.putNumber("Drive Left Vel",
+            Components.getDrive().getLeftMotor().getSelectedSensorVelocity(0));
     }
 }

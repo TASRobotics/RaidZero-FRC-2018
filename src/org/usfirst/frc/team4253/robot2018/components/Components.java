@@ -21,8 +21,8 @@ public class Components {
      * null before this method is called.
      */
     public static void initialize() {
-        intake = new Intake(10, 11, 4, 5);
-        drive = new Drive(1, 2, 3, 4, 0, 1);
+        intake = new Intake(10, 11, 0, 1); 
+        drive = new Drive(1, 2, 3, 4, 4, 5); 
         lift = new Lift(12);
         climb = new Climb(13, 14, 2, 3);
     }

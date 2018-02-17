@@ -15,6 +15,8 @@ public class Climb {
     private TalonSRX winch;
     private TalonSRX arm;
     private DoubleSolenoid releaser;
+    private static final double P_VALUE = 2;
+    private double position;
 
     /**
      * Constructs a ramp object and sets up the ramp motors and piston releaser.
@@ -36,9 +38,12 @@ public class Climb {
         arm.setNeutralMode(NeutralMode.Brake);
 
         winch.setInverted(true);
-        arm.setInverted(true);
+
+        arm.setSensorPhase(true);
+        arm.config_kP(0, P_VALUE, MotorSettings.TIMEOUT);
 
         releaser.set(DoubleSolenoid.Value.kForward);
+        position = 0;
     }
 
     /**
@@ -46,6 +51,7 @@ public class Climb {
      */
     public void moveArm(double power) {
         arm.set(ControlMode.PercentOutput, power);
+        position = 0;
     }
 
     /**
@@ -59,7 +65,11 @@ public class Climb {
      * Stops the left ramp.
      */
     public void stopArm() {
-        arm.set(ControlMode.Position, arm.getSelectedSensorPosition(MotorSettings.PID_IDX));
+        System.out.println(arm.getClosedLoopTarget(0));
+        if (position == 0) {
+            position = arm.getSelectedSensorPosition(MotorSettings.PID_IDX);
+        }
+        arm.set(ControlMode.Position, position);
     }
 
     /**
