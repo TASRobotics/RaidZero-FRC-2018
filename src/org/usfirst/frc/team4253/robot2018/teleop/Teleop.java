@@ -7,6 +7,7 @@ import static edu.wpi.first.wpilibj.GenericHID.Hand.kLeft;
 import static edu.wpi.first.wpilibj.GenericHID.Hand.kRight;
 
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * Teleop specific code for the robot.
@@ -18,7 +19,9 @@ public class Teleop {
     private static TeleopDrive teleopDrive;
 
     private static final double AXIS_TO_LIFT = 1000;
+    private static final double INTAKE_WHEEL_POWER = 0.9;
     private static final double ANALOG_THRESHOLD = 0.8;
+    private static boolean released = false;
 
     /**
      * Initializes the teleop-specific components.
@@ -40,6 +43,8 @@ public class Teleop {
     public static void setup() {
         teleopDrive.setup();
         Components.getLift().resetEnc();
+        Components.getRamps().setup();
+        released = false;
     }
 
     /**
@@ -61,15 +66,12 @@ public class Teleop {
         double rightTriggerAxis = controller.getTriggerAxis(kRight);
         double leftTriggerAxis = controller.getTriggerAxis(kLeft);
 
-        double control2YAxis = controller2.getY(kRight);
-        if (controller2.getY(kRight) < 0) {
-            control2YAxis = controller2.getY(kRight) / 2;
-        }
-
         if (rightTriggerAxis > leftTriggerAxis) {
-            Components.getLift().movePWM(controller.getTriggerAxis(kRight) + control2YAxis);
+            Components.getLift()
+                .movePWM(controller.getTriggerAxis(kRight) + controller2.getY(kRight));
         } else {
-            Components.getLift().movePWM(-controller.getTriggerAxis(kLeft) / 2 + control2YAxis);
+            Components.getLift()
+                .movePWM(-controller.getTriggerAxis(kLeft) + controller2.getY(kRight));
         }
 
         // Motion Magic Lift
@@ -89,35 +91,35 @@ public class Teleop {
 
         // Intake
         if (controller2.getTriggerAxis(kRight) >= 0.8) {
-            Components.getIntake().runWheelsIn();
+            Components.getIntake().runWheelsIn(INTAKE_WHEEL_POWER);
         } else if (controller.getBumper(kLeft)
             || controller2.getTriggerAxis(kLeft) >= ANALOG_THRESHOLD) {
-            Components.getIntake().runWheelsOut();
+            Components.getIntake().runWheelsOut(INTAKE_WHEEL_POWER);
         } else {
             Components.getIntake().stopWheels();
         }
-        if (controller2.getY(kLeft) <= -ANALOG_THRESHOLD) {
+        if (controller2.getY(kLeft) >= ANALOG_THRESHOLD) {
             Components.getIntake().openClaw();
         }
-        if (controller2.getY(kLeft) >= ANALOG_THRESHOLD) {
+        if (controller2.getY(kLeft) <= -ANALOG_THRESHOLD) {
             Components.getIntake().closeClaw();
         }
 
         // Climb
-        if (controller2.getBumper(kRight)) {
+        if (controller2.getBumper(kRight) && released) {
             Components.getRamps().moveRightRamp();
         } else {
             Components.getRamps().stopRightRamp();
         }
-        if (controller2.getBumper(kLeft)) {
+        if (controller2.getBumper(kLeft) && released) {
             Components.getRamps().moveLeftRamp();
         } else {
             Components.getRamps().stopLeftRamp();
         }
         if (controller.getBackButton() && controller.getStartButton()) {
             Components.getRamps().releaseRamps();
+            released = true;
         }
-
+        SmartDashboard.putNumber("Lift Pos", Components.getLift().getEncoderPos());
     }
-
 }

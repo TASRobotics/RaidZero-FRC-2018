@@ -6,6 +6,7 @@ import org.usfirst.frc.team4253.robot2018.components.MotorSettings;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.sensors.PigeonIMU;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * Autonomous-specific functionality for the drive.
@@ -63,33 +64,12 @@ public class AutoDrive {
     }
 
     /**
-     * Moves the robot to the target position.
-     * 
-     * @param targetPos the target encoder position to move the robot to
-     */
-    public void moveStraight(int targetPos) {
-        autoStraight();
-        rightMotor.configMotionCruiseVelocity(DEFAULT_VEL + (int) autoStraightModifier,
-            MotorSettings.TIMEOUT);
-        rightMotor.configMotionAcceleration(DEFAULT_ACCEL + (int) autoStraightModifier,
-            MotorSettings.TIMEOUT);
-        leftMotor.configMotionCruiseVelocity(DEFAULT_VEL + (int) autoStraightModifier,
-            MotorSettings.TIMEOUT);
-        leftMotor.configMotionAcceleration(DEFAULT_ACCEL + (int) autoStraightModifier,
-            MotorSettings.TIMEOUT);
-
-        rightMotor.set(ControlMode.MotionMagic, targetPos);
-        leftMotor.set(ControlMode.MotionMagic, targetPos);
-    }
-
-    /**
      * Moves the robot in a curve.
      * 
      * @param path the path to move
-     * @return whether the robot has finished moving
      */
-    public boolean moveCurve(AutoPath path) {
-        int targetPos = (int) ((path.getMotorData().length - 1) * INCH_TO_TICKS);
+    public void moveCurve(AutoPath path) {
+        int targetPos = getTargetPos(path);
         GeoGebraEntry current = interpolate(path.getMotorData(), targetPos);
         if (path.getReverse()) {
             targetPos = -targetPos;
@@ -108,31 +88,19 @@ public class AutoDrive {
 
         rightMotor.set(ControlMode.MotionMagic, targetPos);
         leftMotor.set(ControlMode.MotionMagic, targetPos);
-
-        int averageCurrentPos = Math.abs((leftMotor.getSelectedSensorPosition(MotorSettings.PID_IDX)
-            + rightMotor.getSelectedSensorPosition(MotorSettings.PID_IDX)) / 2);
-        int averageCurrentVel = Math.abs((leftMotor.getSelectedSensorVelocity(MotorSettings.PID_IDX)
-                + rightMotor.getSelectedSensorVelocity(MotorSettings.PID_IDX)) / 2);
-        return averageCurrentVel <= VEL_TOLERANCE
-            && Math.abs(targetPos - averageCurrentPos) <= POS_TOLERANCE;
     }
 
-    /**
-     * Straightens the robot based off the gyro.
-     * 
-     * <p>This changes the {@link #autoStraightModifier} so that the robot moves straight.
-     */
-    private void autoStraight() {
-        PigeonIMU.FusionStatus fusionStatus = new PigeonIMU.FusionStatus();
-        double[] xyz_dps = new double[3];
-        pigeon.getRawGyro(xyz_dps);
-        pigeon.getFusedHeading(fusionStatus);
+    public double getProgress(AutoPath path) {
+        return getEncoderPos() / Math.abs(getTargetPos(path));
+    }
 
-        currentAngle = fusionStatus.heading;
-        currentAngularRate = xyz_dps[2];
-
-        autoStraightModifier =
-            (0 - currentAngle) * AUTO_STRAIGHT_P - currentAngularRate * AUTO_STRIAGHT_D;
+    public boolean checkFinished(AutoPath path) {
+        int targetPos = Math.abs(getTargetPos(path));
+        int averageCurrentVel = Math.abs((leftMotor.getSelectedSensorVelocity(MotorSettings.PID_IDX)
+            + rightMotor.getSelectedSensorVelocity(MotorSettings.PID_IDX)) / 2);
+        SmartDashboard.putNumber("Pos Difference", targetPos - getEncoderPos());
+        return averageCurrentVel <= VEL_TOLERANCE
+            && Math.abs(targetPos - getEncoderPos()) <= POS_TOLERANCE;
     }
 
     /**
@@ -155,7 +123,8 @@ public class AutoDrive {
         autoAngleModifier =
             (targetAngle - currentAngle) * AUTO_ANGLE_P - currentAngularRate * AUTO_ANGLE_D;
         if (reverse) {
-            autoAngleModifier = -autoAngleModifier;
+            autoAngleModifier = 0;
+            // autoAngleModifier = -autoAngleModifier;
         }
     }
 
@@ -197,8 +166,7 @@ public class AutoDrive {
      * @return the current angle and percent difference
      */
     private GeoGebraEntry interpolate(GeoGebraEntry[] data, int targetPos) {
-        double currentPos = Math.abs((leftMotor.getSelectedSensorPosition(MotorSettings.PID_IDX)
-            + rightMotor.getSelectedSensorPosition(MotorSettings.PID_IDX)) / 2);
+        double currentPos = getEncoderPos();
 
         if (currentPos <= 0) {
             System.out.println("currentPos <= 0");
@@ -224,5 +192,53 @@ public class AutoDrive {
 
         return new GeoGebraEntry((nextAngle - prevAngle) * x + prevAngle,
             (nextPercentDifference - prevPercentDifference) * x + prevPercentDifference);
+    }
+
+    public double getEncoderPos() {
+        return Math.abs((leftMotor.getSelectedSensorPosition(MotorSettings.PID_IDX)
+            + rightMotor.getSelectedSensorPosition(MotorSettings.PID_IDX)) / 2.0);
+    }
+
+    private int getTargetPos(AutoPath path) {
+        return (int) ((path.getMotorData().length - 1) * INCH_TO_TICKS);
+    }
+
+    /**
+     * Moves the robot to the target position.
+     * 
+     * @param targetPos the target encoder position to move the robot to
+     */
+    public void moveStraight(int targetPos) {
+        // autoStraight();
+        autoStraightModifier = 0;
+        rightMotor.configMotionCruiseVelocity(DEFAULT_VEL + (int) autoStraightModifier,
+            MotorSettings.TIMEOUT);
+        rightMotor.configMotionAcceleration(DEFAULT_ACCEL + (int) autoStraightModifier,
+            MotorSettings.TIMEOUT);
+        leftMotor.configMotionCruiseVelocity(DEFAULT_VEL + (int) autoStraightModifier,
+            MotorSettings.TIMEOUT);
+        leftMotor.configMotionAcceleration(DEFAULT_ACCEL + (int) autoStraightModifier,
+            MotorSettings.TIMEOUT);
+
+        rightMotor.set(ControlMode.MotionMagic, targetPos);
+        leftMotor.set(ControlMode.MotionMagic, targetPos);
+    }
+
+    /**
+     * Straightens the robot based off the gyro.
+     * 
+     * <p>This changes the {@link #autoStraightModifier} so that the robot moves straight.
+     */
+    private void autoStraight() {
+        PigeonIMU.FusionStatus fusionStatus = new PigeonIMU.FusionStatus();
+        double[] xyz_dps = new double[3];
+        pigeon.getRawGyro(xyz_dps);
+        pigeon.getFusedHeading(fusionStatus);
+
+        currentAngle = fusionStatus.heading;
+        currentAngularRate = xyz_dps[2];
+
+        autoStraightModifier =
+            (0 - currentAngle) * AUTO_STRAIGHT_P - currentAngularRate * AUTO_STRIAGHT_D;
     }
 }

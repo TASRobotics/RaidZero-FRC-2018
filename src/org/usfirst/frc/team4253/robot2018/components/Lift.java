@@ -11,8 +11,8 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 public class Lift {
 
     public static final int GRAB_CUBE_HEIGHT = 0;
-    public static final int SWITCH_HEIGHT = 15000;
-    public static final int SCALE_HEIGHT = 32500;
+    public static final int SWITCH_HEIGHT = 3750;
+    public static final int SCALE_HEIGHT = 8125; // Highest possible pos : 9800
 
     private static final int TARGET_VEL = 1000;
     private static final int TARGET_ACCEL = 1000;
@@ -43,6 +43,7 @@ public class Lift {
         lift.configMotionAcceleration(TARGET_ACCEL, MotorSettings.TIMEOUT);
 
         lift.setSelectedSensorPosition(0, 0, MotorSettings.TIMEOUT);
+        lift.setInverted(true);
 
         lift.config_kP(0, P_VALUE, MotorSettings.TIMEOUT);
         lift.config_kI(0, I_VALUE, MotorSettings.TIMEOUT);
@@ -55,8 +56,11 @@ public class Lift {
      * 
      * @param targetPos the target position for the lift
      */
-    public boolean move(double targetPos) {
+    public void move(double targetPos) {
         lift.set(ControlMode.MotionMagic, targetPos);
+    }
+
+    public boolean checkFinished(double targetPos) {
         int currentVel = lift.getSelectedSensorVelocity(MotorSettings.PID_IDX);
         int currentPos = lift.getSelectedSensorPosition(MotorSettings.PID_IDX);
         return Math.abs(currentVel) <= VEL_TOLERANCE
@@ -77,5 +81,14 @@ public class Lift {
      */
     public void resetEnc() {
         lift.setSelectedSensorPosition(0, 0, MotorSettings.TIMEOUT);
+    }
+
+    /**
+     * Return encoder values
+     * 
+     * @return the encoder position of the lift
+     */
+    public int getEncoderPos() {
+        return lift.getSelectedSensorPosition(MotorSettings.PID_IDX);
     }
 }

@@ -9,6 +9,14 @@ public enum Mode {
      */
     SwitchScale,
     /**
+     * Cross line.
+     */
+    CrossLine,
+    /**
+     * Scale only autonomous.
+     */
+    ScaleOnly,
+    /**
      * Do nothing.
      */
     DoNothing
