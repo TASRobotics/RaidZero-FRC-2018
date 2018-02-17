@@ -27,6 +27,7 @@ public class AutoDrive {
     private static final int POS_TOLERANCE = 10;
 
     private static final int PIGEON_TIMEOUT = 100;
+    private static final double WHEEL_BASED_RADIUS = 12;
 
     private double currentAngle;
     private double currentAngularRate;
@@ -86,8 +87,10 @@ public class AutoDrive {
         rightMotor.configMotionAcceleration(currentTargets[3] + (int) autoAngleModifier,
             MotorSettings.TIMEOUT);
 
-        rightMotor.set(ControlMode.MotionMagic, targetPos);
-        leftMotor.set(ControlMode.MotionMagic, targetPos);
+        rightMotor.set(ControlMode.MotionMagic,
+            targetPos + getfinalAngleToEncoderPosCorrection(path, path.getReverse()));
+        leftMotor.set(ControlMode.MotionMagic,
+            targetPos - getfinalAngleToEncoderPosCorrection(path, path.getReverse()));
     }
 
     public double getProgress(AutoPath path) {
@@ -123,8 +126,7 @@ public class AutoDrive {
         autoAngleModifier =
             (targetAngle - currentAngle) * AUTO_ANGLE_P - currentAngularRate * AUTO_ANGLE_D;
         if (reverse) {
-            autoAngleModifier = 0;
-            // autoAngleModifier = -autoAngleModifier;
+            autoAngleModifier = -autoAngleModifier;
         }
     }
 
@@ -201,6 +203,13 @@ public class AutoDrive {
 
     private int getTargetPos(AutoPath path) {
         return (int) ((path.getMotorData().length - 1) * INCH_TO_TICKS);
+    }
+
+    private int getfinalAngleToEncoderPosCorrection(AutoPath path, boolean reverse) {
+        double initialAngle = path.getMotorData()[0].getAngle();
+        double finalAngle = path.getMotorData()[path.getMotorData().length - 1].getAngle();
+        return (int) (Math.toRadians((finalAngle - initialAngle)) * WHEEL_BASED_RADIUS
+            * INCH_TO_TICKS);
     }
 
     /**
