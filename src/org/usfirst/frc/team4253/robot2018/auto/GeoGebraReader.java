@@ -20,16 +20,29 @@ public class GeoGebraReader {
      * <p>If there is any error reading a file, then the returned list will simply not contain the
      * data from that file and any subsequent files.
      * 
+     * @param mode the autonomous mode
      * @param startingSide the starting position of the robot
      * @param plateData the plate assignment data
      * @return the paths in a list ordered by stage
      */
-    public static List<AutoPath> getPaths(StartingSide startingSide, PlateData plateData) {
+    public static List<AutoPath> getPaths(Mode mode, StartingSide startingSide,
+        PlateData plateData) {
         ArrayList<AutoPath> paths = new ArrayList<>();
         try {
-            paths.add(read(0, startingSide, plateData.getNearSwitchSide()));
-            paths.add(read(1, plateData.getNearSwitchSide(), plateData.getNearSwitchSide()));
-            // paths.add(read(2, plateData.getNearSwitchSide(), plateData.getScaleSide()));
+            switch (mode) {
+                case SwitchScale:
+                    paths.add(read(mode, 0, startingSide, plateData.getNearSwitchSide()));
+                    paths.add(read(mode, 1, plateData.getNearSwitchSide(),
+                        plateData.getNearSwitchSide()));
+                    paths.add(
+                        read(mode, 2, plateData.getNearSwitchSide(), plateData.getScaleSide()));
+                    break;
+                case ScaleOnly:
+                    paths.add(read(mode, 0, startingSide, plateData.getScaleSide()));
+                    break;
+                default:
+                    break;
+            }
         } catch (Exception andrew) {
             System.err.println("Failed reading file: " + andrew.getMessage());
             andrew.printStackTrace();
@@ -37,16 +50,30 @@ public class GeoGebraReader {
         return paths;
     }
 
-    private static AutoPath read(int stage, StartingSide start, Side end) throws IOException {
-        return readFile(getFilename(stage, start, end));
+    private static AutoPath read(Mode mode, int stage, StartingSide start, Side end)
+        throws IOException {
+        return readFile(getFilename(mode, stage, start, end));
     }
 
-    private static AutoPath read(int stage, Side start, Side end) throws IOException {
-        return read(stage, start.toStartingSide(), end);
+    private static AutoPath read(Mode mode, int stage, Side start, Side end) throws IOException {
+        return read(mode, stage, start.toStartingSide(), end);
     }
 
-    private static String getFilename(int stage, StartingSide start, Side end) {
-        return stage + "-" + getStartString(start) + "-" + getEndString(end) + ".csv";
+    private static String getFilename(Mode mode, int stage, StartingSide start, Side end) {
+        return getModeString(mode) + "-" + stage + "-" + getStartString(start) + "-"
+            + getEndString(end) + ".csv";
+    }
+
+    private static String getModeString(Mode mode) {
+        switch (mode) {
+            case SwitchScale:
+                return "switch and scale";
+            case ScaleOnly:
+                return "scale only";
+            default:
+                throw new IllegalArgumentException(
+                    "Attempted to read file for invalid mode: " + mode);
+        }
     }
 
     private static String getStartString(StartingSide start) {
@@ -68,17 +95,29 @@ public class GeoGebraReader {
 
     private static AutoPath readFile(String filename) throws IOException {
         List<String> lines = Files.readAllLines(DIRECTORY.resolve(filename));
-        int stage = Integer.parseInt(lines.get(0));
-        StartingSide start = parseStartingSide(lines.get(1));
-        Side end = parseSide(lines.get(2));
-        boolean reverse = parseDirection(lines.get(3));
-        GeoGebraEntry[] motorData = new GeoGebraEntry[lines.size() - 4];
+        Mode mode = parseMode(lines.get(0));
+        int stage = Integer.parseInt(lines.get(1));
+        StartingSide start = parseStartingSide(lines.get(2));
+        Side end = parseSide(lines.get(3));
+        boolean reverse = parseDirection(lines.get(4));
+        GeoGebraEntry[] motorData = new GeoGebraEntry[lines.size() - 5];
         for (int i = 0; i < motorData.length; i++) {
-            String[] row = lines.get(i + 4).split(",");
+            String[] row = lines.get(i + 5).split(",");
             motorData[i] =
                 new GeoGebraEntry(Double.parseDouble(row[0]), Double.parseDouble(row[1]));
         }
-        return new AutoPath(stage, start, end, reverse, motorData);
+        return new AutoPath(mode, stage, start, end, reverse, motorData);
+    }
+
+    private static Mode parseMode(String input) {
+        switch (input.toLowerCase()) {
+            case "switch and scale":
+                return Mode.SwitchScale;
+            case "scale only":
+                return Mode.ScaleOnly;
+            default:
+                throw new IllegalArgumentException("Failed to parse mode: " + input);
+        }
     }
 
     private static StartingSide parseStartingSide(String input) {
