@@ -23,13 +23,14 @@ End must always be Left or Right.
 
 1. Install node.js (current). https://nodejs.org/en/
 2. Run `npm install` in this directory to install dependencies (you must be connected to the internet).
-3. To run the program, run the `geogebra-transfer.cmd` script.
+3. To run the program, execute `node main`.
 
 That's all that's required to run the program, but if you want to run the script easily, you can pin it to the taskbar. (Note: Windows only)
 
-4. Right click in this folder and go to `New > Shortcut`.
-5. For the location, put `cmd /c "path\to\this\folder\geogebra-transfer.cmd"` where `path\to\this\folder` is the path to this folder, and click next.
-6. Name the shortcut something like `transfer`, and click finish.
+3. On your desktop, right click and go to `New > Shortcut`.
+4. For the location, put `cmd /c "path\to\repository\RaidZero-FRC-2018\geogebra-transfer\geogebra-transfer.cmd"` where `path\to\repository` is the path to this repository, and click next.
+5. Name the shortcut something like `geogebra transfer`, and click finish.
+6. If you want, you can right click on the shortcut and go to `Properties` and change the icon.
 7. Right click on the shortcut and click `Pin to taskbar`.
 
 Now you can launch the script from the taskbar.
@@ -39,7 +40,7 @@ Now you can launch the script from the taskbar.
 Note: Make sure the data is in the new format.
 
 1. Press Ctrl+A or click the top-left square to select all cells.
-2. Right click and click copy. (Ctrl+C sometimes doesn't work)
+2. Right click and click copy.
 3. Make sure you are connected to the robot.
 4. Run the script. It should automatically read from the clipboard, convert the data, and upload it to the robot.
 
