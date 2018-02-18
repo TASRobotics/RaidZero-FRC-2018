@@ -27,7 +27,7 @@ public class AutoDrive {
     private static final int POS_TOLERANCE = 10;
 
     private static final int PIGEON_TIMEOUT = 100;
-    private static final double WHEEL_BASED_RADIUS = 12;
+    private static final double WHEEL_BASED_RADIUS = 14.0;
 
     private double currentAngle;
     private double currentAngularRate;
@@ -91,6 +91,13 @@ public class AutoDrive {
             targetPos + getfinalAngleToEncoderPosCorrection(path, path.getReverse()));
         leftMotor.set(ControlMode.MotionMagic,
             targetPos - getfinalAngleToEncoderPosCorrection(path, path.getReverse()));
+
+        SmartDashboard.putNumber("Left Difference",
+            targetPos - getfinalAngleToEncoderPosCorrection(path, path.getReverse())
+                - leftMotor.getSelectedSensorPosition(0));
+        SmartDashboard.putNumber("Right Difference",
+            targetPos + getfinalAngleToEncoderPosCorrection(path, path.getReverse())
+                - rightMotor.getSelectedSensorPosition(0));
     }
 
     public double getProgress(AutoPath path) {
@@ -131,7 +138,7 @@ public class AutoDrive {
     }
 
     /**
-     * Resets the drive encoders.
+     * Resets the encoders to 0.
      */
     public void resetEncoders() {
         rightMotor.setSelectedSensorPosition(0, MotorSettings.PID_IDX, MotorSettings.TIMEOUT);
@@ -210,6 +217,12 @@ public class AutoDrive {
         double finalAngle = path.getMotorData()[path.getMotorData().length - 1].getAngle();
         return (int) (Math.toRadians((finalAngle - initialAngle)) * WHEEL_BASED_RADIUS
             * INCH_TO_TICKS);
+    }
+
+    public void pauseDrive() {
+        resetEncoders();
+        leftMotor.set(ControlMode.MotionMagic, 0);
+        rightMotor.set(ControlMode.MotionMagic, 0);
     }
 
     /**

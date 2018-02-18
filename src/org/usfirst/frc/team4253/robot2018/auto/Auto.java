@@ -82,6 +82,9 @@ public class Auto {
                 autoDrive.resetEncoders();
             }
         }
+        else {
+            autoDrive.pauseDrive();
+        }
     }
 
     /**
@@ -102,20 +105,28 @@ public class Auto {
                         }
                         break;
                     case 1:
-                        Components.getLift().move(Lift.GRAB_CUBE_HEIGHT);
+                        Components.getLift().move(100);
+                        Components.getIntake().stopWheels();
                         break;
                     case 2:
-                        if (autoDrive.getProgress(path) > 0.6) {
+                        if (autoDrive.getProgress(path) > 0.5) {
                             Components.getIntake().stopWheels();
-                        } else if (autoDrive.getProgress(path) > 0.5) {
+                        } else if (autoDrive.getProgress(path) > 0.35) {
                             Components.getIntake().closeClaw();
                             Components.getIntake().runWheelsIn(0.2);
+                            ;
                         } else {
                             Components.getIntake().openClaw();
                             Components.getIntake().runWheelsIn(1.0);
                         }
-                        if (autoDrive.getProgress(path) > 0.7) {
+                        if (autoDrive.getProgress(path) > 0.5) {
                             Components.getLift().move(Lift.SCALE_HEIGHT);
+                        }
+                        if (autoDrive.getProgress(path) > 0.95) {
+                            Components.getIntake().runWheelsOut(0.4);
+                        }
+                        if (autoDrive.getProgress(path) > 0.97) {
+                            Components.getIntake().openClaw();
                         }
                         break;
                     default:
@@ -151,7 +162,7 @@ public class Auto {
                     case 1:
                         break;
                     case 2:
-                        Components.getIntake().openClaw();
+                        Components.getIntake().stopWheels();
                         break;
                     default:
                         break;

@@ -79,7 +79,7 @@ public class Teleop {
                 .movePWM(controller.getTriggerAxis(kRight) + player2LiftInput);
         } else {
             Components.getLift()
-                .movePWM(-controller.getTriggerAxis(kLeft) + player2LiftInput);
+                .movePWM(-controller.getTriggerAxis(kLeft) * 0.5 + 0.5 * player2LiftInput);
         }
 
         // Motion Magic Lift

@@ -37,7 +37,7 @@ public class Climb {
         winch.setNeutralMode(NeutralMode.Brake);
         arm.setNeutralMode(NeutralMode.Brake);
 
-        winch.setInverted(true);
+        winch.setInverted(false);
 
         arm.setSensorPhase(true);
         arm.config_kP(0, P_VALUE, MotorSettings.TIMEOUT);
