@@ -26,14 +26,20 @@ public class Lift {
     private static final int POS_TOLERANCE = 10;
 
     private TalonSRX lift;
+    private TalonSRX follower;
 
     /**
      * Constructs a Lift object and sets up the lift motor.
      * 
      * @param motorID the ID of the lift motor
      */
-    public Lift(int motorID) {
+    public Lift(int motorID, int motorID2) {
         lift = new TalonSRX(motorID);
+        follower = new TalonSRX(motorID2);
+        follower.set(ControlMode.Follower, motorID);
+
+        lift.setNeutralMode(NeutralMode.Brake);
+        follower.setNeutralMode(NeutralMode.Brake);
 
         lift.setNeutralMode(NeutralMode.Brake);
         lift.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, MotorSettings.PID_IDX,
@@ -44,6 +50,7 @@ public class Lift {
 
         lift.setSelectedSensorPosition(0, 0, MotorSettings.TIMEOUT);
         lift.setInverted(true);
+        follower.setInverted(true);
 
         lift.config_kP(0, P_VALUE, MotorSettings.TIMEOUT);
         lift.config_kI(0, I_VALUE, MotorSettings.TIMEOUT);
