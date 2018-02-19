@@ -115,7 +115,9 @@ public class Teleop {
 
         // Winch
         if (controller2.getBumper(kRight) && released) {
-            Components.getClimb().moveWinch();
+            Components.getClimb().moveWinch(1.0);
+        } else if (controller2.getBumper(kLeft) && released) {
+            Components.getClimb().moveWinch(-1.0);
         } else {
             Components.getClimb().stopWinch();
         }

@@ -57,8 +57,8 @@ public class Climb {
     /**
      * Moves the right ramp up.
      */
-    public void moveWinch() {
-        winch.set(ControlMode.PercentOutput, WINCHPOWER);
+    public void moveWinch(double power) {
+        winch.set(ControlMode.PercentOutput, power);
     }
 
     /**
