@@ -15,8 +15,6 @@ public class Climb {
     private TalonSRX winch;
     private TalonSRX arm;
     private DoubleSolenoid releaser;
-    private static final double P_VALUE = 2;
-    private double position;
 
     /**
      * Constructs a ramp object and sets up the ramp motors and piston releaser.
@@ -38,20 +36,23 @@ public class Climb {
         arm.setNeutralMode(NeutralMode.Brake);
 
         winch.setInverted(false);
+        arm.setInverted(true);
 
         arm.setSensorPhase(true);
-        arm.config_kP(0, P_VALUE, MotorSettings.TIMEOUT);
+        arm.setSelectedSensorPosition(0, MotorSettings.PID_IDX, MotorSettings.TIMEOUT);
 
         releaser.set(DoubleSolenoid.Value.kForward);
-        position = 0;
     }
 
     /**
      * Moves the left ramp up.
      */
     public void moveArm(double power) {
-        arm.set(ControlMode.PercentOutput, power);
-        position = 0;
+        arm.set(ControlMode.PercentOutput, power / 3);
+    }
+
+    public void moveArmTurbo(double power) {
+        moveArm(power * 2);
     }
 
     /**
@@ -65,11 +66,7 @@ public class Climb {
      * Stops the left ramp.
      */
     public void stopArm() {
-        System.out.println(arm.getClosedLoopTarget(0));
-        if (position == 0) {
-            position = arm.getSelectedSensorPosition(MotorSettings.PID_IDX);
-        }
-        arm.set(ControlMode.Position, position);
+        arm.set(ControlMode.PercentOutput, 0);
     }
 
     /**
@@ -91,5 +88,14 @@ public class Climb {
      */
     public void setup() {
         releaser.set(DoubleSolenoid.Value.kForward);
+    }
+
+    /**
+     * Return encoder values
+     * 
+     * @return the encoder position of the arm
+     */
+    public int getEncoderPos() {
+        return arm.getSelectedSensorPosition(MotorSettings.PID_IDX);
     }
 }

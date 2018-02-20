@@ -15,7 +15,7 @@ public class AutoDrive {
 
     private static final double AUTO_STRAIGHT_P = 0.08;
     private static final double AUTO_STRIAGHT_D = 0.0004;
-    private static final double AUTO_ANGLE_P = 4;
+    private static final double AUTO_ANGLE_P = 4.5;
     private static final double AUTO_ANGLE_D = 0.0004;
 
     private static final double INCH_TO_TICKS = 2542 / 32;
@@ -27,7 +27,7 @@ public class AutoDrive {
     private static final int POS_TOLERANCE = 10;
 
     private static final int PIGEON_TIMEOUT = 100;
-    private static final double WHEEL_BASED_RADIUS = 14.0;
+    private static final double WHEEL_BASED_RADIUS = 15.0;
 
     private double currentAngle;
     private double currentAngularRate;

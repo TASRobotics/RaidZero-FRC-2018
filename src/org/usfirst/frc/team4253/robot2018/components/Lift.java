@@ -49,8 +49,8 @@ public class Lift {
         lift.configMotionAcceleration(TARGET_ACCEL, MotorSettings.TIMEOUT);
 
         lift.setSelectedSensorPosition(0, 0, MotorSettings.TIMEOUT);
-        lift.setInverted(true);
-        follower.setInverted(true);
+        lift.setInverted(false);
+        follower.setInverted(false);
 
         lift.config_kP(0, P_VALUE, MotorSettings.TIMEOUT);
         lift.config_kI(0, I_VALUE, MotorSettings.TIMEOUT);

@@ -103,6 +103,9 @@ public class Auto {
                         if (autoDrive.getProgress(path) > 0.98) {
                             Components.getIntake().runWheelsOut(0.4);
                         }
+                        if (autoDrive.getProgress(path) > 0.99) {
+                            Components.getIntake().openClaw();
+                        }
                         break;
                     case 1:
                         Components.getLift().move(100);
@@ -123,10 +126,7 @@ public class Auto {
                             Components.getLift().move(Lift.SCALE_HEIGHT);
                         }
                         if (autoDrive.getProgress(path) > 0.95) {
-                            Components.getIntake().runWheelsOut(0.4);
-                        }
-                        if (autoDrive.getProgress(path) > 0.97) {
-                            Components.getIntake().openClaw();
+                            Components.getIntake().runWheelsOut(0.5);
                         }
                         break;
                     default:
@@ -157,7 +157,6 @@ public class Auto {
             case SwitchScale:
                 switch (stage) {
                     case 0:
-                        Components.getIntake().openClaw();
                         break;
                     case 1:
                         break;

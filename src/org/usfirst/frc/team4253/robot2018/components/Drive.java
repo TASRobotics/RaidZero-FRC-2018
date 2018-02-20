@@ -19,7 +19,7 @@ public class Drive {
     private DoubleSolenoid gearShift;
     private PigeonIMU pigeon;
 
-    private static final double[] FPID = { 0.717, 2.2, 0.004, 15, 50 };
+    private static final double[] FPID = { 0.717 / 2, 2.2, 0.004, 15, 50 };
 
     /**
      * Constructs a Drive object and sets up the motors and gear shift.
@@ -76,7 +76,7 @@ public class Drive {
         leader.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 10,
             MotorSettings.TIMEOUT);
         follower.setInverted(invertMotor);
-        if (invertMotor) {
+        if (!invertMotor) {
             pigeon = new PigeonIMU(follower);
         }
 

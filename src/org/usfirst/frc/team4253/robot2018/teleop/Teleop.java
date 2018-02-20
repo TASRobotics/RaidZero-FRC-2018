@@ -1,7 +1,6 @@
 package org.usfirst.frc.team4253.robot2018.teleop;
 
 import org.usfirst.frc.team4253.robot2018.components.Components;
-import org.usfirst.frc.team4253.robot2018.components.Lift;
 
 import static edu.wpi.first.wpilibj.GenericHID.Hand.kLeft;
 import static edu.wpi.first.wpilibj.GenericHID.Hand.kRight;
@@ -14,15 +13,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  */
 public class Teleop {
 
-    private static XboxController controller;
+    private static XboxController controller1;
     private static XboxController controller2;
     private static TeleopDrive teleopDrive;
 
-    private static final double AXIS_TO_LIFT = 1000;
     private static final double INTAKE_WHEEL_POWER = 0.9;
-    private static final double ANALOG_THRESHOLD = 0.8;
-    private static boolean released = false;
-    private static boolean timeToClimb = false;
+
+    private static boolean climbMode = false;
 
     /**
      * Initializes the teleop-specific components.
@@ -30,7 +27,7 @@ public class Teleop {
      * <p>This should be called when the robot starts up.
      */
     public static void initialize() {
-        controller = new XboxController(0);
+        controller1 = new XboxController(0);
         controller2 = new XboxController(1);
         teleopDrive = new TeleopDrive(Components.getDrive());
     }
@@ -45,8 +42,7 @@ public class Teleop {
         teleopDrive.setup();
         Components.getLift().resetEnc();
         Components.getClimb().setup();
-        released = false;
-        timeToClimb = false;
+        climbMode = false;
     }
 
     /**
@@ -55,95 +51,79 @@ public class Teleop {
      * <p>This should be called repeatedly during teleop mode.
      */
     public static void run() {
+        // Player 1
         // Drive
-        if (controller.getBumperPressed(kRight)) {
+        if (controller1.getBumperPressed(kRight)) {
             Components.getDrive().setHighGear();
         }
-        if (controller.getBumperReleased(kRight)) {
+        if (controller1.getBumperReleased(kRight)) {
             Components.getDrive().setLowGear();
         }
-        teleopDrive.drive(controller.getY(kLeft), controller.getY(kRight));
+        teleopDrive.drive(controller1.getY(kLeft), controller1.getY(kRight));
 
         // Lift
-        double rightTriggerAxis = controller.getTriggerAxis(kRight);
-        double leftTriggerAxis = controller.getTriggerAxis(kLeft);
-        double player2LiftInput = 0;
-        if (!timeToClimb) {
-            player2LiftInput = -controller2.getY(kRight);
-        } else {
-            player2LiftInput = 0;
-        }
+        boolean player1IntakeActive = true;
+        double rightTriggerAxis = controller1.getTriggerAxis(kRight);
+        double leftTriggerAxis = controller1.getTriggerAxis(kLeft);
 
-        if (rightTriggerAxis > leftTriggerAxis) {
-            Components.getLift()
-                .movePWM(controller.getTriggerAxis(kRight) + player2LiftInput);
+        if (rightTriggerAxis > 0.1) {
+            Components.getLift().movePWM(controller1.getTriggerAxis(kRight));
+        } else if (leftTriggerAxis > 0.1) {
+            Components.getLift().movePWM(-controller1.getTriggerAxis(kLeft) * 0.5);
         } else {
-            Components.getLift()
-                .movePWM(-controller.getTriggerAxis(kLeft) * 0.5 + 0.5 * player2LiftInput);
-        }
-
-        // Motion Magic Lift
-        if (controller2.getXButton()) {
-            // for lowest target position for the lift
-            Components.getLift()
-                .move(Lift.GRAB_CUBE_HEIGHT + controller.getY(kLeft) * AXIS_TO_LIFT);
-        }
-        if (controller2.getYButton()) {
-            // for switch target position for the lift
-            Components.getLift().move(Lift.SWITCH_HEIGHT + controller.getY(kLeft) * AXIS_TO_LIFT);
-        }
-        if (controller2.getBButton()) {
-            // for scale target position for the lift
-            Components.getLift().move(Lift.SCALE_HEIGHT + controller.getY(kLeft) * AXIS_TO_LIFT);
+            Components.getLift().movePWM(0);
         }
 
         // Intake
-        if (controller2.getTriggerAxis(kRight) >= 0.8) {
-            Components.getIntake().runWheelsIn(INTAKE_WHEEL_POWER);
-        } else if (controller.getBumper(kLeft)
-            || controller2.getTriggerAxis(kLeft) >= ANALOG_THRESHOLD) {
+        if (controller1.getBumper(kLeft)) {
             Components.getIntake().runWheelsOut(INTAKE_WHEEL_POWER);
+            player1IntakeActive = true;
         } else {
-            Components.getIntake().stopWheels();
+            player1IntakeActive = false;
         }
-        if (controller2.getY(kLeft) >= ANALOG_THRESHOLD) {
-            Components.getIntake().openClaw();
+        
+        // Switch between lift or climb
+        if (controller2.getStartButtonPressed()) {
+            climbMode = !climbMode;
         }
-        if (controller2.getY(kLeft) <= -ANALOG_THRESHOLD) {
-            Components.getIntake().closeClaw();
-        }
-
-        // Winch
-        if (controller2.getBumper(kRight) && released) {
-            Components.getClimb().moveWinch(1.0);
-        } else if (controller2.getBumper(kLeft) && released) {
-            Components.getClimb().moveWinch(-1.0);
-        } else {
-            Components.getClimb().stopWinch();
-        }
-
-        // Arm
-        if (released && timeToClimb) {
+        
+        // Player 2
+        if (climbMode) {
+            // Arm
             if (Math.abs(controller2.getY(kRight)) <= 0.1) {
                 Components.getClimb().stopArm();
+            } else if (controller2.getTriggerAxis(kRight) > 0.8) {
+                Components.getClimb().moveArmTurbo(controller2.getY(kRight));
             } else {
                 Components.getClimb().moveArm(controller2.getY(kRight));
             }
+            
+            // Winch
+            if (Math.abs(controller2.getY(kLeft)) <= 0.1) {
+                Components.getClimb().stopWinch();
+            } else {
+                Components.getClimb().moveWinch(controller2.getY(kLeft));
+            }
         } else {
-            Components.getClimb().stopArm();
-        }
-        if (controller.getBackButton() && controller.getStartButton()) {
-            Components.getClimb().releaseArm();
-            released = true;
+            // Intake
+            if (!player1IntakeActive) {
+                Components.getIntake().runWheelsIn(-controller2.getY(kRight));
+            }
+            if (controller2.getY(kLeft) >= 0.8) {
+                Components.getIntake().openClaw();
+            }
+            if (controller2.getY(kLeft) <= -0.8) {
+                Components.getIntake().closeClaw();
+            }
         }
 
-        // Switch between lift or arm
-        if (controller2.getStartButtonPressed()) {
-            timeToClimb = !timeToClimb;
-        }
-        SmartDashboard.putBoolean("Climb Mode", timeToClimb);
+        SmartDashboard.putBoolean("Climb Mode", climbMode);
         SmartDashboard.putNumber("Lift Pos", Components.getLift().getEncoderPos());
         SmartDashboard.putNumber("Drive Left Vel",
             Components.getDrive().getLeftMotor().getSelectedSensorVelocity(0));
+        SmartDashboard.putNumber("Drive Right Vel",
+            Components.getDrive().getRightMotor().getSelectedSensorVelocity(0));
+        SmartDashboard.putNumber("Arm Pos", Components.getClimb().getEncoderPos());
+        SmartDashboard.putNumber("Controller2 Right getY", controller2.getY(kRight));
     }
 }
