@@ -117,7 +117,6 @@ public class Auto {
                         } else if (autoDrive.getProgress(path) > 0.35) {
                             Components.getIntake().closeClaw();
                             Components.getIntake().runWheelsIn(0.2);
-                            ;
                         } else {
                             Components.getIntake().openClaw();
                             Components.getIntake().runWheelsIn(1.0);
