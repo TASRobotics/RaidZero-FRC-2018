@@ -5,6 +5,7 @@ package org.usfirst.frc.team4253.robot2018.auto;
  */
 public class AutoPath {
 
+    private Mode mode;
     private int stage;
     private StartingSide start; // can only be center when stage == 0
     private Side end;
@@ -14,19 +15,30 @@ public class AutoPath {
     /**
      * Constructs an AutoPath object.
      * 
+     * @param mode the autonomous routine
      * @param stage the stage of the path (starting from 0)
      * @param start the starting side of the robot
      * @param end the ending side of the robot
      * @param reverse whether the robot drives backwards
      * @param motorData the GeoGebra entries for the motors
      */
-    public AutoPath(int stage, StartingSide start, Side end, boolean reverse,
+    public AutoPath(Mode mode, int stage, StartingSide start, Side end, boolean reverse,
         GeoGebraEntry[] motorData) {
+        this.mode = mode;
         this.stage = stage;
         this.start = start;
         this.end = end;
         this.reverse = reverse;
         this.motorData = motorData;
+    }
+
+    /**
+     * Returns the autonomous mode.
+     * 
+     * @return the mode
+     */
+    public Mode getMode() {
+        return mode;
     }
 
     /**

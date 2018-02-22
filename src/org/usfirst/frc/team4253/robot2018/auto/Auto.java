@@ -36,7 +36,8 @@ public class Auto {
         autoDrive.setup();
         Components.getLift().resetEnc();
         mode = AutoChooser.getMode();
-        paths = GeoGebraReader.getPaths(AutoChooser.getStartingSide(), MatchData.getPlateData());
+        paths =
+            GeoGebraReader.getPaths(mode, AutoChooser.getStartingSide(), MatchData.getPlateData());
         Components.getIntake().closeClaw();
         stage = 0;
     }
@@ -49,7 +50,8 @@ public class Auto {
     public static void run() {
         switch (mode) {
             case SwitchScale:
-                runSwitchScale();
+            case ScaleOnly:
+                runPathAuto();
                 break;
             case CrossLine:
                 crossLine();
@@ -67,39 +69,81 @@ public class Auto {
     }
 
     /**
-     * Runs the standard switch and scale autonomous.
+     * Runs autonomous with paths.
      */
-    private static void runSwitchScale() {
+    private static void runPathAuto() {
         if (stage < paths.size()) {
             AutoPath path = paths.get(stage);
             autoDrive.moveCurve(path);
             moveOtherComponents(path);
-            if (autoDrive.checkFinished(path) && transition()) {
+            if (autoDrive.checkFinished(path)) {
+                transition();
                 stage++;
                 autoDrive.resetEncoders();
             }
         }
+        else {
+            autoDrive.pauseDrive();
+        }
     }
 
+    /**
+     * Runs other components that are not the drive.
+     * 
+     * @param path the geogebra path.
+     */
     private static void moveOtherComponents(AutoPath path) {
-        switch (stage) {
-            case 0:
-                if (autoDrive.getProgress(path) > 0.3) {
-                    Components.getLift().move(Lift.SWITCH_HEIGHT);
-                }
-                if (autoDrive.getProgress(path) > 0.98) {
-                    Components.getIntake().runWheelsOut(0.4);
+        switch (mode) {
+            case SwitchScale:
+                switch (stage) {
+                    case 0:
+                        if (autoDrive.getProgress(path) > 0.3) {
+                            Components.getLift().move(Lift.SWITCH_HEIGHT);
+                        }
+                        if (autoDrive.getProgress(path) > 0.98) {
+                            Components.getIntake().runWheelsOut(0.4);
+                        }
+                        if (autoDrive.getProgress(path) > 0.99) {
+                            Components.getIntake().openClaw();
+                        }
+                        break;
+                    case 1:
+                        Components.getLift().move(100);
+                        Components.getIntake().stopWheels();
+                        break;
+                    case 2:
+                        if (autoDrive.getProgress(path) > 0.5) {
+                            Components.getIntake().stopWheels();
+                        } else if (autoDrive.getProgress(path) > 0.35) {
+                            Components.getIntake().closeClaw();
+                            Components.getIntake().runWheelsIn(0.2);
+                        } else {
+                            Components.getIntake().openClaw();
+                            Components.getIntake().runWheelsIn(1.0);
+                        }
+                        if (autoDrive.getProgress(path) > 0.5) {
+                            Components.getLift().move(Lift.SCALE_HEIGHT);
+                        }
+                        if (autoDrive.getProgress(path) > 0.95) {
+                            Components.getIntake().runWheelsOut(0.5);
+                        }
+                        break;
+                    default:
+                        break;
                 }
                 break;
-            case 1:
-                Components.getLift().move(Lift.GRAB_CUBE_HEIGHT);
-                break;
-            case 2:
-                if (autoDrive.getEncoderPos() > 7000) {
-                    Components.getIntake().idle();
-                }
-                if (autoDrive.getProgress(path) > 0.7) {
-                    Components.getLift().move(Lift.SCALE_HEIGHT);
+            case ScaleOnly:
+                switch (stage) {
+                    case 0:
+                        if (autoDrive.getProgress(path) > 0.5) {
+                            Components.getLift().move(Lift.SCALE_HEIGHT);
+                        }
+                        if (autoDrive.getProgress(path) > 0.95) {
+                            Components.getIntake().runWheelsOut(0.5);
+                        }
+                        break;
+                    default:
+                        break;
                 }
                 break;
             default:
@@ -107,25 +151,43 @@ public class Auto {
         }
     }
 
-    private static boolean transition() {
-        switch (stage) {
-            case 0:
-                Components.getIntake().openClaw();
-                return true;
-            case 1:
-                return Components.getLift().checkFinished(Lift.GRAB_CUBE_HEIGHT);
-            case 2:
-                if (Components.getLift().checkFinished(Lift.SCALE_HEIGHT)) {
-                    Components.getIntake().release();
-                    return true;
+    /**
+     * Runs the transition phase between stages.
+     */
+    private static void transition() {
+        switch (mode) {
+            case SwitchScale:
+                switch (stage) {
+                    case 0:
+                        break;
+                    case 1:
+                        break;
+                    case 2:
+                        Components.getIntake().stopWheels();
+                        break;
+                    default:
+                        break;
                 }
-                return false;
+                break;
+            case ScaleOnly:
+                switch (stage) {
+                    case 0:
+                        Components.getIntake().stopWheels();
+                        break;
+                    default:
+                        break;
+                }
+                break;
             default:
-                return true;
+                break;
         }
     }
 
+    /**
+     * Runs the cross line autonomous.
+     */
     private static void crossLine() {
         autoDrive.moveStraight(11000);
     }
+
 }

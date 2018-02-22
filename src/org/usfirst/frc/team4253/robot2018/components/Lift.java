@@ -12,7 +12,7 @@ public class Lift {
 
     public static final int GRAB_CUBE_HEIGHT = 0;
     public static final int SWITCH_HEIGHT = 3750;
-    public static final int SCALE_HEIGHT = 8125; // Highest possible pos : 9800
+    public static final int SCALE_HEIGHT = 8700; // Highest possible pos : 9800
 
     private static final int TARGET_VEL = 1000;
     private static final int TARGET_ACCEL = 1000;
@@ -26,14 +26,20 @@ public class Lift {
     private static final int POS_TOLERANCE = 10;
 
     private TalonSRX lift;
+    private TalonSRX follower;
 
     /**
      * Constructs a Lift object and sets up the lift motor.
      * 
      * @param motorID the ID of the lift motor
      */
-    public Lift(int motorID) {
+    public Lift(int motorID, int motorID2) {
         lift = new TalonSRX(motorID);
+        follower = new TalonSRX(motorID2);
+        follower.set(ControlMode.Follower, motorID);
+
+        lift.setNeutralMode(NeutralMode.Brake);
+        follower.setNeutralMode(NeutralMode.Brake);
 
         lift.setNeutralMode(NeutralMode.Brake);
         lift.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, MotorSettings.PID_IDX,
@@ -43,7 +49,8 @@ public class Lift {
         lift.configMotionAcceleration(TARGET_ACCEL, MotorSettings.TIMEOUT);
 
         lift.setSelectedSensorPosition(0, 0, MotorSettings.TIMEOUT);
-        lift.setInverted(true);
+        lift.setInverted(false);
+        follower.setInverted(false);
 
         lift.config_kP(0, P_VALUE, MotorSettings.TIMEOUT);
         lift.config_kI(0, I_VALUE, MotorSettings.TIMEOUT);

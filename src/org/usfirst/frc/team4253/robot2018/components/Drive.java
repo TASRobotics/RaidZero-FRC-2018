@@ -76,7 +76,7 @@ public class Drive {
         leader.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 10,
             MotorSettings.TIMEOUT);
         follower.setInverted(invertMotor);
-        if (invertMotor) {
+        if (!invertMotor) {
             pigeon = new PigeonIMU(follower);
         }
 

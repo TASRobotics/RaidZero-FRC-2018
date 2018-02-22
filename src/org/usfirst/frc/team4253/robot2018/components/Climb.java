@@ -7,7 +7,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 
 /**
- * The ramps (both sides).
+ * The arm and winch.
  */
 public class Climb {
 
@@ -15,11 +15,9 @@ public class Climb {
     private TalonSRX winch;
     private TalonSRX arm;
     private DoubleSolenoid releaser;
-    private static final double P_VALUE = 2;
-    private double position;
 
     /**
-     * Constructs a ramp object and sets up the ramp motors and piston releaser.
+     * Constructs a Climb object and sets up the arm and winch motors.
      * 
      * @param armID the ID of the arm motor
      * @param winchID the ID of the winch motor
@@ -37,59 +35,74 @@ public class Climb {
         winch.setNeutralMode(NeutralMode.Brake);
         arm.setNeutralMode(NeutralMode.Brake);
 
-        winch.setInverted(true);
+        winch.setInverted(false);
+        arm.setInverted(true);
 
         arm.setSensorPhase(true);
-        arm.config_kP(0, P_VALUE, MotorSettings.TIMEOUT);
+        arm.setSelectedSensorPosition(0, MotorSettings.PID_IDX, MotorSettings.TIMEOUT);
 
         releaser.set(DoubleSolenoid.Value.kForward);
-        position = 0;
     }
 
     /**
-     * Moves the left ramp up.
+     * Moves the arm at normal speed.
+     * 
+     * @param power the motor power (between -1 and 1)
      */
     public void moveArm(double power) {
-        arm.set(ControlMode.PercentOutput, power);
-        position = 0;
+        arm.set(ControlMode.PercentOutput, power / 3);
     }
 
     /**
-     * Moves the right ramp up.
+     * Moves the arm at turbo speed.
+     * 
+     * @param power the motor power (between -1 and 1)
      */
-    public void moveWinch() {
-        winch.set(ControlMode.PercentOutput, WINCHPOWER);
+    public void moveArmTurbo(double power) {
+        moveArm(power * 2);
     }
 
     /**
-     * Stops the left ramp.
+     * Moves the winch.
+     */
+    public void moveWinch(double power) {
+        winch.set(ControlMode.PercentOutput, power);
+    }
+
+    /**
+     * Stops the arm.
      */
     public void stopArm() {
-        System.out.println(arm.getClosedLoopTarget(0));
-        if (position == 0) {
-            position = arm.getSelectedSensorPosition(MotorSettings.PID_IDX);
-        }
-        arm.set(ControlMode.Position, position);
+        arm.set(ControlMode.PercentOutput, 0);
     }
 
     /**
-     * Stops the right ramp.
+     * Stops the winch.
      */
     public void stopWinch() {
         winch.set(ControlMode.PercentOutput, 0);
     }
 
     /**
-     * Releases the ramps.
+     * Releases the arm.
      */
     public void releaseArm() {
         releaser.set(DoubleSolenoid.Value.kReverse);
     }
 
     /**
-     * Setup the ramp releaser
+     * Setup the releaser.
      */
     public void setup() {
         releaser.set(DoubleSolenoid.Value.kForward);
+    }
+
+    /**
+     * Returns the encoder position of the arm.
+     * 
+     * @return the encoder position of the arm
+     */
+    public int getEncoderPos() {
+        return arm.getSelectedSensorPosition(MotorSettings.PID_IDX);
     }
 }
