@@ -7,7 +7,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 
 /**
- * The ramps (both sides).
+ * The arm and winch.
  */
 public class Climb {
 
@@ -17,7 +17,7 @@ public class Climb {
     private DoubleSolenoid releaser;
 
     /**
-     * Constructs a ramp object and sets up the ramp motors and piston releaser.
+     * Constructs a Climb object and sets up the arm and winch motors.
      * 
      * @param armID the ID of the arm motor
      * @param winchID the ID of the winch motor
@@ -45,53 +45,60 @@ public class Climb {
     }
 
     /**
-     * Moves the left ramp up.
+     * Moves the arm at normal speed.
+     * 
+     * @param power the motor power (between -1 and 1)
      */
     public void moveArm(double power) {
         arm.set(ControlMode.PercentOutput, power / 3);
     }
 
+    /**
+     * Moves the arm at turbo speed.
+     * 
+     * @param power the motor power (between -1 and 1)
+     */
     public void moveArmTurbo(double power) {
         moveArm(power * 2);
     }
 
     /**
-     * Moves the right ramp up.
+     * Moves the winch.
      */
     public void moveWinch(double power) {
         winch.set(ControlMode.PercentOutput, power);
     }
 
     /**
-     * Stops the left ramp.
+     * Stops the arm.
      */
     public void stopArm() {
         arm.set(ControlMode.PercentOutput, 0);
     }
 
     /**
-     * Stops the right ramp.
+     * Stops the winch.
      */
     public void stopWinch() {
         winch.set(ControlMode.PercentOutput, 0);
     }
 
     /**
-     * Releases the ramps.
+     * Releases the arm.
      */
     public void releaseArm() {
         releaser.set(DoubleSolenoid.Value.kReverse);
     }
 
     /**
-     * Setup the ramp releaser
+     * Setup the releaser.
      */
     public void setup() {
         releaser.set(DoubleSolenoid.Value.kForward);
     }
 
     /**
-     * Return encoder values
+     * Returns the encoder position of the arm.
      * 
      * @return the encoder position of the arm
      */
