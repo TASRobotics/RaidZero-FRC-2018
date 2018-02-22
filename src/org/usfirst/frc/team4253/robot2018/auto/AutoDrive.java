@@ -16,7 +16,7 @@ public class AutoDrive {
     private static final double AUTO_STRAIGHT_P = 0.08;
     private static final double AUTO_STRIAGHT_D = 0.0004;
     private static final double AUTO_ANGLE_P = 4.5;
-    private static final double AUTO_ANGLE_D = 0.0004;
+    private static final double AUTO_ANGLE_D = 0.1;
 
     private static final double INCH_TO_TICKS = 2542 / 32;
 
@@ -24,7 +24,7 @@ public class AutoDrive {
     private static final int DEFAULT_ACCEL = 1000;
 
     private static final int VEL_TOLERANCE = 5;
-    private static final int POS_TOLERANCE = 10;
+    private static final int POS_TOLERANCE = 25;
 
     private static final int PIGEON_TIMEOUT = 100;
     private static final double WHEEL_BASED_RADIUS = 15.0;
@@ -79,7 +79,7 @@ public class AutoDrive {
         }
         int[] currentTargets =
             convertToMotorValues(current.getPercentDifference(), path.getReverse());
-        autoAngle(current.getAngle(), path.getReverse());
+        autoAngle(current.getAngle(), current.getPercentDifference(), path.getReverse());
         leftMotor.configMotionCruiseVelocity(currentTargets[0] - (int) autoAngleModifier,
             MotorSettings.TIMEOUT);
         rightMotor.configMotionCruiseVelocity(currentTargets[1] + (int) autoAngleModifier,
@@ -123,7 +123,7 @@ public class AutoDrive {
      * @param targetAngle the angle to try to reach
      * @param reverse the boolean to tell to reverse
      */
-    private void autoAngle(double targetAngle, boolean reverse) {
+    private void autoAngle(double targetAngle, double percentDiff, boolean reverse) {
         PigeonIMU.FusionStatus fusionStatus = new PigeonIMU.FusionStatus();
         double[] xyz_dps = new double[3];
         pigeon.getRawGyro(xyz_dps);
@@ -134,6 +134,7 @@ public class AutoDrive {
 
         autoAngleModifier =
             (targetAngle - currentAngle) * AUTO_ANGLE_P - currentAngularRate * AUTO_ANGLE_D;
+
         if (reverse) {
             autoAngleModifier = -autoAngleModifier;
         }
@@ -161,6 +162,17 @@ public class AutoDrive {
      */
     private int[] convertToMotorValues(double percentDiff, boolean reverse) {
         int sign = reverse ? -1 : 1;
+        if (Math.abs(percentDiff) < 0.1) {
+            return new int[] {
+                (int) ((1 - sign * percentDiff) * DEFAULT_VEL
+                    * (1.5 - Math.abs(percentDiff) / 0.2)),
+                (int) ((1 + sign * percentDiff) * DEFAULT_VEL
+                    * (1.5 - Math.abs(percentDiff) / 0.2)),
+                (int) ((1 - sign * percentDiff) * DEFAULT_ACCEL
+                    * (1.5 - Math.abs(percentDiff) / 0.2)),
+                (int) ((1 + sign * percentDiff) * DEFAULT_ACCEL
+                    * (1.5 - Math.abs(percentDiff) / 0.2)) };
+        }
         return new int[] {
             (int) ((1 - sign * percentDiff) * DEFAULT_VEL),
             (int) ((1 + sign * percentDiff) * DEFAULT_VEL),

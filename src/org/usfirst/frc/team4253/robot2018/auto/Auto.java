@@ -139,6 +139,9 @@ public class Auto {
                         if (autoDrive.getProgress(path) > 0.5) {
                             Components.getLift().move(Lift.SCALE_HEIGHT);
                         }
+                        if (autoDrive.getProgress(path) > 0.95) {
+                            Components.getIntake().runWheelsOut(0.5);
+                        }
                         break;
                     default:
                         break;
