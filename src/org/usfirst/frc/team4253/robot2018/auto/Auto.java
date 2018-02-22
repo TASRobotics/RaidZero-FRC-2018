@@ -170,6 +170,13 @@ public class Auto {
                 }
                 break;
             case ScaleOnly:
+                switch (stage) {
+                    case 0:
+                        Components.getIntake().stopWheels();
+                        break;
+                    default:
+                        break;
+                }
                 break;
             default:
                 break;
