@@ -1,5 +1,7 @@
 package org.usfirst.frc.team4253.robot2018.components;
 
+import edu.wpi.first.wpilibj.CameraServer;
+
 /**
  * The components of the robot.
  * 
@@ -17,6 +19,8 @@ public class Components {
     /**
      * Initializes each component by calling its constructor.
      * 
+     * <p>Also starts video capture from camera.
+     * 
      * <p>Make sure this method has been called before accessing any components, as they will be
      * null before this method is called.
      */
@@ -25,6 +29,7 @@ public class Components {
         drive = new Drive(1, 2, 3, 4, 4, 5);
         lift = new Lift(12, 15);
         climb = new Climb(13, 14, 2, 3);
+        CameraServer.getInstance().startAutomaticCapture();
     }
 
     /**

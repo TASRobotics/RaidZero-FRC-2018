@@ -32,10 +32,15 @@ public class GeoGebraReader {
             switch (mode) {
                 case SwitchScale:
                     paths.add(read(mode, 0, startingSide, plateData.getNearSwitchSide()));
-                    paths.add(read(mode, 1, plateData.getNearSwitchSide(),
-                        plateData.getNearSwitchSide()));
-                    paths.add(
-                        read(mode, 2, plateData.getNearSwitchSide(), plateData.getScaleSide()));
+                    if (plateData.getNearSwitchSide() == plateData.getScaleSide()) {
+                        paths.add(read(mode, 1, plateData.getNearSwitchSide(),
+                            plateData.getNearSwitchSide().opposite()));
+                    } else {
+                        paths.add(read(mode, 1, plateData.getNearSwitchSide(),
+                            plateData.getNearSwitchSide()));
+                    }
+                    paths.add(read(mode, 2, plateData.getScaleSide().opposite(),
+                            plateData.getScaleSide()));
                     break;
                 case ScaleOnly:
                     paths.add(read(mode, 0, startingSide, plateData.getScaleSide()));

@@ -36,6 +36,7 @@ public class AutoDrive {
 
     private TalonSRX rightMotor;
     private TalonSRX leftMotor;
+    private Drive drive;
     private PigeonIMU pigeon;
 
     /**
@@ -47,6 +48,7 @@ public class AutoDrive {
         rightMotor = drive.getRightMotor();
         leftMotor = drive.getLeftMotor();
         pigeon = drive.getPigeon();
+        this.drive = drive;
         // Reset Encoder At Init
         setup();
     }

@@ -22,8 +22,7 @@ const pathInfoFormat = {
         return oneOf('left', 'right');
     }),
     end: dependsOn(['mode', 'stage', 'start'], ([mode, stage, start]) => {
-        if (mode === 'switch and scale'
-            && (stage === 0 && start !== 'center' || stage === 1)) {
+        if (mode === 'switch and scale' && stage === 0 && start !== 'center') {
             return is(start);
         }
         return oneOf('left', 'right');

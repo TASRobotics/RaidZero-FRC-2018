@@ -23,4 +23,15 @@ public enum Side {
         }
     }
 
+    public Side opposite() {
+        switch (this) {
+            case Left:
+                return Side.Right;
+            case Right:
+                return Side.Left;
+            default:
+                return null;
+        }
+    }
+
 }
