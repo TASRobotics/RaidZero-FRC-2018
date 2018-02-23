@@ -79,7 +79,7 @@ public class Auto {
             if (autoDrive.checkFinished(path)) {
                 transition();
                 stage++;
-                autoDrive.resetEncoders();
+                autoDrive.startNewPath();
             }
         }
         else {
