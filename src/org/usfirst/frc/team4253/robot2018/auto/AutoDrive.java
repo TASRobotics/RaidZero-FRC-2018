@@ -29,8 +29,6 @@ public class AutoDrive {
     private static final int PIGEON_TIMEOUT = 100;
     private static final double WHEEL_BASED_RADIUS = 15.0;
 
-    private int startingPosLeft;
-    private int startingPosRight;
     private double currentAngle;
     private double currentAngularRate;
     private double autoStraightModifier;
@@ -38,6 +36,7 @@ public class AutoDrive {
 
     private TalonSRX rightMotor;
     private TalonSRX leftMotor;
+    private Drive drive;
     private PigeonIMU pigeon;
 
     /**
@@ -49,6 +48,7 @@ public class AutoDrive {
         rightMotor = drive.getRightMotor();
         leftMotor = drive.getLeftMotor();
         pigeon = drive.getPigeon();
+        this.drive = drive;
         // Reset Encoder At Init
         setup();
     }
@@ -61,16 +61,9 @@ public class AutoDrive {
      * <p>TODO: Add anything else that's need in the future.
      */
     public void setup() {
-        startingPosLeft = 0;
-        startingPosRight = 0;
         pigeon.setFusedHeading(0, PIGEON_TIMEOUT);
         rightMotor.setSelectedSensorPosition(0, MotorSettings.PID_IDX, MotorSettings.TIMEOUT);
         leftMotor.setSelectedSensorPosition(0, MotorSettings.PID_IDX, MotorSettings.TIMEOUT);
-    }
-
-    public void startNewPath() {
-        startingPosLeft = leftMotor.getSelectedSensorPosition(MotorSettings.PID_IDX);
-        startingPosRight = rightMotor.getSelectedSensorPosition(MotorSettings.PID_IDX);
     }
 
     /**
@@ -96,20 +89,17 @@ public class AutoDrive {
         rightMotor.configMotionAcceleration(currentTargets[3] + (int) autoAngleModifier,
             MotorSettings.TIMEOUT);
 
-        int totalTargetLeft = startingPosLeft + targetPos;
-        int totalTargetRight = startingPosRight + targetPos;
-
         rightMotor.set(ControlMode.MotionMagic,
-            totalTargetRight + getfinalAngleToEncoderPosCorrection(path, path.getReverse()));
+            targetPos + getfinalAngleToEncoderPosCorrection(path, path.getReverse()));
         leftMotor.set(ControlMode.MotionMagic,
-            totalTargetLeft - getfinalAngleToEncoderPosCorrection(path, path.getReverse()));
+            targetPos - getfinalAngleToEncoderPosCorrection(path, path.getReverse()));
 
-        // SmartDashboard.putNumber("Left Difference",
-        // targetPos - getfinalAngleToEncoderPosCorrection(path, path.getReverse())
-        // - leftMotor.getSelectedSensorPosition(0));
-        // SmartDashboard.putNumber("Right Difference",
-        // targetPos + getfinalAngleToEncoderPosCorrection(path, path.getReverse())
-        // - rightMotor.getSelectedSensorPosition(0));
+        SmartDashboard.putNumber("Left Difference",
+            targetPos - getfinalAngleToEncoderPosCorrection(path, path.getReverse())
+                - leftMotor.getSelectedSensorPosition(0));
+        SmartDashboard.putNumber("Right Difference",
+            targetPos + getfinalAngleToEncoderPosCorrection(path, path.getReverse())
+                - rightMotor.getSelectedSensorPosition(0));
     }
 
     public double getProgress(AutoPath path) {
@@ -228,9 +218,8 @@ public class AutoDrive {
     }
 
     public double getEncoderPos() {
-        int left = leftMotor.getSelectedSensorPosition(MotorSettings.PID_IDX) - startingPosLeft;
-        int right = rightMotor.getSelectedSensorPosition(MotorSettings.PID_IDX) - startingPosRight;
-        return Math.abs((left + right) / 2.0);
+        return Math.abs((leftMotor.getSelectedSensorPosition(MotorSettings.PID_IDX)
+            + rightMotor.getSelectedSensorPosition(MotorSettings.PID_IDX)) / 2.0);
     }
 
     private int getTargetPos(AutoPath path) {
