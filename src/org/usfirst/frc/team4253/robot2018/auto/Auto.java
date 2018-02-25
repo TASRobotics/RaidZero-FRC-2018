@@ -78,11 +78,10 @@ public class Auto {
             moveOtherComponents(path);
             if (autoDrive.checkFinished(path)) {
                 transition();
+                autoDrive.finishPath(path);
                 stage++;
-                autoDrive.resetEncoders();
             }
-        }
-        else {
+        } else {
             autoDrive.pauseDrive();
         }
     }

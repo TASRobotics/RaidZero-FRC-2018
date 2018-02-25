@@ -116,6 +116,23 @@ public class AutoDrive {
     }
 
     /**
+     * Prepares the robot for the next stage by resetting the encoders to the offset between the
+     * target position for the current path and the current encoder positions.
+     * 
+     * @param path the path that has been completed
+     */
+    public void finishPath(AutoPath path) {
+        int targetPos = getTargetPos(path);
+        int leftPos = leftMotor.getSelectedSensorPosition(MotorSettings.PID_IDX);
+        int rightPos = rightMotor.getSelectedSensorPosition(MotorSettings.PID_IDX);
+        int correction = getfinalAngleToEncoderPosCorrection(path, path.getReverse());
+        leftMotor.setSelectedSensorPosition(leftPos - targetPos + correction, MotorSettings.PID_IDX,
+            MotorSettings.TIMEOUT);
+        rightMotor.setSelectedSensorPosition(rightPos - targetPos - correction,
+            MotorSettings.PID_IDX, MotorSettings.TIMEOUT);
+    }
+
+    /**
      * Ensures the robot moves with the angle from the geogebra data.
      * 
      * <p>This changes the {@link #autoAngleModifier} so that the robot moves straight.
