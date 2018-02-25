@@ -44,6 +44,9 @@ public class GeoGebraReader {
                     break;
                 case ScaleOnly:
                     paths.add(read(mode, 0, startingSide, plateData.getScaleSide()));
+                    paths.add(read(mode, 1, plateData.getScaleSide(), plateData.getScaleSide()));
+                    paths.add(
+                        read(mode, 2, plateData.getScaleSide(), plateData.getNearSwitchSide()));
                     break;
                 default:
                     break;

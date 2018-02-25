@@ -1,7 +1,5 @@
 package org.usfirst.frc.team4253.robot2018.components;
 
-import edu.wpi.first.wpilibj.CameraServer;
-
 /**
  * The components of the robot.
  * 
@@ -29,7 +27,7 @@ public class Components {
         drive = new Drive(1, 2, 3, 4, 4, 5);
         lift = new Lift(12, 15);
         climb = new Climb(13, 14, 2, 3);
-        CameraServer.getInstance().startAutomaticCapture();
+        // CameraServer.getInstance().startAutomaticCapture();
     }
 
     /**

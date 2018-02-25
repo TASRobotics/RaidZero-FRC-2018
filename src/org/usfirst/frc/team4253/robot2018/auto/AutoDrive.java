@@ -89,10 +89,10 @@ public class AutoDrive {
         rightMotor.configMotionAcceleration(currentTargets[3] + (int) autoAngleModifier,
             MotorSettings.TIMEOUT);
 
-        rightMotor.set(ControlMode.MotionMagic,
-            targetPos + getfinalAngleToEncoderPosCorrection(path, path.getReverse()));
         leftMotor.set(ControlMode.MotionMagic,
             targetPos - getfinalAngleToEncoderPosCorrection(path, path.getReverse()));
+        rightMotor.set(ControlMode.MotionMagic,
+            targetPos + getfinalAngleToEncoderPosCorrection(path, path.getReverse()));
 
         SmartDashboard.putNumber("Left Difference",
             targetPos - getfinalAngleToEncoderPosCorrection(path, path.getReverse())
@@ -122,14 +122,17 @@ public class AutoDrive {
      * @param path the path that has been completed
      */
     public void finishPath(AutoPath path) {
-        int targetPos = getTargetPos(path);
+        int targetPos = path.getReverse() ? -getTargetPos(path) : getTargetPos(path);
         int leftPos = leftMotor.getSelectedSensorPosition(MotorSettings.PID_IDX);
         int rightPos = rightMotor.getSelectedSensorPosition(MotorSettings.PID_IDX);
         int correction = getfinalAngleToEncoderPosCorrection(path, path.getReverse());
-        leftMotor.setSelectedSensorPosition(leftPos - targetPos + correction, MotorSettings.PID_IDX,
+        int newLeftPos = leftPos - (targetPos - correction);
+        int newRightPos = rightPos - (targetPos + correction);
+        System.out.println("left: " + newLeftPos + " right: " + newRightPos);
+        leftMotor.setSelectedSensorPosition(newLeftPos, MotorSettings.PID_IDX,
             MotorSettings.TIMEOUT);
-        rightMotor.setSelectedSensorPosition(rightPos - targetPos - correction,
-            MotorSettings.PID_IDX, MotorSettings.TIMEOUT);
+        rightMotor.setSelectedSensorPosition(newRightPos, MotorSettings.PID_IDX,
+            MotorSettings.TIMEOUT);
     }
 
     /**
@@ -209,7 +212,7 @@ public class AutoDrive {
         double currentPos = getEncoderPos();
 
         if (currentPos <= 0) {
-            System.out.println("currentPos <= 0");
+            // System.out.println("currentPos <= 0");
             return data[0];
         }
 
@@ -218,11 +221,11 @@ public class AutoDrive {
         int nextIndex = prevIndex + 1;
 
         if (nextIndex >= data.length) {
-            System.out.println("nextIndex >= data.length");
+            // System.out.println("nextIndex >= data.length");
             return data[data.length - 1];
         }
 
-        System.out.println("index: " + prevIndex);
+        // System.out.println("index: " + prevIndex);
 
         double prevAngle = data[prevIndex].getAngle();
         double nextAngle = data[nextIndex].getAngle();

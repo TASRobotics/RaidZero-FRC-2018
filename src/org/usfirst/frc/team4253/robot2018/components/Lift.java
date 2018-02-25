@@ -10,7 +10,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
  */
 public class Lift {
 
-    public static final int GRAB_CUBE_HEIGHT = 0;
+    public static final int GRAB_CUBE_HEIGHT = 100;
     public static final int SWITCH_HEIGHT = 3750;
     public static final int SCALE_HEIGHT = 8700; // Highest possible pos : 9800
 

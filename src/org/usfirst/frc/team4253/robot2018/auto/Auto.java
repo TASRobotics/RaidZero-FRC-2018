@@ -107,7 +107,7 @@ public class Auto {
                         }
                         break;
                     case 1:
-                        Components.getLift().move(100);
+                        Components.getLift().move(Lift.GRAB_CUBE_HEIGHT);
                         Components.getIntake().stopWheels();
                         break;
                     case 2:
@@ -141,6 +141,24 @@ public class Auto {
                             Components.getIntake().runWheelsOut(0.5);
                         }
                         break;
+                    case 1:
+                        if (autoDrive.getProgress(path) > 0.1) {
+                            Components.getLift().move(Lift.GRAB_CUBE_HEIGHT);
+                        }
+                        break;
+                    case 2:
+                        if (autoDrive.getProgress(path) > 0.5) {
+                            Components.getIntake().runWheelsIn(1);
+                        }
+                        if (autoDrive.getProgress(path) > 0.9) {
+                            Components.getLift().move(Lift.SWITCH_HEIGHT);
+                        }
+                        if (autoDrive.getProgress(path) > 0.98) {
+                            Components.getIntake().runWheelsOut(0.4);
+                        }
+                        if (autoDrive.getProgress(path) > 0.99) {
+                            Components.getIntake().openClaw();
+                        }
                     default:
                         break;
                 }
@@ -173,6 +191,10 @@ public class Auto {
                     case 0:
                         Components.getIntake().stopWheels();
                         break;
+                    case 1:
+                        break;
+                    case 2:
+                        Components.getIntake().stopWheels();
                     default:
                         break;
                 }
