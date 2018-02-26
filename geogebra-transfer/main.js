@@ -12,11 +12,11 @@ const pathInfoFormat = {
             case 'switch and scale':
                 return numberAnd(stage => stage >= 0 && stage <= 2);
             case 'scale only':
-                return numberAnd(stage => stage === 0);
+                return numberAnd(stage => stage >= 0 && stage <= 2);
         }
     }),
     start: dependsOn(['mode', 'stage'], ([mode, stage]) => {
-        if (mode === 'switch and scale' && stage === 0) {
+        if (stage === 0) {
             return oneOf('left', 'center', 'right');
         }
         return oneOf('left', 'right');
