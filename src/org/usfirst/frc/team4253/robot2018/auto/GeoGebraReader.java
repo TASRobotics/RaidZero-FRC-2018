@@ -20,18 +20,22 @@ public class GeoGebraReader {
      * <p>If there is any error reading a file, then the returned list will simply not contain the
      * data from that file and any subsequent files.
      * 
+     * @param plan the autonomous plan
      * @param mode the autonomous mode
      * @param startingSide the starting position of the robot
      * @param plateData the plate assignment data
      * @return the paths in a list ordered by stage
      */
-    public static List<AutoPath> getPaths(Mode mode, StartingSide startingSide,
+    public static List<AutoPath> getPaths(Plan plan, Mode mode, StartingSide startingSide,
         PlateData plateData) {
         ArrayList<AutoPath> paths = new ArrayList<>();
         try {
             switch (mode) {
                 case SwitchScale:
                     paths.add(read(mode, 0, startingSide, plateData.getNearSwitchSide()));
+                    if (plan == Plan.SwitchOnly) {
+                        break;
+                    }
                     if (plateData.getNearSwitchSide() == plateData.getScaleSide()) {
                         paths.add(read(mode, 1, plateData.getNearSwitchSide(),
                             plateData.getNearSwitchSide().opposite()));
@@ -44,6 +48,9 @@ public class GeoGebraReader {
                     break;
                 case ScaleOnly:
                     paths.add(read(mode, 0, startingSide, plateData.getScaleSide()));
+                    if (plan == Plan.ActuallyScaleOnly) {
+                        break;
+                    }
                     paths.add(read(mode, 1, plateData.getScaleSide(), plateData.getScaleSide()));
                     paths.add(
                         read(mode, 2, plateData.getScaleSide(), plateData.getNearSwitchSide()));

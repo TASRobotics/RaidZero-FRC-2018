@@ -35,9 +35,33 @@ public class Auto {
     public static void setup() {
         autoDrive.setup();
         Components.getLift().resetEnc();
-        mode = AutoChooser.getMode();
-        paths =
-            GeoGebraReader.getPaths(mode, AutoChooser.getStartingSide(), MatchData.getPlateData());
+        Plan plan = AutoChooser.getPlan();
+        StartingSide startingSide = AutoChooser.getStartingSide();
+        PlateData plateData = MatchData.getPlateData();
+        switch (plan) {
+            case SwitchThenScale:
+            case SwitchOnly:
+                mode = Mode.SwitchScale;
+                break;
+            case ScaleThenSwitch:
+            case ActuallyScaleOnly:
+                mode = Mode.ScaleOnly;
+                break;
+            case ScaleFirstIfSameSide:
+                if (plateData.getNearSwitchSide() == plateData.getScaleSide()) {
+                    mode = Mode.ScaleOnly;
+                } else {
+                    mode = Mode.SwitchScale;
+                }
+                break;
+            case CrossLine:
+                mode = Mode.CrossLine;
+                break;
+            case DoNothing:
+                mode = Mode.DoNothing;
+                break;
+        }
+        paths = GeoGebraReader.getPaths(plan, mode, startingSide, plateData);
         Components.getIntake().closeClaw();
         stage = 0;
     }
