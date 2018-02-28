@@ -40,6 +40,13 @@ public class Auto {
         PlateData plateData = MatchData.getPlateData();
         switch (plan) {
             case SwitchThenScale:
+                if (startingSide != StartingSide.Center
+                    && plateData.getNearSwitchSide().toStartingSide() != startingSide) {
+                    mode = Mode.ScaleOnly;
+                } else {
+                    mode = Mode.SwitchScale;
+                }
+                break;
             case SwitchOnly:
                 mode = Mode.SwitchScale;
                 break;

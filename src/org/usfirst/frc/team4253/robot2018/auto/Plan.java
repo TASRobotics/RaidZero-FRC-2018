@@ -6,6 +6,9 @@ package org.usfirst.frc.team4253.robot2018.auto;
 public enum Plan {
     /**
      * Switch then scale.
+     * 
+     * <p>Unless we start from the side and the switch is on the opposite side. Then we do scale
+     * first.
      */
     SwitchThenScale,
     /**
