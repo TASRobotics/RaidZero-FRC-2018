@@ -119,11 +119,14 @@ public class Auto {
             if (index == prevIndex) {
                 sameIndexIterations++;
                 double progress = autoDrive.getProgress(path);
-                if (sameIndexIterations >= 25 && progress <= 0.90 && progress >= 0.10) {
+                if ((sameIndexIterations >= 500 / 20 || Math.abs(autoDrive.getCurrentAngle(path)
+                        - Components.getDrive().getPigeon().getFusedHeading()) > 15)
+                    && progress <= 0.9 && progress >= 0.1) {
                     autoDrive.pauseDrive();
                     Components.getLift().movePWM(0);
                     Components.getIntake().stopWheels();
                     abort = true;
+                    return;
                 }
             } else {
                 sameIndexIterations = 0;

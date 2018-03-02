@@ -112,6 +112,12 @@ public class AutoDrive {
         return (int) (current * path.getMotorData().length / targetPos);
     }
 
+    public double getCurrentAngle(AutoPath path) {
+        int targetPos = getTargetPos(path);
+        GeoGebraEntry current = interpolate(path.getMotorData(), targetPos);
+        return current.getAngle();
+    }
+
     public boolean checkFinished(AutoPath path) {
         int targetPos = Math.abs(getTargetPos(path));
         int averageCurrentVel = Math.abs((leftMotor.getSelectedSensorVelocity(MotorSettings.PID_IDX)
