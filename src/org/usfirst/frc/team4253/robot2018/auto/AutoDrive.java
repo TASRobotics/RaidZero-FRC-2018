@@ -106,6 +106,12 @@ public class AutoDrive {
         return getEncoderPos() / Math.abs(getTargetPos(path));
     }
 
+    public int getCurrentIndex(AutoPath path) {
+        int targetPos = getTargetPos(path);
+        double current = getEncoderPos();
+        return (int) (current * path.getMotorData().length / targetPos);
+    }
+
     public boolean checkFinished(AutoPath path) {
         int targetPos = Math.abs(getTargetPos(path));
         int averageCurrentVel = Math.abs((leftMotor.getSelectedSensorVelocity(MotorSettings.PID_IDX)

@@ -15,6 +15,9 @@ public class Auto {
     private static Mode mode;
     private static List<AutoPath> paths;
     private static int stage;
+    private static int prevIndex;
+    private static int sameIndexIterations;
+    private static boolean abort;
 
     /**
      * Initializes the autonomous-specific components.
@@ -71,6 +74,9 @@ public class Auto {
         paths = GeoGebraReader.getPaths(plan, mode, startingSide, plateData);
         Components.getIntake().closeClaw();
         stage = 0;
+        prevIndex = 0;
+        sameIndexIterations = 0;
+        abort = false;
     }
 
     /**
@@ -79,6 +85,9 @@ public class Auto {
      * <p>This should be called repeatedly during autonomous mode.
      */
     public static void run() {
+        if (abort) {
+            return;
+        }
         switch (mode) {
             case SwitchScale:
             case ScaleOnly:
@@ -106,11 +115,26 @@ public class Auto {
         if (stage < paths.size()) {
             AutoPath path = paths.get(stage);
             autoDrive.moveCurve(path);
+            int index = autoDrive.getCurrentIndex(path);
+            if (index == prevIndex) {
+                sameIndexIterations++;
+                double progress = autoDrive.getProgress(path);
+                if (sameIndexIterations >= 25 && progress <= 0.90 && progress >= 0.10) {
+                    autoDrive.pauseDrive();
+                    Components.getLift().movePWM(0);
+                    Components.getIntake().stopWheels();
+                    abort = true;
+                }
+            } else {
+                sameIndexIterations = 0;
+            }
+            prevIndex = index;
             moveOtherComponents(path);
             if (autoDrive.checkFinished(path)) {
                 transition();
                 autoDrive.finishPath(path);
                 stage++;
+                prevIndex = 0;
             }
         } else {
             autoDrive.pauseDrive();
