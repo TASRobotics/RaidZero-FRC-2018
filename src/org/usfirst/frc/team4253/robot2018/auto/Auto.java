@@ -126,6 +126,10 @@ public class Auto {
                     Components.getLift().movePWM(0);
                     Components.getIntake().stopWheels();
                     abort = true;
+                    System.out.println("ABORTED");
+                    System.out.println("Angle Diff:" + Math.abs(autoDrive.getCurrentAngle(path)
+                        - Components.getDrive().getPigeon().getFusedHeading()));
+                    System.out.println("Number of stopped iterations:" + sameIndexIterations);
                     return;
                 }
             } else {

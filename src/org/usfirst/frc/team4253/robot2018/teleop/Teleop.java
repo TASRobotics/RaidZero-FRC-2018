@@ -92,7 +92,7 @@ public class Teleop {
             // Arm
             if (Math.abs(controller2.getY(kRight)) <= 0.1) {
                 Components.getClimb().stopArm();
-            } else if (controller2.getTriggerAxis(kRight) > 0.8) {
+            } else if (controller2.getTriggerAxis(kRight) > 0.8 && controller2.getY(kRight) <= 0) {
                 Components.getClimb().moveArmTurbo(controller2.getY(kRight));
             } else {
                 Components.getClimb().moveArm(controller2.getY(kRight));
