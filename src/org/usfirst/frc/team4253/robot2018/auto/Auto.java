@@ -15,6 +15,9 @@ public class Auto {
     private static Mode mode;
     private static List<AutoPath> paths;
     private static int stage;
+    private static int prevIndex;
+    private static int sameIndexIterations;
+    private static boolean abort;
 
     /**
      * Initializes the autonomous-specific components.
@@ -35,11 +38,45 @@ public class Auto {
     public static void setup() {
         autoDrive.setup();
         Components.getLift().resetEnc();
-        mode = AutoChooser.getMode();
-        paths =
-            GeoGebraReader.getPaths(mode, AutoChooser.getStartingSide(), MatchData.getPlateData());
+        Plan plan = AutoChooser.getPlan();
+        StartingSide startingSide = AutoChooser.getStartingSide();
+        PlateData plateData = MatchData.getPlateData();
+        switch (plan) {
+            case SwitchThenScale:
+                if (startingSide != StartingSide.Center
+                    && plateData.getNearSwitchSide().toStartingSide() != startingSide) {
+                    mode = Mode.ScaleOnly;
+                } else {
+                    mode = Mode.SwitchScale;
+                }
+                break;
+            case SwitchOnly:
+                mode = Mode.SwitchScale;
+                break;
+            case ScaleThenSwitch:
+            case ActuallyScaleOnly:
+                mode = Mode.ScaleOnly;
+                break;
+            case ScaleFirstIfSameSide:
+                if (plateData.getNearSwitchSide() == plateData.getScaleSide()) {
+                    mode = Mode.ScaleOnly;
+                } else {
+                    mode = Mode.SwitchScale;
+                }
+                break;
+            case CrossLine:
+                mode = Mode.CrossLine;
+                break;
+            case DoNothing:
+                mode = Mode.DoNothing;
+                break;
+        }
+        paths = GeoGebraReader.getPaths(plan, mode, startingSide, plateData);
         Components.getIntake().closeClaw();
         stage = 0;
+        prevIndex = 0;
+        sameIndexIterations = 0;
+        abort = false;
     }
 
     /**
@@ -48,6 +85,9 @@ public class Auto {
      * <p>This should be called repeatedly during autonomous mode.
      */
     public static void run() {
+        if (abort) {
+            return;
+        }
         switch (mode) {
             case SwitchScale:
             case ScaleOnly:
@@ -75,14 +115,35 @@ public class Auto {
         if (stage < paths.size()) {
             AutoPath path = paths.get(stage);
             autoDrive.moveCurve(path);
+            int index = autoDrive.getCurrentIndex(path);
+            if (index == prevIndex) {
+                sameIndexIterations++;
+                double progress = autoDrive.getProgress(path);
+                if ((sameIndexIterations >= 500 / 20 || Math.abs(autoDrive.getCurrentAngle(path)
+                        - Components.getDrive().getPigeon().getFusedHeading()) > 15)
+                    && progress <= 0.9 && progress >= 0.1) {
+                    autoDrive.pauseDrive();
+                    Components.getLift().movePWM(0);
+                    Components.getIntake().stopWheels();
+                    abort = true;
+                    System.out.println("ABORTED");
+                    System.out.println("Angle Diff:" + Math.abs(autoDrive.getCurrentAngle(path)
+                        - Components.getDrive().getPigeon().getFusedHeading()));
+                    System.out.println("Number of stopped iterations:" + sameIndexIterations);
+                    return;
+                }
+            } else {
+                sameIndexIterations = 0;
+            }
+            prevIndex = index;
             moveOtherComponents(path);
             if (autoDrive.checkFinished(path)) {
                 transition();
+                autoDrive.finishPath(path);
                 stage++;
-                autoDrive.resetEncoders();
+                prevIndex = 0;
             }
-        }
-        else {
+        } else {
             autoDrive.pauseDrive();
         }
     }
@@ -108,7 +169,7 @@ public class Auto {
                         }
                         break;
                     case 1:
-                        Components.getLift().move(100);
+                        Components.getLift().move(Lift.GRAB_CUBE_HEIGHT);
                         Components.getIntake().stopWheels();
                         break;
                     case 2:
@@ -142,6 +203,24 @@ public class Auto {
                             Components.getIntake().runWheelsOut(0.5);
                         }
                         break;
+                    case 1:
+                        if (autoDrive.getProgress(path) > 0.1) {
+                            Components.getLift().move(Lift.GRAB_CUBE_HEIGHT);
+                        }
+                        break;
+                    case 2:
+                        if (autoDrive.getProgress(path) > 0.5) {
+                            Components.getIntake().runWheelsIn(1);
+                        }
+                        if (autoDrive.getProgress(path) > 0.9) {
+                            Components.getLift().move(Lift.SWITCH_HEIGHT);
+                        }
+                        if (autoDrive.getProgress(path) > 0.98) {
+                            Components.getIntake().runWheelsOut(0.4);
+                        }
+                        if (autoDrive.getProgress(path) > 0.99) {
+                            Components.getIntake().openClaw();
+                        }
                     default:
                         break;
                 }
@@ -174,6 +253,10 @@ public class Auto {
                     case 0:
                         Components.getIntake().stopWheels();
                         break;
+                    case 1:
+                        break;
+                    case 2:
+                        Components.getIntake().stopWheels();
                     default:
                         break;
                 }

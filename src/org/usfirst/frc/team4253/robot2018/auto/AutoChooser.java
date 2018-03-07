@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class AutoChooser {
 
     private static SendableChooser<StartingSide> startingSideChooser;
-    private static SendableChooser<Mode> modeChooser;
+    private static SendableChooser<Plan> planChooser;
 
     /**
      * Creates the SendableChoosers and puts them onto the Smart Dashboard.
@@ -21,12 +21,15 @@ public class AutoChooser {
         startingSideChooser.addObject("Right", StartingSide.Right);
         SmartDashboard.putData("Starting side", startingSideChooser);
 
-        modeChooser = new SendableChooser<>();
-        modeChooser.addDefault("Switch and scale", Mode.SwitchScale);
-        modeChooser.addObject("Cross Line", Mode.CrossLine);
-        modeChooser.addObject("Scale Only", Mode.ScaleOnly);
-        modeChooser.addObject("Do nothing", Mode.DoNothing);
-        SmartDashboard.putData("Auto mode", modeChooser);
+        planChooser = new SendableChooser<>();
+        planChooser.addDefault("Switch then scale", Plan.SwitchThenScale);
+        planChooser.addObject("Scale then switch", Plan.ScaleThenSwitch);
+        planChooser.addObject("Scale first if same side", Plan.ScaleFirstIfSameSide);
+        planChooser.addObject("Switch only", Plan.SwitchOnly);
+        planChooser.addObject("Actually scale only", Plan.ActuallyScaleOnly);
+        planChooser.addObject("Cross line", Plan.CrossLine);
+        planChooser.addObject("Do nothing", Plan.DoNothing);
+        SmartDashboard.putData("Auto plan", planChooser);
     }
 
     /**
@@ -39,12 +42,12 @@ public class AutoChooser {
     }
 
     /**
-     * Returns the selected autonomous mode that the robot should run.
+     * Returns the selected autonomous plan that the robot should run.
      * 
-     * @return the auto mode
+     * @return the auto plan
      */
-    public static Mode getMode() {
-        return modeChooser.getSelected();
+    public static Plan getPlan() {
+        return planChooser.getSelected();
     }
 
 }
