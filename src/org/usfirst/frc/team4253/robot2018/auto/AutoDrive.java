@@ -89,10 +89,10 @@ public class AutoDrive {
         rightMotor.configMotionAcceleration(currentTargets[3] + (int) autoAngleModifier,
             MotorSettings.TIMEOUT);
 
-        rightMotor.set(ControlMode.MotionMagic,
-            targetPos + getfinalAngleToEncoderPosCorrection(path, path.getReverse()));
         leftMotor.set(ControlMode.MotionMagic,
             targetPos - getfinalAngleToEncoderPosCorrection(path, path.getReverse()));
+        rightMotor.set(ControlMode.MotionMagic,
+            targetPos + getfinalAngleToEncoderPosCorrection(path, path.getReverse()));
 
         SmartDashboard.putNumber("Left Difference",
             targetPos - getfinalAngleToEncoderPosCorrection(path, path.getReverse())
@@ -106,6 +106,18 @@ public class AutoDrive {
         return getEncoderPos() / Math.abs(getTargetPos(path));
     }
 
+    public int getCurrentIndex(AutoPath path) {
+        int targetPos = getTargetPos(path);
+        double current = getEncoderPos();
+        return (int) (current * path.getMotorData().length / targetPos);
+    }
+
+    public double getCurrentAngle(AutoPath path) {
+        int targetPos = getTargetPos(path);
+        GeoGebraEntry current = interpolate(path.getMotorData(), targetPos);
+        return current.getAngle();
+    }
+
     public boolean checkFinished(AutoPath path) {
         int targetPos = Math.abs(getTargetPos(path));
         int averageCurrentVel = Math.abs((leftMotor.getSelectedSensorVelocity(MotorSettings.PID_IDX)
@@ -113,6 +125,26 @@ public class AutoDrive {
         SmartDashboard.putNumber("Pos Difference", targetPos - getEncoderPos());
         return averageCurrentVel <= VEL_TOLERANCE
             && Math.abs(targetPos - getEncoderPos()) <= POS_TOLERANCE;
+    }
+
+    /**
+     * Prepares the robot for the next stage by resetting the encoders to the offset between the
+     * target position for the current path and the current encoder positions.
+     * 
+     * @param path the path that has been completed
+     */
+    public void finishPath(AutoPath path) {
+        int targetPos = path.getReverse() ? -getTargetPos(path) : getTargetPos(path);
+        int leftPos = leftMotor.getSelectedSensorPosition(MotorSettings.PID_IDX);
+        int rightPos = rightMotor.getSelectedSensorPosition(MotorSettings.PID_IDX);
+        int correction = getfinalAngleToEncoderPosCorrection(path, path.getReverse());
+        int newLeftPos = leftPos - (targetPos - correction);
+        int newRightPos = rightPos - (targetPos + correction);
+        System.out.println("left: " + newLeftPos + " right: " + newRightPos);
+        leftMotor.setSelectedSensorPosition(newLeftPos, MotorSettings.PID_IDX,
+            MotorSettings.TIMEOUT);
+        rightMotor.setSelectedSensorPosition(newRightPos, MotorSettings.PID_IDX,
+            MotorSettings.TIMEOUT);
     }
 
     /**
@@ -192,7 +224,7 @@ public class AutoDrive {
         double currentPos = getEncoderPos();
 
         if (currentPos <= 0) {
-            System.out.println("currentPos <= 0");
+            // System.out.println("currentPos <= 0");
             return data[0];
         }
 
@@ -201,11 +233,11 @@ public class AutoDrive {
         int nextIndex = prevIndex + 1;
 
         if (nextIndex >= data.length) {
-            System.out.println("nextIndex >= data.length");
+            // System.out.println("nextIndex >= data.length");
             return data[data.length - 1];
         }
 
-        System.out.println("index: " + prevIndex);
+        // System.out.println("index: " + prevIndex);
 
         double prevAngle = data[prevIndex].getAngle();
         double nextAngle = data[nextIndex].getAngle();
