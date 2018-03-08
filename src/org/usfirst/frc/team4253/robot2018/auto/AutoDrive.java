@@ -274,10 +274,10 @@ public class AutoDrive {
     /**
      * Moves the robot to the target position.
      * 
-     * @param targetPos the target encoder position to move the robot to
+     * @param targetPos the target physical position to move the robot to, in inches
      */
     public void moveStraight(int targetPos) {
-        // autoStraight();
+        autoStraight(targetPos - getEncoderPos() < 0);
         autoStraightModifier = 0;
         rightMotor.configMotionCruiseVelocity(DEFAULT_VEL + (int) autoStraightModifier,
             MotorSettings.TIMEOUT);
@@ -288,8 +288,8 @@ public class AutoDrive {
         leftMotor.configMotionAcceleration(DEFAULT_ACCEL + (int) autoStraightModifier,
             MotorSettings.TIMEOUT);
 
-        rightMotor.set(ControlMode.MotionMagic, targetPos);
-        leftMotor.set(ControlMode.MotionMagic, targetPos);
+        rightMotor.set(ControlMode.MotionMagic, INCH_TO_TICKS * targetPos);
+        leftMotor.set(ControlMode.MotionMagic, INCH_TO_TICKS * targetPos);
     }
 
     /**
@@ -297,7 +297,8 @@ public class AutoDrive {
      * 
      * <p>This changes the {@link #autoStraightModifier} so that the robot moves straight.
      */
-    private void autoStraight() {
+    private void autoStraight(boolean reverse) {
+        int sign = reverse ? -1 : 1;
         PigeonIMU.FusionStatus fusionStatus = new PigeonIMU.FusionStatus();
         double[] xyz_dps = new double[3];
         pigeon.getRawGyro(xyz_dps);
@@ -307,6 +308,6 @@ public class AutoDrive {
         currentAngularRate = xyz_dps[2];
 
         autoStraightModifier =
-            (0 - currentAngle) * AUTO_STRAIGHT_P - currentAngularRate * AUTO_STRIAGHT_D;
+            sign * ((0 - currentAngle) * AUTO_STRAIGHT_P - currentAngularRate * AUTO_STRIAGHT_D);
     }
 }

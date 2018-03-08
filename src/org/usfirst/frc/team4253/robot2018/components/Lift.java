@@ -12,6 +12,7 @@ public class Lift {
 
     public static final int GRAB_CUBE_HEIGHT = 50;
     public static final int SWITCH_HEIGHT = 3750;
+    public static final int SAFE_HEIGHT = 2000;
     public static final int SCALE_HEIGHT = 9001; // Highest possible pos : 9800
 
     private static final int TARGET_VEL = 1000;
