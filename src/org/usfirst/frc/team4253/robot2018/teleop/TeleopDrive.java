@@ -3,6 +3,7 @@ package org.usfirst.frc.team4253.robot2018.teleop;
 import org.usfirst.frc.team4253.robot2018.Utils;
 import org.usfirst.frc.team4253.robot2018.components.Drive;
 import org.usfirst.frc.team4253.robot2018.components.Lift;
+import org.usfirst.frc.team4253.robot2018.components.MotorSettings;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 
@@ -34,6 +35,10 @@ public class TeleopDrive {
         drive.getLeftMotor().configOpenloopRamp(DEFAULTRAMPTIME, 0); // Ramp rate - change second
                                                                      // parameter to not-magic
         drive.getRightMotor().configOpenloopRamp(DEFAULTRAMPTIME, 0);
+        drive.getRightMotor().configPeakOutputForward(0.96, MotorSettings.TIMEOUT);
+        drive.getRightMotor().configPeakOutputReverse(-0.96, MotorSettings.TIMEOUT);
+        drive.getLeftMotor().configPeakOutputForward(1.0, MotorSettings.TIMEOUT);
+        drive.getLeftMotor().configPeakOutputReverse(-1.0, MotorSettings.TIMEOUT);
     }
 
     /**

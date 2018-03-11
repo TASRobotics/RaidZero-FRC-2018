@@ -14,7 +14,7 @@ public class Auto {
 
     private static final int TEST_FORWARD_DISTANCE = 80;
     private static final int BACKUP_DISTANCE = 10;
-    private static final int DISTANCE_TOLERANCE = 2;
+    private static final int DISTANCE_TOLERANCE = 1;
 
     private static AutoDrive autoDrive;
     private static Mode mode;

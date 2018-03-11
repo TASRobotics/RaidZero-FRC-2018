@@ -68,7 +68,6 @@ public class Teleop {
         teleopDrive.drive(controller1.getY(kLeft), controller1.getY(kRight), defeatRamp);
 
         // Lift
-        boolean player1IntakeActive = true;
         double rightTriggerAxis = controller1.getTriggerAxis(kRight);
         double leftTriggerAxis = controller1.getTriggerAxis(kLeft);
 
@@ -86,13 +85,6 @@ public class Teleop {
             Components.getLift().movePWM(0);
         }
 
-        // Intake
-        if (controller1.getBumper(kLeft)) {
-            Components.getIntake().runWheelsOut(INTAKE_WHEEL_POWER);
-            player1IntakeActive = true;
-        } else {
-            player1IntakeActive = false;
-        }
         
         // Switch between lift or climb
         if (controller2.getStartButtonPressed()) {
@@ -118,9 +110,8 @@ public class Teleop {
             }
         } else {
             // Intake
-            if (!player1IntakeActive) {
-                Components.getIntake().runWheelsIn(-controller2.getY(kRight) * 0.8);
-            }
+            Components.getIntake().runWheelsIn(-controller2.getY(kRight) * 0.8);
+
             if (controller2.getY(kLeft) >= 0.8) {
                 Components.getIntake().openClaw();
             }
@@ -132,7 +123,12 @@ public class Teleop {
                 Components.getLift().movePWM(controller2.getTriggerAxis(kRight) / 2);
             }
             if ((controller2.getTriggerAxis(kLeft) >= 0.05) && (leftTriggerAxis < 0.1)) {
-                Components.getLift().movePWM(-controller2.getTriggerAxis(kLeft) / 2);
+                Components.getLift().movePWM(-controller2.getTriggerAxis(kLeft) / 3);
+            }
+            if (controller2.getPOV() == 0) {
+                Components.getLift().movePWM(0.5);
+            } else if (controller2.getPOV() == 180) {
+                Components.getLift().movePWM(-0.3);
             }
         }
 
