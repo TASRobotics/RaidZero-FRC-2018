@@ -28,6 +28,7 @@ public class AutoChooser {
         planChooser.addObject("Switch only", Plan.SwitchOnly);
         planChooser.addObject("Actually scale only", Plan.ActuallyScaleOnly);
         planChooser.addObject("Cross line", Plan.CrossLine);
+        planChooser.addObject("BARKER", Plan.Barker);
         planChooser.addObject("Do nothing", Plan.DoNothing);
         SmartDashboard.putData("Auto plan", planChooser);
     }

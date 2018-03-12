@@ -31,6 +31,24 @@ public class GeoGebraReader {
         ArrayList<AutoPath> paths = new ArrayList<>();
         try {
             switch (mode) {
+                case Barker:
+                    if (Side.Right == plateData.getNearSwitchSide()) {
+                        paths.add(read(mode, 0, startingSide, plateData.getScaleSide()));
+                        paths
+                            .add(read(mode, 1, plateData.getScaleSide(), plateData.getScaleSide()));
+                    } else {
+                        paths.add(read(mode, 0, startingSide, plateData.getNearSwitchSide()));
+                        if (plateData.getNearSwitchSide() == plateData.getScaleSide()) {
+                            paths.add(read(mode, 1, plateData.getNearSwitchSide(),
+                                plateData.getNearSwitchSide().opposite()));
+                        } else {
+                            paths.add(read(mode, 1, plateData.getNearSwitchSide(),
+                                plateData.getNearSwitchSide()));
+                        }
+                        paths.add(read(mode, 2, plateData.getScaleSide().opposite(),
+                            plateData.getScaleSide()));
+                    }
+                    break;
                 case SwitchScale:
                     paths.add(read(mode, 0, startingSide, plateData.getNearSwitchSide()));
                     if (plan == Plan.SwitchOnly) {

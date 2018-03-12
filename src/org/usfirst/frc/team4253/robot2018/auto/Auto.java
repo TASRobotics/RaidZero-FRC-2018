@@ -76,6 +76,9 @@ public class Auto {
             case CrossLine:
                 mode = Mode.CrossLine;
                 break;
+            case Barker:
+                mode = Mode.Barker;
+                break;
             case DoNothing:
                 mode = Mode.DoNothing;
                 break;
