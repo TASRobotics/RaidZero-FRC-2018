@@ -91,6 +91,11 @@ public class Auto {
         abort = false;
         // testForwardSafe = false;
         testForwardState = 0;
+        if (plateData.getNearSwitchSide() == Side.Left && mode == Mode.Barker) {
+            mode = Mode.SwitchScale;
+        } else if (plateData.getNearSwitchSide() == Side.Right && mode == Mode.Barker) {
+            mode = Mode.ScaleOnly;
+        }
     }
 
     /**
@@ -103,6 +108,7 @@ public class Auto {
             return;
         }
         switch (mode) {
+            case Barker:
             case SwitchScale:
             case ScaleOnly:
                 runPathAuto();

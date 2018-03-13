@@ -33,20 +33,18 @@ public class GeoGebraReader {
             switch (mode) {
                 case Barker:
                     if (Side.Right == plateData.getNearSwitchSide()) {
-                        paths.add(read(mode, 0, startingSide, plateData.getScaleSide()));
-                        paths
-                            .add(read(mode, 1, plateData.getScaleSide(), plateData.getScaleSide()));
+                        paths.add(read(Mode.ScaleOnly, 0, startingSide, plateData.getScaleSide()));
+                        paths.add(read(Mode.ScaleOnly, 1, plateData.getScaleSide(),
+                                plateData.getScaleSide()));
+                        System.out.println("" + paths.get(0).getMode() + paths.get(0).getStage()
+                            + paths.get(0).getStart() + paths.get(0).getEnd());
+                        System.out.println("" + paths.get(1).getMode() + paths.get(1).getStage()
+                            + paths.get(1).getStart() + paths.get(1).getEnd());
                     } else {
-                        paths.add(read(mode, 0, startingSide, plateData.getNearSwitchSide()));
-                        if (plateData.getNearSwitchSide() == plateData.getScaleSide()) {
-                            paths.add(read(mode, 1, plateData.getNearSwitchSide(),
-                                plateData.getNearSwitchSide().opposite()));
-                        } else {
-                            paths.add(read(mode, 1, plateData.getNearSwitchSide(),
-                                plateData.getNearSwitchSide()));
-                        }
-                        paths.add(read(mode, 2, plateData.getScaleSide().opposite(),
-                            plateData.getScaleSide()));
+                        paths.add(
+                            read(Mode.SwitchScale, 0, startingSide, plateData.getNearSwitchSide()));
+                        System.out.println("" + paths.get(0).getMode() + paths.get(0).getStage()
+                            + paths.get(0).getStart() + paths.get(0).getEnd());
                     }
                     break;
                 case SwitchScale:
