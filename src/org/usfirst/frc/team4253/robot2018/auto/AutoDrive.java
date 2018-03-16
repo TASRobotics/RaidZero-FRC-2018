@@ -66,6 +66,7 @@ public class AutoDrive {
         leftMotor.setSelectedSensorPosition(0, MotorSettings.PID_IDX, MotorSettings.TIMEOUT);
     }
 
+
     /**
      * Moves the robot in a curve.
      * 
@@ -79,7 +80,8 @@ public class AutoDrive {
         }
         int[] currentTargets =
             convertToMotorValues(current.getPercentDifference(), path.getReverse());
-        autoAngle(current.getAngle(), current.getPercentDifference(), path.getReverse());
+        autoAngle(current.getAngle(), current.getPercentDifference());
+
         leftMotor.configMotionCruiseVelocity(currentTargets[0] - (int) autoAngleModifier,
             MotorSettings.TIMEOUT);
         rightMotor.configMotionCruiseVelocity(currentTargets[1] + (int) autoAngleModifier,
@@ -155,7 +157,7 @@ public class AutoDrive {
      * @param targetAngle the angle to try to reach
      * @param reverse the boolean to tell to reverse
      */
-    private void autoAngle(double targetAngle, double percentDiff, boolean reverse) {
+    private void autoAngle(double targetAngle, double percentDiff) {
         PigeonIMU.FusionStatus fusionStatus = new PigeonIMU.FusionStatus();
         double[] xyz_dps = new double[3];
         pigeon.getRawGyro(xyz_dps);
@@ -166,8 +168,8 @@ public class AutoDrive {
 
         autoAngleModifier =
             (targetAngle - currentAngle) * AUTO_ANGLE_P - currentAngularRate * AUTO_ANGLE_D;
-
-        if (reverse) {
+        // if going backwards, PID'ing must be reversed
+        if (leftMotor.getSelectedSensorVelocity(0) < 0) {
             autoAngleModifier = -autoAngleModifier;
         }
     }
@@ -271,33 +273,39 @@ public class AutoDrive {
         rightMotor.set(ControlMode.MotionMagic, 0);
     }
 
+    public void moveStraight(int targetPosInches) {
+        moveStraight(targetPosInches, 0, 0, 0);
+    }
+
     /**
      * Moves the robot to the target position.
      * 
-     * @param targetPos the target encoder position to move the robot to
+     * @param targetPosInches the target physical position to move the robot to, in inches
      */
-    public void moveStraight(int targetPos) {
-        // autoStraight();
-        autoStraightModifier = 0;
+    public void moveStraight(int targetPosInches, int rightInit, int leftInit, double angleHold) {
+        int encoderDistanceTravelled =
+            (int) (targetPosInches * INCH_TO_TICKS - ((rightInit + leftInit) / 2));
+        autoAngle(angleHold, 0);
         rightMotor.configMotionCruiseVelocity(DEFAULT_VEL + (int) autoStraightModifier,
             MotorSettings.TIMEOUT);
         rightMotor.configMotionAcceleration(DEFAULT_ACCEL + (int) autoStraightModifier,
             MotorSettings.TIMEOUT);
-        leftMotor.configMotionCruiseVelocity(DEFAULT_VEL + (int) autoStraightModifier,
+        leftMotor.configMotionCruiseVelocity(DEFAULT_VEL - (int) autoStraightModifier,
             MotorSettings.TIMEOUT);
-        leftMotor.configMotionAcceleration(DEFAULT_ACCEL + (int) autoStraightModifier,
+        leftMotor.configMotionAcceleration(DEFAULT_ACCEL - (int) autoStraightModifier,
             MotorSettings.TIMEOUT);
 
-        rightMotor.set(ControlMode.MotionMagic, targetPos);
-        leftMotor.set(ControlMode.MotionMagic, targetPos);
+        rightMotor.set(ControlMode.MotionMagic, rightInit + encoderDistanceTravelled);
+        leftMotor.set(ControlMode.MotionMagic, leftInit + encoderDistanceTravelled);
     }
+
 
     /**
      * Straightens the robot based off the gyro.
      * 
      * <p>This changes the {@link #autoStraightModifier} so that the robot moves straight.
      */
-    private void autoStraight() {
+    private void autoStraight(double angleHold) {
         PigeonIMU.FusionStatus fusionStatus = new PigeonIMU.FusionStatus();
         double[] xyz_dps = new double[3];
         pigeon.getRawGyro(xyz_dps);
@@ -307,6 +315,10 @@ public class AutoDrive {
         currentAngularRate = xyz_dps[2];
 
         autoStraightModifier =
-            (0 - currentAngle) * AUTO_STRAIGHT_P - currentAngularRate * AUTO_STRIAGHT_D;
+            ((angleHold - currentAngle) * AUTO_STRAIGHT_P - currentAngularRate * AUTO_STRIAGHT_D);
+        if (leftMotor.getSelectedSensorVelocity(0) < 0) {
+            autoAngleModifier = -autoAngleModifier;
+        }
+
     }
 }

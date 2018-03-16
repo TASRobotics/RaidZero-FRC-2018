@@ -1,6 +1,7 @@
 package org.usfirst.frc.team4253.robot2018.teleop;
 
 import org.usfirst.frc.team4253.robot2018.components.Components;
+import org.usfirst.frc.team4253.robot2018.components.Lift;
 
 import static edu.wpi.first.wpilibj.GenericHID.Hand.kLeft;
 import static edu.wpi.first.wpilibj.GenericHID.Hand.kRight;
@@ -20,6 +21,7 @@ public class Teleop {
     private static final double INTAKE_WHEEL_POWER = 0.9;
 
     private static boolean climbMode = false;
+    private static boolean defeatRamp = false;
 
     /**
      * Initializes the teleop-specific components.
@@ -29,7 +31,7 @@ public class Teleop {
     public static void initialize() {
         controller1 = new XboxController(0);
         controller2 = new XboxController(1);
-        teleopDrive = new TeleopDrive(Components.getDrive());
+        teleopDrive = new TeleopDrive(Components.getDrive(), Components.getLift());
     }
 
     /**
@@ -40,9 +42,9 @@ public class Teleop {
      */
     public static void setup() {
         teleopDrive.setup();
-        Components.getLift().resetEnc();
         Components.getClimb().setup();
         climbMode = false;
+        defeatRamp = false;
     }
 
     /**
@@ -52,17 +54,20 @@ public class Teleop {
      */
     public static void run() {
         // Player 1
+        // defeat Ramp timing
+        if (controller1.getStartButton() && controller1.getBackButton()) {
+            defeatRamp = true;
+        }
         // Drive
-        if (controller1.getBumperPressed(kRight)) {
+        if (controller1.getBumperPressed(kLeft)) {
             Components.getDrive().setHighGear();
         }
-        if (controller1.getBumperReleased(kRight)) {
+        if (controller1.getBumperPressed(kRight)) {
             Components.getDrive().setLowGear();
         }
-        teleopDrive.drive(controller1.getY(kLeft), controller1.getY(kRight));
+        teleopDrive.drive(controller1.getY(kLeft), controller1.getY(kRight), defeatRamp);
 
         // Lift
-        boolean player1IntakeActive = true;
         double rightTriggerAxis = controller1.getTriggerAxis(kRight);
         double leftTriggerAxis = controller1.getTriggerAxis(kLeft);
 
@@ -70,17 +75,16 @@ public class Teleop {
             Components.getLift().movePWM(controller1.getTriggerAxis(kRight));
         } else if (leftTriggerAxis > 0.1) {
             Components.getLift().movePWM(-controller1.getTriggerAxis(kLeft) * 0.5);
+        } else if (controller2.getAButton()) {
+            Components.getLift().move(Lift.GRAB_CUBE_HEIGHT);
+        } else if (controller2.getXButton()) {
+            Components.getLift().move(Lift.SWITCH_HEIGHT);
+        } else if (controller2.getYButton()) {
+            Components.getLift().move(Lift.SCALE_HEIGHT);
         } else {
             Components.getLift().movePWM(0);
         }
 
-        // Intake
-        if (controller1.getBumper(kLeft)) {
-            Components.getIntake().runWheelsOut(INTAKE_WHEEL_POWER);
-            player1IntakeActive = true;
-        } else {
-            player1IntakeActive = false;
-        }
         
         // Switch between lift or climb
         if (controller2.getStartButtonPressed()) {
@@ -106,14 +110,25 @@ public class Teleop {
             }
         } else {
             // Intake
-            if (!player1IntakeActive) {
-                Components.getIntake().runWheelsIn(-controller2.getY(kRight));
-            }
+            Components.getIntake().runWheelsIn(-controller2.getY(kRight) * 0.8);
+
             if (controller2.getY(kLeft) >= 0.8) {
                 Components.getIntake().openClaw();
             }
             if (controller2.getY(kLeft) <= -0.8) {
                 Components.getIntake().closeClaw();
+            }
+            // Lift
+            if ((controller2.getTriggerAxis(kRight) >= 0.05) && (rightTriggerAxis < 0.1)) {
+                Components.getLift().movePWM(controller2.getTriggerAxis(kRight) / 2);
+            }
+            if ((controller2.getTriggerAxis(kLeft) >= 0.05) && (leftTriggerAxis < 0.1)) {
+                Components.getLift().movePWM(-controller2.getTriggerAxis(kLeft) / 3);
+            }
+            if (controller2.getPOV() == 0) {
+                Components.getLift().movePWM(0.5);
+            } else if (controller2.getPOV() == 180) {
+                Components.getLift().movePWM(-0.3);
             }
         }
 

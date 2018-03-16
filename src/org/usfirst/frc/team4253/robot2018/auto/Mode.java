@@ -17,6 +17,10 @@ public enum Mode {
      */
     ScaleOnly,
     /**
+     * BARKER
+     */
+    Barker,
+    /**
      * Do nothing.
      */
     DoNothing

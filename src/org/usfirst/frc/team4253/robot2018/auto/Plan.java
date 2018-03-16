@@ -32,6 +32,10 @@ public enum Plan {
      */
     CrossLine,
     /**
+     * BARKER
+     */
+    Barker,
+    /**
      * Do nothing.
      */
     DoNothing
