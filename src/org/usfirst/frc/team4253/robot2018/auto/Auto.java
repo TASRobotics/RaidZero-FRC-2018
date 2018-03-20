@@ -135,7 +135,7 @@ public class Auto {
         if (stage < paths.size()) {
             AutoPath path = paths.get(stage);
             int index = autoDrive.getCurrentIndex(path);
-            if (mode.equals(Mode.SwitchScale) && (stage == 2)) {
+            if (mode.equals(Mode.SwitchScale) && (stage == 2) && false) {
                 System.out.println(testForwardState);
                 switch (testForwardState) {
                     case 0:
