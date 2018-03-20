@@ -120,10 +120,10 @@ public class Teleop {
             }
             // Lift
             if ((controller2.getTriggerAxis(kRight) >= 0.05) && (rightTriggerAxis < 0.1)) {
-                Components.getLift().movePWM(controller2.getTriggerAxis(kRight) / 2);
+                Components.getLift().movePWM(controller2.getTriggerAxis(kRight));
             }
             if ((controller2.getTriggerAxis(kLeft) >= 0.05) && (leftTriggerAxis < 0.1)) {
-                Components.getLift().movePWM(-controller2.getTriggerAxis(kLeft) / 3);
+                Components.getLift().movePWM(-controller2.getTriggerAxis(kLeft) / 2);
             }
             if (controller2.getPOV() == 0) {
                 Components.getLift().movePWM(0.5);
