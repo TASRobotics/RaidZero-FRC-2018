@@ -5,9 +5,13 @@ package org.usfirst.frc.team4253.robot2018.auto;
  */
 public enum Mode {
     /**
-     * Standard switch and scale autonomous.
+     * Switch then scale.
      */
     SwitchScale,
+    /**
+     * Switch from the side.
+     */
+    SideSwitch,
     /**
      * Cross line.
      */
@@ -16,10 +20,6 @@ public enum Mode {
      * Scale only autonomous.
      */
     ScaleOnly,
-    /**
-     * BARKER
-     */
-    Barker,
     /**
      * Do nothing.
      */

@@ -21,55 +21,80 @@ public class GeoGebraReader {
      * data from that file and any subsequent files.
      * 
      * @param plan the autonomous plan
-     * @param mode the autonomous mode
      * @param startingSide the starting position of the robot
      * @param plateData the plate assignment data
      * @return the paths in a list ordered by stage
      */
-    public static List<AutoPath> getPaths(Plan plan, Mode mode, StartingSide startingSide,
+    public static List<AutoPath> getPaths(Plan plan, StartingSide startingSide,
         PlateData plateData) {
         ArrayList<AutoPath> paths = new ArrayList<>();
         try {
-            switch (mode) {
-                case Barker:
-                    if (Side.Right == plateData.getNearSwitchSide()) {
-                        paths.add(read(Mode.ScaleOnly, 0, startingSide, plateData.getScaleSide()));
-                        paths.add(read(Mode.ScaleOnly, 1, plateData.getScaleSide(),
-                                plateData.getScaleSide()));
-                        System.out.println("" + paths.get(0).getMode() + paths.get(0).getStage()
-                            + paths.get(0).getStart() + paths.get(0).getEnd());
-                        System.out.println("" + paths.get(1).getMode() + paths.get(1).getStage()
-                            + paths.get(1).getStart() + paths.get(1).getEnd());
-                    } else {
+            switch (plan) {
+                case SwitchOnly:
+                    if (startingSide == StartingSide.Center) {
                         paths.add(
                             read(Mode.SwitchScale, 0, startingSide, plateData.getNearSwitchSide()));
-                        System.out.println("" + paths.get(0).getMode() + paths.get(0).getStage()
-                            + paths.get(0).getStart() + paths.get(0).getEnd());
+                    } else {
+                        paths.add(
+                            read(Mode.SideSwitch, 0, startingSide, plateData.getNearSwitchSide()));
                     }
                     break;
-                case SwitchScale:
-                    paths.add(read(mode, 0, startingSide, plateData.getNearSwitchSide()));
-                    if (plan == Plan.SwitchOnly) {
-                        break;
-                    }
+                case SwitchThenScale:
+                    paths.add(read(Mode.SwitchScale, 0, startingSide, plateData.getNearSwitchSide()));
                     if (plateData.getNearSwitchSide() == plateData.getScaleSide()) {
-                        paths.add(read(mode, 1, plateData.getNearSwitchSide(),
+                        paths.add(read(Mode.SwitchScale, 1, plateData.getNearSwitchSide(),
                             plateData.getNearSwitchSide().opposite()));
                     } else {
-                        paths.add(read(mode, 1, plateData.getNearSwitchSide(),
+                        paths.add(read(Mode.SwitchScale, 1, plateData.getNearSwitchSide(),
                             plateData.getNearSwitchSide()));
                     }
-                    paths.add(read(mode, 2, plateData.getScaleSide().opposite(),
-                            plateData.getScaleSide()));
+                    paths.add(read(Mode.SwitchScale, 2, plateData.getScaleSide().opposite(),
+                        plateData.getScaleSide()));
                     break;
-                case ScaleOnly:
-                    paths.add(read(mode, 0, startingSide, plateData.getScaleSide()));
-                    paths.add(read(mode, 1, plateData.getScaleSide(), plateData.getScaleSide()));
-                    if (plan == Plan.ActuallyScaleOnly) {
-                        break;
+                case ActuallyScaleOnly:
+                    paths.add(read(Mode.ScaleOnly, 0, startingSide, plateData.getScaleSide()));
+                    paths.add(read(Mode.ScaleOnly, 1, plateData.getScaleSide(),
+                        plateData.getScaleSide()));
+                    break;
+                case ScaleThenSwitch:
+                    if (startingSide != StartingSide.Center
+                        && startingSide == plateData.getNearSwitchSide().toStartingSide()
+                        && plateData.getScaleSide() != plateData.getNearSwitchSide()) {
+                        paths.add(
+                            read(Mode.SideSwitch, 0, startingSide, plateData.getNearSwitchSide()));
+                        paths.add(read(Mode.SideSwitch, 1, plateData.getNearSwitchSide(),
+                            plateData.getNearSwitchSide()));
+                        paths.add(read(Mode.SideSwitch, 2, plateData.getNearSwitchSide(),
+                            plateData.getScaleSide()));
+                    } else {
+                        paths.add(read(Mode.ScaleOnly, 0, startingSide, plateData.getScaleSide()));
+                        paths.add(read(Mode.ScaleOnly, 1, plateData.getScaleSide(),
+                            plateData.getScaleSide()));
+                        paths.add(read(Mode.ScaleOnly, 2, plateData.getScaleSide(),
+                            plateData.getScaleSide()));
                     }
-                    paths.add(
-                        read(mode, 2, plateData.getScaleSide(), plateData.getNearSwitchSide()));
+                    break;
+                case DoubleScale: {
+                    paths.add(read(Mode.ScaleOnly, 0, startingSide, plateData.getScaleSide()));
+                    AutoPath stage1 =
+                        read(Mode.ScaleOnly, 1, plateData.getScaleSide(), plateData.getScaleSide());
+                    paths.add(stage1);
+                    AutoPath stage2 =
+                        read(Mode.ScaleOnly, 2, plateData.getScaleSide(), plateData.getScaleSide());
+                    paths.add(stage2);
+                    paths.add(stage2.flipped()); // stage 3
+                    paths.add(stage1.flipped()); // stage 4
+                    break;
+                }
+                case Elims:
+                    if (plateData.getNearSwitchSide() == Side.Left) {
+                        paths.add(
+                            read(Mode.SideSwitch, 0, startingSide, plateData.getNearSwitchSide()));
+                    } else {
+                        paths.add(read(Mode.ScaleOnly, 0, startingSide, plateData.getScaleSide()));
+                        paths.add(read(Mode.ScaleOnly, 1, plateData.getScaleSide(),
+                            plateData.getScaleSide()));
+                    }
                     break;
                 default:
                     break;
@@ -99,6 +124,8 @@ public class GeoGebraReader {
         switch (mode) {
             case SwitchScale:
                 return "switch and scale";
+            case SideSwitch:
+                return "side switch";
             case ScaleOnly:
                 return "scale only";
             default:
@@ -144,6 +171,8 @@ public class GeoGebraReader {
         switch (input.toLowerCase()) {
             case "switch and scale":
                 return Mode.SwitchScale;
+            case "side switch":
+                return Mode.SideSwitch;
             case "scale only":
                 return Mode.ScaleOnly;
             default:

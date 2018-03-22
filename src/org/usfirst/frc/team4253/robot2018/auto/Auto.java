@@ -12,7 +12,7 @@ import java.util.List;
 public class Auto {
 
     private static AutoDrive autoDrive;
-    private static Mode mode;
+    private static Plan plan;
     private static List<AutoPath> paths;
     private static int stage;
     private static int prevIndex;
@@ -38,53 +38,15 @@ public class Auto {
     public static void setup() {
         autoDrive.setup();
         Components.getLift().resetEnc();
-        Plan plan = AutoChooser.getPlan();
+        plan = AutoChooser.getPlan();
         StartingSide startingSide = AutoChooser.getStartingSide();
         PlateData plateData = MatchData.getPlateData();
-        switch (plan) {
-            case SwitchThenScale:
-                if (startingSide != StartingSide.Center
-                    && plateData.getNearSwitchSide().toStartingSide() != startingSide) {
-                    mode = Mode.ScaleOnly;
-                } else {
-                    mode = Mode.SwitchScale;
-                }
-                break;
-            case SwitchOnly:
-                mode = Mode.SwitchScale;
-                break;
-            case ScaleThenSwitch:
-            case ActuallyScaleOnly:
-                mode = Mode.ScaleOnly;
-                break;
-            case ScaleFirstIfSameSide:
-                if (plateData.getNearSwitchSide() == plateData.getScaleSide()) {
-                    mode = Mode.ScaleOnly;
-                } else {
-                    mode = Mode.SwitchScale;
-                }
-                break;
-            case CrossLine:
-                mode = Mode.CrossLine;
-                break;
-            case Barker:
-                mode = Mode.Barker;
-                break;
-            case DoNothing:
-                mode = Mode.DoNothing;
-                break;
-        }
-        paths = GeoGebraReader.getPaths(plan, mode, startingSide, plateData);
+        paths = GeoGebraReader.getPaths(plan, startingSide, plateData);
         Components.getIntake().closeClaw();
         stage = 0;
         prevIndex = 0;
         sameIndexIterations = 0;
         abort = false;
-        if (plateData.getNearSwitchSide() == Side.Left && mode == Mode.Barker) {
-            mode = Mode.SwitchScale;
-        } else if (plateData.getNearSwitchSide() == Side.Right && mode == Mode.Barker) {
-            mode = Mode.ScaleOnly;
-        }
     }
 
     /**
@@ -96,10 +58,13 @@ public class Auto {
         if (abort) {
             return;
         }
-        switch (mode) {
-            case Barker:
-            case SwitchScale:
-            case ScaleOnly:
+        switch (plan) {
+            case SwitchOnly:
+            case SwitchThenScale:
+            case ActuallyScaleOnly:
+            case ScaleThenSwitch:
+            case DoubleScale:
+            case Elims:
                 runPathAuto();
                 break;
             case CrossLine:
@@ -148,7 +113,7 @@ public class Auto {
             prevIndex = index;
             moveOtherComponents(path);
             if (autoDrive.checkFinished(path)) {
-                transition();
+                transition(path.getMode());
                 autoDrive.finishPath(path);
                 stage++;
                 prevIndex = 0;
@@ -171,7 +136,7 @@ public class Auto {
                 Components.getIntake().stopWheels();
             }
         }
-        switch (mode) {
+        switch (path.getMode()) {
             case SwitchScale:
                 switch (stage) {
                     case 0:
@@ -204,6 +169,45 @@ public class Auto {
                         }
                         if (autoDrive.getProgress(path) > 0.95) {
                             Components.getIntake().runWheelsOut(0.5);
+                        }
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            case SideSwitch:
+                switch (stage) {
+                    case 0:
+                        if (autoDrive.getProgress(path) > 0.3) {
+                            Components.getLift().move(Lift.SWITCH_HEIGHT);
+                        }
+                        if (autoDrive.getProgress(path) > 0.98) {
+                            Components.getIntake().runWheelsOut(0.4);
+                        }
+                        if (autoDrive.getProgress(path) > 0.99) {
+                            Components.getIntake().openClaw();
+                        }
+                        break;
+                    case 1:
+                        Components.getLift().move(Lift.SAFE_HEIGHT);
+                        Components.getIntake().stopWheels();
+                        break;
+                    case 2:
+                        if (autoDrive.getProgress(path) > 0.95) {
+                            Components.getIntake().runWheelsOut(0.5);
+                        } else if (autoDrive.getProgress(path) > 0.55) {
+                            Components.getIntake().stopWheels();
+                        } else if (autoDrive.getProgress(path) > 0.49) {
+                            Components.getIntake().closeClaw();
+                            Components.getIntake().runWheelsIn(0.2);
+                        } else {
+                            Components.getIntake().openClaw();
+                            Components.getIntake().runWheelsIn(1.0);
+                        }
+                        if (autoDrive.getProgress(path) > 0.5) {
+                            Components.getLift().move(Lift.SCALE_HEIGHT);
+                        } else if (autoDrive.getProgress(path) > 0.4) {
+                            Components.getLift().move(Lift.GRAB_CUBE_HEIGHT);
                         }
                         break;
                     default:
@@ -249,10 +253,13 @@ public class Auto {
 
     /**
      * Runs the transition phase between stages.
+     * 
+     * @param prevMode the mode of the stage that was just finished.
      */
-    private static void transition() {
-        switch (mode) {
+    private static void transition(Mode prevMode) {
+        switch (prevMode) {
             case SwitchScale:
+            case SideSwitch:
                 switch (stage) {
                     case 0:
                         break;

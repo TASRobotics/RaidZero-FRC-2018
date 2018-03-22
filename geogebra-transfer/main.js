@@ -6,25 +6,25 @@ const directory = '/home/lvuser/paths/';
 const robotNumber = '4253';
 
 const pathInfoFormat = {
-    mode: oneOf('switch and scale', 'scale only'),
-    stage: dependsOn('mode', mode => {
-        switch (mode) {
-            case 'switch and scale':
-                return numberAnd(stage => stage >= 0 && stage <= 2);
-            case 'scale only':
-                return numberAnd(stage => stage >= 0 && stage <= 2);
-        }
-    }),
+    mode: oneOf('switch and scale', 'scale only', 'side switch'),
+	stage: numberAnd(stage => stage >= 0 && stage <= 2);
     start: dependsOn(['mode', 'stage'], ([mode, stage]) => {
-        if (stage === 0) {
-            return oneOf('left', 'center', 'right');
-        }
-        return oneOf('left', 'right');
+		switch (mode) {
+			case 'switch and scale':
+				return is('center');
+			case 'scale only':
+				return is('left', 'center', 'right');
+			case 'side switch':
+				return is('left', 'right');
+		}
     }),
     end: dependsOn(['mode', 'stage', 'start'], ([mode, stage, start]) => {
-        if (mode === 'switch and scale' && stage === 0 && start !== 'center') {
+        if (mode === 'side switch' && (stage === 0 || stage === 1) || mode === 'scale only' && stage === 1) {
             return is(start);
         }
+		if (mode === 'side switch' && stage === 2) {
+			return is(oppositeOf(start));
+		}
         return oneOf('left', 'right');
     }),
     direction: dependsOn('stage', stage => {
@@ -173,6 +173,15 @@ function upload(filename, data) {
         username: 'lvuser',
         password: ''
     });
+}
+
+function oppositeOf(x) {
+	switch (x) {
+		case 'left':
+			return 'right';
+		case 'right':
+			return 'left';
+	}
 }
 
 function number(x, name) {
