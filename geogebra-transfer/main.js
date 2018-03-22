@@ -22,7 +22,7 @@ const pathInfoFormat = {
         if (mode === 'side switch' && (stage === 0 || stage === 1) || mode === 'scale only' && stage === 1) {
             return is(start);
         }
-		if (mode === 'side switch' && stage === 2) {
+		if (mode === 'switch and scale' && stage === 2 || mode === 'side switch' && stage === 2) {
 			return is(oppositeOf(start));
 		}
         return oneOf('left', 'right');
