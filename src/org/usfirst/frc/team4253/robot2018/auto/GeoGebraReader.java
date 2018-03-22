@@ -40,16 +40,26 @@ public class GeoGebraReader {
                     }
                     break;
                 case SwitchThenScale:
-                    paths.add(read(Mode.SwitchScale, 0, startingSide, plateData.getNearSwitchSide()));
-                    if (plateData.getNearSwitchSide() == plateData.getScaleSide()) {
-                        paths.add(read(Mode.SwitchScale, 1, plateData.getNearSwitchSide(),
-                            plateData.getNearSwitchSide().opposite()));
+                    if (startingSide == StartingSide.Center) {
+                        paths.add(
+                            read(Mode.SwitchScale, 0, startingSide, plateData.getNearSwitchSide()));
+                        if (plateData.getNearSwitchSide() == plateData.getScaleSide()) {
+                            paths.add(read(Mode.SwitchScale, 1, plateData.getNearSwitchSide(),
+                                plateData.getNearSwitchSide().opposite()));
+                        } else {
+                            paths.add(read(Mode.SwitchScale, 1, plateData.getNearSwitchSide(),
+                                plateData.getNearSwitchSide()));
+                        }
+                        paths.add(read(Mode.SwitchScale, 2, plateData.getScaleSide().opposite(),
+                            plateData.getScaleSide()));
                     } else {
-                        paths.add(read(Mode.SwitchScale, 1, plateData.getNearSwitchSide(),
+                        paths.add(
+                            read(Mode.SideSwitch, 0, startingSide, plateData.getNearSwitchSide()));
+                        paths.add(read(Mode.SideSwitch, 1, plateData.getNearSwitchSide(),
                             plateData.getNearSwitchSide()));
+                        paths.add(read(Mode.SideSwitch, 2, plateData.getNearSwitchSide(),
+                            plateData.getScaleSide()));
                     }
-                    paths.add(read(Mode.SwitchScale, 2, plateData.getScaleSide().opposite(),
-                        plateData.getScaleSide()));
                     break;
                 case ActuallyScaleOnly:
                     paths.add(read(Mode.ScaleOnly, 0, startingSide, plateData.getScaleSide()));
