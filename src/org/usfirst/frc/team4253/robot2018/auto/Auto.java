@@ -2,7 +2,6 @@ package org.usfirst.frc.team4253.robot2018.auto;
 
 import org.usfirst.frc.team4253.robot2018.components.Components;
 import org.usfirst.frc.team4253.robot2018.components.Lift;
-import org.usfirst.frc.team4253.robot2018.components.MotorSettings;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.List;
@@ -12,10 +11,6 @@ import java.util.List;
  */
 public class Auto {
 
-    private static final int TEST_FORWARD_DISTANCE = 80;
-    private static final int BACKUP_DISTANCE = 10;
-    private static final int DISTANCE_TOLERANCE = 1;
-
     private static AutoDrive autoDrive;
     private static Mode mode;
     private static List<AutoPath> paths;
@@ -23,10 +18,6 @@ public class Auto {
     private static int prevIndex;
     private static int sameIndexIterations;
     private static boolean abort;
-    // private static boolean testForwardSafe;
-    private static int testForwardState;
-    private static int saveLeftTicks = 0, saveRightTicks = 0;
-    private static double saveAngle = 0;
 
     /**
      * Initializes the autonomous-specific components.
@@ -89,8 +80,6 @@ public class Auto {
         prevIndex = 0;
         sameIndexIterations = 0;
         abort = false;
-        // testForwardSafe = false;
-        testForwardState = 0;
         if (plateData.getNearSwitchSide() == Side.Left && mode == Mode.Barker) {
             mode = Mode.SwitchScale;
         } else if (plateData.getNearSwitchSide() == Side.Right && mode == Mode.Barker) {
@@ -135,49 +124,8 @@ public class Auto {
         if (stage < paths.size()) {
             AutoPath path = paths.get(stage);
             int index = autoDrive.getCurrentIndex(path);
-            if (mode.equals(Mode.SwitchScale) && (stage == 2) && false) {
-                System.out.println(testForwardState);
-                switch (testForwardState) {
-                    case 0:
-                        if (index <= TEST_FORWARD_DISTANCE) {
-                            autoDrive.moveCurve(path);
-                        } else {
-                            testForwardState = 1;
-                            Components.getLift().move(Lift.GRAB_CUBE_HEIGHT);
-                            saveAngle = Components.getDrive().getPigeon().getFusedHeading();
-                            saveLeftTicks = Components.getDrive().getLeftMotor()
-                                .getSelectedSensorPosition(MotorSettings.PID_IDX);
-                            saveRightTicks = Components.getDrive().getRightMotor()
-                                .getSelectedSensorPosition(MotorSettings.PID_IDX);
-                        }
-                        break;
-                    case 1:
-                        if (index >= (TEST_FORWARD_DISTANCE - BACKUP_DISTANCE
-                            + DISTANCE_TOLERANCE)) {
-                            autoDrive.moveStraight(TEST_FORWARD_DISTANCE - BACKUP_DISTANCE,
-                                saveRightTicks, saveLeftTicks, saveAngle);
-                        } else {
-                            testForwardState = 2;
-                        }
-                        break;
-                    case 2:
-                        if (index <= (TEST_FORWARD_DISTANCE - DISTANCE_TOLERANCE)) {
-                            autoDrive.moveStraight(TEST_FORWARD_DISTANCE, saveRightTicks,
-                                saveLeftTicks, saveAngle);
-                        } else {
-                            testForwardState = 3;
-                        }
-                        break;
-                    case 3:
-                        autoDrive.moveCurve(path);
-                        break;
-                }
-            } else {
-                autoDrive.moveCurve(path);
-            }
-            if ((index == prevIndex) && testForwardState != 1 && testForwardState != 2) { // &&
-                                                                                          // moveForward)
-                                                                                          // {
+            autoDrive.moveCurve(path);
+            if (index == prevIndex) {
                 sameIndexIterations++;
                 double progress = autoDrive.getProgress(path);
                 // Safety code to stop drivetrain after a stopping collision or a de-alignment.
