@@ -71,7 +71,7 @@ public class GeoGebraReader {
                         paths.add(read(Mode.ScaleOnly, 1, plateData.getScaleSide(),
                             plateData.getScaleSide()));
                         paths.add(read(Mode.ScaleOnly, 2, plateData.getScaleSide(),
-                            plateData.getScaleSide()));
+                            plateData.getNearSwitchSide()));
                     }
                     break;
                 case DoubleScale: {
