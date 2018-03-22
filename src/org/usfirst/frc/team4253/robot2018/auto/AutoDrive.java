@@ -61,7 +61,7 @@ public class AutoDrive {
      * <p>TODO: Add anything else that's need in the future.
      */
     public void setup() {
-        pigeon.setFusedHeading(0, PIGEON_TIMEOUT);
+        resetPigeon();
         rightMotor.setSelectedSensorPosition(0, MotorSettings.PID_IDX, MotorSettings.TIMEOUT);
         leftMotor.setSelectedSensorPosition(0, MotorSettings.PID_IDX, MotorSettings.TIMEOUT);
     }
@@ -320,5 +320,12 @@ public class AutoDrive {
             autoAngleModifier = -autoAngleModifier;
         }
 
+    }
+
+    /**
+     * Resets the pigeon.
+     */
+    public void resetPigeon() {
+        pigeon.setFusedHeading(0, PIGEON_TIMEOUT);
     }
 }

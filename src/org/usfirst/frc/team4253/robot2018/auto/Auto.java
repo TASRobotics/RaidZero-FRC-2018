@@ -118,6 +118,14 @@ public class Auto {
                 stage++;
                 prevIndex = 0;
             }
+        } else if (plan == Plan.ScaleThenSwitch && stage == 3) {
+            autoDrive.moveStraight(10);
+            if (autoDrive.getEncoderPos() > 9) {
+                Components.getIntake().runWheelsOut(0.4);
+                if (autoDrive.getEncoderPos() > 9.5) {
+                    Components.getIntake().openClaw();
+                }
+            }
         } else {
             autoDrive.pauseDrive();
         }
@@ -155,9 +163,11 @@ public class Auto {
                         Components.getIntake().stopWheels();
                         break;
                     case 2:
-                        if (autoDrive.getProgress(path) > 0.5) {
+                        if (autoDrive.getProgress(path) > 0.95) {
+                            Components.getIntake().runWheelsOut(0.5);
+                        } else if (autoDrive.getProgress(path) > 0.55) {
                             Components.getIntake().stopWheels();
-                        } else if (autoDrive.getProgress(path) > 0.35) {
+                        } else if (autoDrive.getProgress(path) > 0.45) {
                             Components.getIntake().closeClaw();
                             Components.getIntake().runWheelsIn(0.2);
                         } else {
@@ -166,9 +176,8 @@ public class Auto {
                         }
                         if (autoDrive.getProgress(path) > 0.5) {
                             Components.getLift().move(Lift.SCALE_HEIGHT);
-                        }
-                        if (autoDrive.getProgress(path) > 0.95) {
-                            Components.getIntake().runWheelsOut(0.5);
+                        } else if (autoDrive.getProgress(path) > 0.3) {
+                            Components.getLift().move(Lift.GRAB_CUBE_HEIGHT);
                         }
                         break;
                     default:
@@ -197,7 +206,7 @@ public class Auto {
                             Components.getIntake().runWheelsOut(0.5);
                         } else if (autoDrive.getProgress(path) > 0.55) {
                             Components.getIntake().stopWheels();
-                        } else if (autoDrive.getProgress(path) > 0.49) {
+                        } else if (autoDrive.getProgress(path) > 0.45) {
                             Components.getIntake().closeClaw();
                             Components.getIntake().runWheelsIn(0.2);
                         } else {
@@ -206,7 +215,7 @@ public class Auto {
                         }
                         if (autoDrive.getProgress(path) > 0.5) {
                             Components.getLift().move(Lift.SCALE_HEIGHT);
-                        } else if (autoDrive.getProgress(path) > 0.4) {
+                        } else if (autoDrive.getProgress(path) > 0.3) {
                             Components.getLift().move(Lift.GRAB_CUBE_HEIGHT);
                         }
                         break;
@@ -230,17 +239,25 @@ public class Auto {
                         }
                         break;
                     case 2:
-                        if (autoDrive.getProgress(path) > 0.5) {
+                        if (path.getStart() == path.getEnd().toStartingSide()) {
                             Components.getIntake().runWheelsIn(1);
+                            if (autoDrive.getProgress(path) > 95) {
+                                Components.getIntake().closeClaw();
+                            }
+                        } else {
+                            if (autoDrive.getProgress(path) > 0.65) {
+                                Components.getIntake().runWheelsIn(1);
+                            }
+                            if (autoDrive.getProgress(path) > 0.6) {
+                                Components.getIntake().closeClaw();
+                            }
                         }
-                        if (autoDrive.getProgress(path) > 0.9) {
-                            Components.getLift().move(Lift.SWITCH_HEIGHT);
-                        }
-                        if (autoDrive.getProgress(path) > 0.98) {
-                            Components.getIntake().runWheelsOut(0.4);
-                        }
-                        if (autoDrive.getProgress(path) > 0.99) {
-                            Components.getIntake().openClaw();
+                    case 3:
+                        Components.getLift().move(Lift.SWITCH_HEIGHT);
+                    case 4:
+                        Components.getLift().move(Lift.SCALE_HEIGHT);
+                        if (autoDrive.getProgress(path) > 90) {
+                            Components.getIntake().runWheelsOut(0.5);
                         }
                     default:
                         break;
@@ -254,39 +271,45 @@ public class Auto {
     /**
      * Runs the transition phase between stages.
      * 
-     * @param prevMode the mode of the stage that was just finished.
+     * @param prevMode the mode of the stage that was just finished
+     * @return whether the transition is done and we can move to the next stage
      */
-    private static void transition(Mode prevMode) {
+    private static boolean transition(Mode prevMode) {
         switch (prevMode) {
             case SwitchScale:
             case SideSwitch:
                 switch (stage) {
-                    case 0:
-                        break;
-                    case 1:
-                        break;
                     case 2:
                         Components.getIntake().stopWheels();
-                        break;
+                        return true;
                     default:
-                        break;
+                        return true;
                 }
-                break;
             case ScaleOnly:
                 switch (stage) {
                     case 0:
                         Components.getIntake().stopWheels();
-                        break;
+                        return true;
                     case 1:
-                        break;
+                        Components.getIntake().openClaw();
+                        return true;
                     case 2:
                         Components.getIntake().stopWheels();
+                        if (plan == Plan.ScaleThenSwitch) {
+                            Components.getLift().move(Lift.SCALE_HEIGHT);
+                            if (Components.getLift().getEncoderPos() > Lift.SAFE_HEIGHT) {
+                                autoDrive.resetEncoders();
+                                autoDrive.resetPigeon();
+                                return true;
+                            }
+                            return false;
+                        }
+                        return true;
                     default:
-                        break;
+                        return true;
                 }
-                break;
             default:
-                break;
+                return true;
         }
     }
 
@@ -294,7 +317,7 @@ public class Auto {
      * Runs the cross line autonomous.
      */
     private static void crossLine() {
-        autoDrive.moveStraight(11000);
+        autoDrive.moveStraight(140);
     }
 
 }
