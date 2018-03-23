@@ -97,7 +97,7 @@ public class Auto {
                 // Safety code to stop drivetrain after a stopping collision or a de-alignment.
                 if ((sameIndexIterations >= 500 / 20
                     || Math.abs(autoDrive.getCurrentAngle(currentPath)
-                        - Components.getDrive().getPigeon().getFusedHeading()) > 15)
+                        - Components.getDrive().getPigeon().getFusedHeading()) > 20)
                     && progress <= 0.9 && progress >= 0.1) {
                     autoDrive.pauseDrive();
                     Components.getLift().movePWM(0);
@@ -244,7 +244,7 @@ public class Auto {
                     case 2:
                         if (path.getStart() == path.getEnd().toStartingSide()) {
                             Components.getIntake().runWheelsIn(1);
-                            if (autoDrive.getProgress(path) > 95) {
+                            if (autoDrive.getProgress(path) > 0.95) {
                                 Components.getIntake().closeClaw();
                             }
                         } else {
@@ -264,13 +264,16 @@ public class Auto {
                                 Components.getIntake().closeClaw();
                             }
                         }
+                        break;
                     case 3:
                         Components.getLift().move(Lift.SWITCH_HEIGHT);
+                        break;
                     case 4:
                         Components.getLift().move(Lift.SCALE_HEIGHT);
-                        if (autoDrive.getProgress(path) > 90) {
+                        if (autoDrive.getProgress(path) > 0.90) {
                             Components.getIntake().runWheelsOut(0.5);
                         }
+                        break;
                     default:
                         break;
                 }

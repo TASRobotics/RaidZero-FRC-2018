@@ -7,7 +7,12 @@ const robotNumber = '4253';
 
 const pathInfoFormat = {
     mode: oneOf('switch and scale', 'scale only', 'side switch'),
-	stage: numberAnd(stage => stage >= 0 && stage <= 2),
+	stage: dependsOn('mode', mode => {
+		if (mode === 'scale only') {
+			return numberAnd(stage => stage >= 0 && stage <= 4);
+		}
+		return numberAnd(stage => stage >= 0 && stage <= 2);
+	}),
     start: dependsOn(['mode', 'stage'], ([mode, stage]) => {
 		if (stage === 0) {
 			switch (mode) {
@@ -22,7 +27,7 @@ const pathInfoFormat = {
 		return oneOf('left', 'right');
     }),
     end: dependsOn(['mode', 'stage', 'start'], ([mode, stage, start]) => {
-        if (mode === 'side switch' && (stage === 0 || stage === 1) || mode === 'scale only' && stage === 1) {
+        if (mode === 'side switch' && (stage === 0 || stage === 1) || mode === 'scale only' && [1, 3, 4].includes(stage)) {
             return is(start);
         }
 		if (mode === 'switch and scale' && stage === 2 || mode === 'side switch' && stage === 2) {
