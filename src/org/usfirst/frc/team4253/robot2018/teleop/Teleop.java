@@ -6,6 +6,7 @@ import org.usfirst.frc.team4253.robot2018.components.Lift;
 import static edu.wpi.first.wpilibj.GenericHID.Hand.kLeft;
 import static edu.wpi.first.wpilibj.GenericHID.Hand.kRight;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -120,18 +121,20 @@ public class Teleop {
             }
             // Lift
             if ((controller2.getTriggerAxis(kRight) >= 0.05) && (rightTriggerAxis < 0.1)) {
-                Components.getLift().movePWM(controller2.getTriggerAxis(kRight));
+                Components.getLift().movePWM(controller2.getTriggerAxis(kRight) / 2);
             }
             if ((controller2.getTriggerAxis(kLeft) >= 0.05) && (leftTriggerAxis < 0.1)) {
-                Components.getLift().movePWM(-controller2.getTriggerAxis(kLeft) / 2);
+                Components.getLift().movePWM(-controller2.getTriggerAxis(kLeft) / 3);
             }
             if (controller2.getPOV() == 0) {
-                Components.getLift().movePWM(0.5);
+                Components.getLift().movePWM(0.75);
             } else if (controller2.getPOV() == 180) {
-                Components.getLift().movePWM(-0.3);
+                Components.getLift().movePWM(-0.5);
             }
         }
 
+        SmartDashboard.putNumber("Match Time", DriverStation.getInstance().getMatchTime());
+        SmartDashboard.putBoolean("Ramp Rate Override", defeatRamp);
         SmartDashboard.putBoolean("Climb Mode", climbMode);
         SmartDashboard.putNumber("Lift Pos", Components.getLift().getEncoderPos());
         SmartDashboard.putNumber("Drive Left Vel",

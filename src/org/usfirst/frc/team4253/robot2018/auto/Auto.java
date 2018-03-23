@@ -14,6 +14,7 @@ public class Auto {
     private static AutoDrive autoDrive;
     private static Plan plan;
     private static List<AutoPath> paths;
+    private static AutoPath currentPath;
     private static int stage;
     private static int prevIndex;
     private static int sameIndexIterations;
@@ -87,14 +88,15 @@ public class Auto {
      */
     private static void runPathAuto() {
         if (stage < paths.size()) {
-            AutoPath path = paths.get(stage);
-            int index = autoDrive.getCurrentIndex(path);
-            autoDrive.moveCurve(path);
+            currentPath = paths.get(stage);
+            int index = autoDrive.getCurrentIndex(currentPath);
+            autoDrive.moveCurve(currentPath);
             if (index == prevIndex) {
                 sameIndexIterations++;
-                double progress = autoDrive.getProgress(path);
+                double progress = autoDrive.getProgress(currentPath);
                 // Safety code to stop drivetrain after a stopping collision or a de-alignment.
-                if ((sameIndexIterations >= 500 / 20 || Math.abs(autoDrive.getCurrentAngle(path)
+                if ((sameIndexIterations >= 500 / 20
+                    || Math.abs(autoDrive.getCurrentAngle(currentPath)
                         - Components.getDrive().getPigeon().getFusedHeading()) > 15)
                     && progress <= 0.9 && progress >= 0.1) {
                     autoDrive.pauseDrive();
@@ -102,7 +104,8 @@ public class Auto {
                     Components.getIntake().stopWheels();
                     abort = true;
                     System.out.println("ABORTED");
-                    System.out.println("Angle Diff:" + Math.abs(autoDrive.getCurrentAngle(path)
+                    System.out
+                        .println("Angle Diff:" + Math.abs(autoDrive.getCurrentAngle(currentPath)
                         - Components.getDrive().getPigeon().getFusedHeading()));
                     System.out.println("Number of stopped iterations:" + sameIndexIterations);
                     return;
@@ -111,14 +114,14 @@ public class Auto {
                 sameIndexIterations = 0;
             }
             prevIndex = index;
-            moveOtherComponents(path);
-            if (autoDrive.checkFinished(path)) {
-                transition(path.getMode());
-                autoDrive.finishPath(path);
+            moveOtherComponents(currentPath);
+            if (autoDrive.checkFinished(currentPath) && transition(currentPath.getMode())) {
+                autoDrive.finishPath(currentPath);
                 stage++;
                 prevIndex = 0;
             }
-        } else if (plan == Plan.ScaleThenSwitch && stage == 3) {
+        } else if (plan == Plan.ScaleThenSwitch && stage == 3
+            && currentPath.getStart() == currentPath.getEnd().toStartingSide()) {
             autoDrive.moveStraight(10);
             if (autoDrive.getEncoderPos() > 9) {
                 Components.getIntake().runWheelsOut(0.4);
@@ -137,13 +140,13 @@ public class Auto {
      * @param path the geogebra path.
      */
     private static void moveOtherComponents(AutoPath path) {
-        if (stage == 0) {
-            if (autoDrive.getCurrentIndex(path) == 0) {
-                Components.getIntake().runWheelsIn(0.5);
-            } else if (autoDrive.getCurrentIndex(path) == 1) {
-                Components.getIntake().stopWheels();
-            }
-        }
+        // if (stage == 0) {
+        // if (autoDrive.getCurrentIndex(path) == 0) {
+        // Components.getIntake().runWheelsIn(0.5);
+        // } else if (autoDrive.getCurrentIndex(path) == 1) {
+        // Components.getIntake().stopWheels();
+        // }
+        // }
         switch (path.getMode()) {
             case SwitchScale:
                 switch (stage) {
@@ -245,10 +248,19 @@ public class Auto {
                                 Components.getIntake().closeClaw();
                             }
                         } else {
-                            if (autoDrive.getProgress(path) > 0.65) {
+                            if (autoDrive.getProgress(path) < 0.65) {
                                 Components.getIntake().runWheelsIn(1);
                             }
-                            if (autoDrive.getProgress(path) > 0.6) {
+
+                            if (autoDrive.getProgress(path) > 0.65) {
+                                Components.getLift().move(Lift.SWITCH_HEIGHT);
+                            }
+                            if (autoDrive.getProgress(path) > 0.98) {
+                                Components.getIntake().runWheelsOut(0.4);
+                            }
+                            if (autoDrive.getProgress(path) > 0.99) {
+                                Components.getIntake().openClaw();
+                            } else if (autoDrive.getProgress(path) > 0.6) {
                                 Components.getIntake().closeClaw();
                             }
                         }
@@ -296,7 +308,7 @@ public class Auto {
                     case 2:
                         Components.getIntake().stopWheels();
                         if (plan == Plan.ScaleThenSwitch) {
-                            Components.getLift().move(Lift.SCALE_HEIGHT);
+                            Components.getLift().move(Lift.SWITCH_HEIGHT);
                             if (Components.getLift().getEncoderPos() > Lift.SAFE_HEIGHT) {
                                 autoDrive.resetEncoders();
                                 autoDrive.resetPigeon();
