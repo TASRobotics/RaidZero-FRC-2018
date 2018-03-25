@@ -65,8 +65,15 @@ public class Auto {
             case ActuallyScaleOnly:
             case ScaleThenSwitch:
             case DoubleScale:
-            case Elims:
                 runPathAuto();
+                break;
+            case Elims:
+                if (paths.isEmpty()) {
+                    crossLine();
+                    System.out.println("path is empty");
+                } else {
+                    runPathAuto();
+                }
                 break;
             case CrossLine:
                 crossLine();

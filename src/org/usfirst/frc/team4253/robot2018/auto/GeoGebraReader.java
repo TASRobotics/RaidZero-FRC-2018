@@ -97,13 +97,13 @@ public class GeoGebraReader {
                     break;
                 }
                 case Elims:
-                    if (plateData.getNearSwitchSide() == Side.Left) {
-                        paths.add(
-                            read(Mode.SideSwitch, 0, startingSide, plateData.getNearSwitchSide()));
-                    } else {
+                    if (plateData.getScaleSide() == Side.Right) {
                         paths.add(read(Mode.ScaleOnly, 0, startingSide, plateData.getScaleSide()));
                         paths.add(read(Mode.ScaleOnly, 1, plateData.getScaleSide(),
                             plateData.getScaleSide()));
+                    } else if (plateData.getNearSwitchSide() == Side.Right) {
+                        paths.add(
+                            read(Mode.SideSwitch, 0, startingSide, plateData.getNearSwitchSide()));
                     }
                     break;
                 default:
