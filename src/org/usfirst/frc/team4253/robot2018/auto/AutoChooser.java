@@ -24,11 +24,11 @@ public class AutoChooser {
         planChooser = new SendableChooser<>();
         planChooser.addDefault("Switch then scale", Plan.SwitchThenScale);
         planChooser.addObject("Scale then switch", Plan.ScaleThenSwitch);
-        planChooser.addObject("Scale first if same side", Plan.ScaleFirstIfSameSide);
         planChooser.addObject("Switch only", Plan.SwitchOnly);
-        planChooser.addObject("Actually scale only", Plan.ActuallyScaleOnly);
+        planChooser.addObject("Scale only", Plan.ActuallyScaleOnly);
+        planChooser.addObject("Double scale", Plan.DoubleScale);
+        planChooser.addObject("Elims", Plan.Elims);
         planChooser.addObject("Cross line", Plan.CrossLine);
-        planChooser.addObject("BARKER", Plan.Barker);
         planChooser.addObject("Do nothing", Plan.DoNothing);
         SmartDashboard.putData("Auto plan", planChooser);
     }
