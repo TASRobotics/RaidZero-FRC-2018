@@ -1,4 +1,4 @@
-package org.usfirst.frc.team4253.robot2018.components;
+package org.usfirst.frc.team4253.robot2018;
 
 /**
  * Common constants for TalonSRX.

@@ -1,7 +1,7 @@
 package org.usfirst.frc.team4253.robot2018.auto;
 
+import org.usfirst.frc.team4253.robot2018.MotorSettings;
 import org.usfirst.frc.team4253.robot2018.components.Drive;
-import org.usfirst.frc.team4253.robot2018.components.MotorSettings;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
