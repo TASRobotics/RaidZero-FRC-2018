@@ -194,7 +194,7 @@ public class AutoDrive {
      * @param reverse the boolean to reverse
      * @return the array containing motor targets
      */
-    private int[] convertToMotorValues(double percentDiff, boolean reverse) {
+    private static int[] convertToMotorValues(double percentDiff, boolean reverse) {
         int sign = reverse ? -1 : 1;
         if (Math.abs(percentDiff) < 0.1) {
             return new int[] {
@@ -256,11 +256,11 @@ public class AutoDrive {
             + rightMotor.getSelectedSensorPosition(MotorSettings.PID_IDX)) / 2.0);
     }
 
-    private int getTargetPos(AutoPath path) {
+    private static int getTargetPos(AutoPath path) {
         return (int) ((path.getMotorData().length - 1) * INCH_TO_TICKS);
     }
 
-    private int getfinalAngleToEncoderPosCorrection(AutoPath path, boolean reverse) {
+    private static int getfinalAngleToEncoderPosCorrection(AutoPath path, boolean reverse) {
         double initialAngle = path.getMotorData()[0].getAngle();
         double finalAngle = path.getMotorData()[path.getMotorData().length - 1].getAngle();
         return (int) (Math.toRadians((finalAngle - initialAngle)) * WHEEL_BASED_RADIUS
