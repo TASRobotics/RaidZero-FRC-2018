@@ -92,8 +92,8 @@ public class GeoGebraReader {
                     AutoPath stage2 =
                         read(Mode.ScaleOnly, 2, plateData.getScaleSide(), plateData.getScaleSide());
                     paths.add(stage2);
-                    // paths.add(stage2.flipped()); // stage 3
-                    // paths.add(stage1.flipped()); // stage 4
+                    // stage 3
+                    // stage 4
                     break;
                 }
                 case Elims:

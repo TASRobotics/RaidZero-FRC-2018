@@ -147,13 +147,6 @@ public class Auto {
      * @param path the geogebra path.
      */
     private static void moveOtherComponents(AutoPath path) {
-        // if (stage == 0) {
-        // if (autoDrive.getCurrentIndex(path) == 0) {
-        // Components.getIntake().runWheelsIn(0.5);
-        // } else if (autoDrive.getCurrentIndex(path) == 1) {
-        // Components.getIntake().stopWheels();
-        // }
-        // }
         switch (path.getMode()) {
             case SwitchScale:
                 switch (stage) {

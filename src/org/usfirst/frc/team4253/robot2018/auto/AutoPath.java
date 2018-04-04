@@ -86,17 +86,4 @@ public class AutoPath {
         return motorData;
     }
 
-    /**
-     * Returns a flipped version of this path.
-     * 
-     * @return a flipped version of this path.
-     */
-    public AutoPath flipped() {
-        GeoGebraEntry[] flippedMotorData = new GeoGebraEntry[motorData.length];
-        for (int i = 0; i < flippedMotorData.length; i++) {
-            flippedMotorData[i] = motorData[motorData.length - 1 - i];
-        }
-        return new AutoPath(mode, stage, start, end, !reverse, flippedMotorData);
-    }
-
 }
