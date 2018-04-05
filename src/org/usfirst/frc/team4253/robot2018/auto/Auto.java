@@ -102,9 +102,9 @@ public class Auto {
                 sameIndexIterations++;
                 double progress = autoDrive.getProgress(currentPath);
                 // Safety code to stop drivetrain after a stopping collision or a de-alignment.
+                double angle = Components.getDrive().getPigeon().getFusedHeading();
                 if ((sameIndexIterations >= 500 / 20
-                    || Math.abs(autoDrive.getCurrentAngle(currentPath)
-                        - Components.getDrive().getPigeon().getFusedHeading()) > 20)
+                    || Math.abs(autoDrive.getCurrentAngle(currentPath) - angle) > 20)
                     && progress <= 0.9 && progress >= 0.1) {
                     autoDrive.pauseDrive();
                     Components.getLift().movePWM(0);
@@ -112,8 +112,8 @@ public class Auto {
                     abort = true;
                     System.out.println("ABORTED");
                     System.out
-                        .println("Angle Diff:" + Math.abs(autoDrive.getCurrentAngle(currentPath)
-                        - Components.getDrive().getPigeon().getFusedHeading()));
+                        .println("Angle Diff:"
+                            + Math.abs(autoDrive.getCurrentAngle(currentPath) - angle));
                     System.out.println("Number of stopped iterations:" + sameIndexIterations);
                     return;
                 }
