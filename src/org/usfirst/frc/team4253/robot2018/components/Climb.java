@@ -1,5 +1,7 @@
 package org.usfirst.frc.team4253.robot2018.components;
 
+import org.usfirst.frc.team4253.robot2018.MotorSettings;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;

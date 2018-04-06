@@ -1,9 +1,9 @@
 package org.usfirst.frc.team4253.robot2018.teleop;
 
+import org.usfirst.frc.team4253.robot2018.MotorSettings;
 import org.usfirst.frc.team4253.robot2018.Utils;
 import org.usfirst.frc.team4253.robot2018.components.Drive;
 import org.usfirst.frc.team4253.robot2018.components.Lift;
-import org.usfirst.frc.team4253.robot2018.components.MotorSettings;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 

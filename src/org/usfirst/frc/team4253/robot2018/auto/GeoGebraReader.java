@@ -62,8 +62,8 @@ public class GeoGebraReader {
                     }
                     break;
                 case ActuallyScaleOnly:
-                    paths.add(read(Mode.ScaleOnly, 0, startingSide, plateData.getScaleSide()));
-                    paths.add(read(Mode.ScaleOnly, 1, plateData.getScaleSide(),
+                    paths.add(read(Mode.ScaleFirst, 0, startingSide, plateData.getScaleSide()));
+                    paths.add(read(Mode.ScaleFirst, 1, plateData.getScaleSide(),
                         plateData.getScaleSide()));
                     break;
                 case ScaleThenSwitch:
@@ -77,29 +77,29 @@ public class GeoGebraReader {
                         paths.add(read(Mode.SideSwitch, 2, plateData.getNearSwitchSide(),
                             plateData.getScaleSide()));
                     } else {
-                        paths.add(read(Mode.ScaleOnly, 0, startingSide, plateData.getScaleSide()));
-                        paths.add(read(Mode.ScaleOnly, 1, plateData.getScaleSide(),
+                        paths.add(read(Mode.ScaleFirst, 0, startingSide, plateData.getScaleSide()));
+                        paths.add(read(Mode.ScaleFirst, 1, plateData.getScaleSide(),
                             plateData.getScaleSide()));
-                        paths.add(read(Mode.ScaleOnly, 2, plateData.getScaleSide(),
+                        paths.add(read(Mode.ScaleFirst, 2, plateData.getScaleSide(),
                             plateData.getNearSwitchSide()));
                     }
                     break;
                 case DoubleScale: {
-                    paths.add(read(Mode.ScaleOnly, 0, startingSide, plateData.getScaleSide()));
+                    paths.add(read(Mode.ScaleFirst, 0, startingSide, plateData.getScaleSide()));
                     AutoPath stage1 =
-                        read(Mode.ScaleOnly, 1, plateData.getScaleSide(), plateData.getScaleSide());
+                        read(Mode.ScaleFirst, 1, plateData.getScaleSide(), plateData.getScaleSide());
                     paths.add(stage1);
                     AutoPath stage2 =
-                        read(Mode.ScaleOnly, 2, plateData.getScaleSide(), plateData.getScaleSide());
+                        read(Mode.ScaleFirst, 2, plateData.getScaleSide(), plateData.getScaleSide());
                     paths.add(stage2);
-                    // paths.add(stage2.flipped()); // stage 3
-                    // paths.add(stage1.flipped()); // stage 4
+                    // stage 3
+                    // stage 4
                     break;
                 }
                 case Elims:
                     if (plateData.getScaleSide() == Side.Right) {
-                        paths.add(read(Mode.ScaleOnly, 0, startingSide, plateData.getScaleSide()));
-                        paths.add(read(Mode.ScaleOnly, 1, plateData.getScaleSide(),
+                        paths.add(read(Mode.ScaleFirst, 0, startingSide, plateData.getScaleSide()));
+                        paths.add(read(Mode.ScaleFirst, 1, plateData.getScaleSide(),
                             plateData.getScaleSide()));
                     } else if (plateData.getNearSwitchSide() == Side.Right) {
                         paths.add(
@@ -136,8 +136,8 @@ public class GeoGebraReader {
                 return "switch and scale";
             case SideSwitch:
                 return "side switch";
-            case ScaleOnly:
-                return "scale only";
+            case ScaleFirst:
+                return "scale first";
             default:
                 throw new IllegalArgumentException(
                     "Attempted to read file for invalid mode: " + mode);
@@ -183,8 +183,8 @@ public class GeoGebraReader {
                 return Mode.SwitchScale;
             case "side switch":
                 return Mode.SideSwitch;
-            case "scale only":
-                return Mode.ScaleOnly;
+            case "scale first":
+                return Mode.ScaleFirst;
             default:
                 throw new IllegalArgumentException("Failed to parse mode: " + input);
         }
