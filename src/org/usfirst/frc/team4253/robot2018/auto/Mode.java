@@ -17,9 +17,9 @@ public enum Mode {
      */
     CrossLine,
     /**
-     * Scale only autonomous.
+     * Scale first autonomous.
      */
-    ScaleOnly,
+    ScaleFirst,
     /**
      * Do nothing.
      */

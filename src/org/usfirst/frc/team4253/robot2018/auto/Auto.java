@@ -226,7 +226,7 @@ public class Auto {
                         break;
                 }
                 break;
-            case ScaleOnly:
+            case ScaleFirst:
                 switch (stage) {
                     case 0:
                         if (autoDrive.getProgress(path) > 0.5) {
@@ -300,7 +300,7 @@ public class Auto {
                     default:
                         return true;
                 }
-            case ScaleOnly:
+            case ScaleFirst:
                 switch (stage) {
                     case 0:
                         Components.getIntake().stopWheels();
