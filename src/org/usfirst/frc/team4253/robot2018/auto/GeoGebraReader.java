@@ -25,9 +25,9 @@ public class GeoGebraReader {
      * @param plateData the plate assignment data
      * @return the paths in a list ordered by stage
      */
-    public static List<AutoPath> getPaths(Plan plan, StartingSide startingSide,
+    public static List<Movement> getPaths(Plan plan, StartingSide startingSide,
         PlateData plateData) {
-        ArrayList<AutoPath> paths = new ArrayList<>();
+        ArrayList<Movement> paths = new ArrayList<>();
         try {
             switch (plan) {
                 case SwitchOnly:

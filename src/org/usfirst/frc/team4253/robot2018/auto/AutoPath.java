@@ -3,7 +3,7 @@ package org.usfirst.frc.team4253.robot2018.auto;
 /**
  * An autonomous path segment, corresponding to a single GeoGebra file.
  */
-public class AutoPath {
+public class AutoPath implements Movement {
 
     private Mode mode;
     private int stage;
@@ -32,11 +32,32 @@ public class AutoPath {
         this.motorData = motorData;
     }
 
+    @Override
+    public void run(AutoDrive drive) {
+        drive.moveCurve(this);
+    }
+
+    @Override
+    public double getProgress(AutoDrive drive) {
+        return drive.getProgress(this);
+    }
+
+    @Override
+    public boolean checkFinished(AutoDrive drive) {
+        return drive.checkFinished(this);
+    }
+
+    @Override
+    public void finish(AutoDrive drive) {
+        drive.finishPath(this);
+    }
+
     /**
      * Returns the autonomous mode.
      * 
      * @return the mode
      */
+    @Override
     public Mode getMode() {
         return mode;
     }

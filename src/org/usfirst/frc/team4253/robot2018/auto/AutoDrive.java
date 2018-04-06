@@ -19,6 +19,8 @@ public class AutoDrive {
     private static final double AUTO_ANGLE_D = 0.1;
 
     private static final double INCH_TO_TICKS = 2542 / 32;
+    private static final int TICKS_TO_DEGREES_POINT = 24;
+    private static final int TICKS_TO_DEGREES_PIVOT = 45;
 
     private static final int DEFAULT_VEL = 500;
     private static final int DEFAULT_ACCEL = 1000;
@@ -297,6 +299,23 @@ public class AutoDrive {
 
         rightMotor.set(ControlMode.MotionMagic, rightInit + encoderDistanceTravelled);
         leftMotor.set(ControlMode.MotionMagic, leftInit + encoderDistanceTravelled);
+    }
+
+    public void pointTurn(int degreesToTurn) {
+        int encoderDistanceToTravel = degreesToTurn * TICKS_TO_DEGREES_POINT;
+        rightMotor.set(ControlMode.MotionMagic, encoderDistanceToTravel);
+        leftMotor.set(ControlMode.MotionMagic, -encoderDistanceToTravel);
+    }
+
+    public void pivot(int degreesToTurn, boolean rightSide) {
+        int encoderDistanceToTravel = degreesToTurn * TICKS_TO_DEGREES_PIVOT;
+        if (rightSide) {
+            rightMotor.set(ControlMode.MotionMagic, encoderDistanceToTravel);
+            leftMotor.set(ControlMode.MotionMagic, 0);
+        } else {
+            rightMotor.set(ControlMode.MotionMagic, 0);
+            leftMotor.set(ControlMode.MotionMagic, -encoderDistanceToTravel);
+        }
     }
 
 
