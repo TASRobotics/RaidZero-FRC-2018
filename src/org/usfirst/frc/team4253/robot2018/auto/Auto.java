@@ -147,13 +147,6 @@ public class Auto {
      * @param path the geogebra path.
      */
     private static void moveOtherComponents(AutoPath path) {
-        // if (stage == 0) {
-        // if (autoDrive.getCurrentIndex(path) == 0) {
-        // Components.getIntake().runWheelsIn(0.5);
-        // } else if (autoDrive.getCurrentIndex(path) == 1) {
-        // Components.getIntake().stopWheels();
-        // }
-        // }
         switch (path.getMode()) {
             case SwitchScale:
                 switch (stage) {
@@ -233,7 +226,7 @@ public class Auto {
                         break;
                 }
                 break;
-            case ScaleOnly:
+            case ScaleFirst:
                 switch (stage) {
                     case 0:
                         if (autoDrive.getProgress(path) > 0.5) {
@@ -307,7 +300,7 @@ public class Auto {
                     default:
                         return true;
                 }
-            case ScaleOnly:
+            case ScaleFirst:
                 switch (stage) {
                     case 0:
                         Components.getIntake().stopWheels();

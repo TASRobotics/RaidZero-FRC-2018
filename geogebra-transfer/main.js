@@ -6,9 +6,9 @@ const directory = '/home/lvuser/paths/';
 const robotNumber = '4253';
 
 const pathInfoFormat = {
-    mode: oneOf('switch and scale', 'scale only', 'side switch'),
+    mode: oneOf('switch and scale', 'scale first', 'side switch'),
 	stage: dependsOn('mode', mode => {
-		if (mode === 'scale only') {
+		if (mode === 'scale first') {
 			return numberAnd(stage => stage >= 0 && stage <= 4);
 		}
 		return numberAnd(stage => stage >= 0 && stage <= 2);
@@ -18,7 +18,7 @@ const pathInfoFormat = {
 			switch (mode) {
 				case 'switch and scale':
 					return is('center');
-				case 'scale only':
+				case 'scale first':
 					return oneOf('left', 'center', 'right');
 				case 'side switch':
 					return oneOf('left', 'right');
@@ -27,10 +27,12 @@ const pathInfoFormat = {
 		return oneOf('left', 'right');
     }),
     end: dependsOn(['mode', 'stage', 'start'], ([mode, stage, start]) => {
-        if (mode === 'side switch' && (stage === 0 || stage === 1) || mode === 'scale only' && [1, 3, 4].includes(stage)) {
+        if (mode === 'side switch' && (stage === 0 || stage === 1)
+            || mode === 'scale first' && [1, 3, 4].includes(stage)) {
             return is(start);
         }
-		if (mode === 'switch and scale' && stage === 2 || mode === 'side switch' && stage === 2) {
+		if (mode === 'switch and scale' && stage === 2
+            || mode === 'side switch' && stage === 2) {
 			return is(oppositeOf(start));
 		}
         return oneOf('left', 'right');
