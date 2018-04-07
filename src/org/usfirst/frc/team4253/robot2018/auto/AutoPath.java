@@ -34,17 +34,17 @@ public class AutoPath implements Movement {
 
     @Override
     public void run(AutoDrive drive) {
-        drive.moveCurve(this);
+        drive.movePath(this);
     }
 
     @Override
     public double getProgress(AutoDrive drive) {
-        return drive.getProgress(this);
+        return drive.getPathProgress(this);
     }
 
     @Override
     public boolean checkFinished(AutoDrive drive) {
-        return drive.checkFinished(this);
+        return drive.checkPathFinished(this);
     }
 
     @Override
@@ -52,11 +52,6 @@ public class AutoPath implements Movement {
         drive.finishPath(this);
     }
 
-    /**
-     * Returns the autonomous mode.
-     * 
-     * @return the mode
-     */
     @Override
     public Mode getMode() {
         return mode;

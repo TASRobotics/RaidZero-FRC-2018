@@ -19,14 +19,15 @@ public class AutoDrive {
     private static final double AUTO_ANGLE_D = 0.1;
 
     private static final double INCH_TO_TICKS = 2542 / 32;
-    private static final int TICKS_TO_DEGREES_POINT = 24;
-    private static final int TICKS_TO_DEGREES_PIVOT = 45;
+    private static final double DEGREES_TO_TICKS_POINT = 1.0 / 24;
+    private static final double DEGREES_TO_TICKS_PIVOT = 1.0 / 45;
 
     private static final int DEFAULT_VEL = 500;
     private static final int DEFAULT_ACCEL = 1000;
 
     private static final int VEL_TOLERANCE = 5;
     private static final int POS_TOLERANCE = 25;
+    private static final double ANGLE_TOLERANCE = 1;
 
     private static final int PIGEON_TIMEOUT = 100;
     private static final double WHEEL_BASED_RADIUS = 15.0;
@@ -38,7 +39,6 @@ public class AutoDrive {
 
     private TalonSRX rightMotor;
     private TalonSRX leftMotor;
-    private Drive drive;
     private PigeonIMU pigeon;
 
     /**
@@ -50,7 +50,6 @@ public class AutoDrive {
         rightMotor = drive.getRightMotor();
         leftMotor = drive.getLeftMotor();
         pigeon = drive.getPigeon();
-        this.drive = drive;
         // Reset Encoder At Init
         setup();
     }
@@ -68,13 +67,12 @@ public class AutoDrive {
         leftMotor.setSelectedSensorPosition(0, MotorSettings.PID_IDX, MotorSettings.TIMEOUT);
     }
 
-
     /**
-     * Moves the robot in a curve.
+     * Moves the robot in a path.
      * 
      * @param path the path to move
      */
-    public void moveCurve(AutoPath path) {
+    public void movePath(AutoPath path) {
         int targetPos = getTargetPos(path);
         GeoGebraEntry current = interpolate(path.getMotorData(), targetPos);
         if (path.getReverse()) {
@@ -106,29 +104,53 @@ public class AutoDrive {
                 - rightMotor.getSelectedSensorPosition(0));
     }
 
-    public double getProgress(AutoPath path) {
-        return getEncoderPos() / Math.abs(getTargetPos(path));
+    /**
+     * Returns how much of the path has been completed.
+     * 
+     * @param path the path to check
+     * @return the progress from 0 to 1
+     */
+    public double getPathProgress(AutoPath path) {
+        return getProgress(getTargetPos(path));
     }
 
+    /**
+     * Returns the index of the GeoGebraEntry array that the robot is currently in.
+     * 
+     * <p>Equivalent to how many inches the robot has traveled along this path.
+     * 
+     * @param path the path to check
+     * @return the index
+     */
     public int getCurrentIndex(AutoPath path) {
         int targetPos = getTargetPos(path);
         double current = getEncoderPos();
         return (int) (current * path.getMotorData().length / targetPos);
     }
 
+    /**
+     * Returns the theoretical angle that the robot should be pointing at at this point along the
+     * path.
+     * 
+     * <p>Note: this does NOT return the current angle of the pigeon.
+     * 
+     * @param path the path to check
+     * @return the current angle from geogebra data
+     */
     public double getCurrentAngle(AutoPath path) {
         int targetPos = getTargetPos(path);
         GeoGebraEntry current = interpolate(path.getMotorData(), targetPos);
         return current.getAngle();
     }
 
-    public boolean checkFinished(AutoPath path) {
-        int targetPos = Math.abs(getTargetPos(path));
-        int averageCurrentVel = Math.abs((leftMotor.getSelectedSensorVelocity(MotorSettings.PID_IDX)
-            + rightMotor.getSelectedSensorVelocity(MotorSettings.PID_IDX)) / 2);
-        SmartDashboard.putNumber("Pos Difference", targetPos - getEncoderPos());
-        return averageCurrentVel <= VEL_TOLERANCE
-            && Math.abs(targetPos - getEncoderPos()) <= POS_TOLERANCE;
+    /**
+     * Returns whether this path has been completed.
+     * 
+     * @param path the path to check
+     * @return whether this path has been completed
+     */
+    public boolean checkPathFinished(AutoPath path) {
+        return checkFinished(getTargetPos(path));
     }
 
     /**
@@ -174,14 +196,6 @@ public class AutoDrive {
         if (leftMotor.getSelectedSensorVelocity(0) < 0) {
             autoAngleModifier = -autoAngleModifier;
         }
-    }
-
-    /**
-     * Resets the encoders to 0.
-     */
-    public void resetEncoders() {
-        rightMotor.setSelectedSensorPosition(0, MotorSettings.PID_IDX, MotorSettings.TIMEOUT);
-        leftMotor.setSelectedSensorPosition(0, MotorSettings.PID_IDX, MotorSettings.TIMEOUT);
     }
 
     /**
@@ -253,11 +267,6 @@ public class AutoDrive {
             (nextPercentDifference - prevPercentDifference) * x + prevPercentDifference);
     }
 
-    public double getEncoderPos() {
-        return Math.abs((leftMotor.getSelectedSensorPosition(MotorSettings.PID_IDX)
-            + rightMotor.getSelectedSensorPosition(MotorSettings.PID_IDX)) / 2.0);
-    }
-
     private static int getTargetPos(AutoPath path) {
         return (int) ((path.getMotorData().length - 1) * INCH_TO_TICKS);
     }
@@ -269,21 +278,15 @@ public class AutoDrive {
             * INCH_TO_TICKS);
     }
 
-    public void pauseDrive() {
-        resetEncoders();
-        leftMotor.set(ControlMode.MotionMagic, 0);
-        rightMotor.set(ControlMode.MotionMagic, 0);
-    }
-
-    public void moveStraight(int targetPosInches) {
-        moveStraight(targetPosInches, 0, 0, 0);
-    }
-
     /**
      * Moves the robot to the target position.
      * 
      * @param targetPosInches the target physical position to move the robot to, in inches
      */
+    public void moveStraight(int targetPosInches) {
+        moveStraight(targetPosInches, 0, 0, 0);
+    }
+
     public void moveStraight(int targetPosInches, int rightInit, int leftInit, double angleHold) {
         int encoderDistanceTravelled =
             (int) (targetPosInches * INCH_TO_TICKS - ((rightInit + leftInit) / 2));
@@ -300,24 +303,6 @@ public class AutoDrive {
         rightMotor.set(ControlMode.MotionMagic, rightInit + encoderDistanceTravelled);
         leftMotor.set(ControlMode.MotionMagic, leftInit + encoderDistanceTravelled);
     }
-
-    public void pointTurn(int degreesToTurn) {
-        int encoderDistanceToTravel = degreesToTurn * TICKS_TO_DEGREES_POINT;
-        rightMotor.set(ControlMode.MotionMagic, encoderDistanceToTravel);
-        leftMotor.set(ControlMode.MotionMagic, -encoderDistanceToTravel);
-    }
-
-    public void pivot(int degreesToTurn, boolean rightSide) {
-        int encoderDistanceToTravel = degreesToTurn * TICKS_TO_DEGREES_PIVOT;
-        if (rightSide) {
-            rightMotor.set(ControlMode.MotionMagic, encoderDistanceToTravel);
-            leftMotor.set(ControlMode.MotionMagic, 0);
-        } else {
-            rightMotor.set(ControlMode.MotionMagic, 0);
-            leftMotor.set(ControlMode.MotionMagic, -encoderDistanceToTravel);
-        }
-    }
-
 
     /**
      * Straightens the robot based off the gyro.
@@ -342,9 +327,117 @@ public class AutoDrive {
     }
 
     /**
+     * Returns the progress of moving straight.
+     * 
+     * @param distance the distance to move in inches
+     * @return the progress from 0 to 1
+     */
+    public double getStraightProgress(int distance) {
+        return getProgress(distance * INCH_TO_TICKS);
+    }
+
+    /**
+     * Returns whether the robot has finished moving the given distance.
+     * 
+     * @param distance the distance to move in inches
+     * @return whether the robot has finished moving
+     */
+    public boolean checkStraightFinished(int distance) {
+        return checkFinished(distance * INCH_TO_TICKS);
+    }
+
+    /**
+     * Turns the robot for a given number of degrees.
+     * 
+     * @param type the type of turn to execute
+     * @param degrees the angle in degrees, positive means counterclockwise
+     */
+    public void turn(TurnType type, double degrees) {
+        switch (type) {
+            case PointTurn: {
+                double ticks = degrees * DEGREES_TO_TICKS_POINT;
+                leftMotor.set(ControlMode.MotionMagic, -ticks);
+                rightMotor.set(ControlMode.MotionMagic, ticks);
+                break;
+            }
+            case PivotOnLeft: {
+                double ticks = degrees * DEGREES_TO_TICKS_PIVOT;
+                leftMotor.set(ControlMode.MotionMagic, 0);
+                rightMotor.set(ControlMode.MotionMagic, ticks);
+                break;
+            }
+            case PivotOnRight: {
+                double ticks = degrees * DEGREES_TO_TICKS_PIVOT;
+                leftMotor.set(ControlMode.MotionMagic, -ticks);
+                rightMotor.set(ControlMode.MotionMagic, 0);
+                break;
+            }
+        }
+    }
+
+    /**
+     * Returns the progress of the turn.
+     * 
+     * @param angle the target angle of the turn
+     * @return the turn progress
+     */
+    public double getTurnProgress(double angle) {
+        return pigeon.getFusedHeading() / angle;
+    }
+
+    /**
+     * Returns whether the turn has been completed.
+     * 
+     * @param angle the angle to turn
+     * @return whether the turn is finished
+     */
+    public boolean checkTurnFinished(double angle) {
+        return velocityWithinTolerance()
+            && Math.abs(angle - pigeon.getFusedHeading()) < ANGLE_TOLERANCE;
+    }
+
+    private double getProgress(double target) {
+        return getEncoderPos() / Math.abs(target);
+    }
+
+    private boolean checkFinished(double target) {
+        double targetPos = Math.abs(target);
+        SmartDashboard.putNumber("Pos Difference", targetPos - getEncoderPos());
+        return velocityWithinTolerance() && Math.abs(targetPos - getEncoderPos()) <= POS_TOLERANCE;
+    }
+
+    private boolean velocityWithinTolerance() {
+        return Math.abs((leftMotor.getSelectedSensorVelocity(MotorSettings.PID_IDX)
+            + rightMotor.getSelectedSensorVelocity(MotorSettings.PID_IDX)) / 2) <= VEL_TOLERANCE;
+    }
+
+    private double getEncoderPos() {
+        return Math.abs((leftMotor.getSelectedSensorPosition(MotorSettings.PID_IDX)
+            + rightMotor.getSelectedSensorPosition(MotorSettings.PID_IDX)) / 2.0);
+    }
+
+    /**
+     * Resets the encoders to 0.
+     */
+    public void resetEncoders() {
+        rightMotor.setSelectedSensorPosition(0, MotorSettings.PID_IDX, MotorSettings.TIMEOUT);
+        leftMotor.setSelectedSensorPosition(0, MotorSettings.PID_IDX, MotorSettings.TIMEOUT);
+    }
+
+    /**
      * Resets the pigeon.
      */
     public void resetPigeon() {
         pigeon.setFusedHeading(0, PIGEON_TIMEOUT);
     }
+
+    /**
+     * Stops the drive.
+     */
+    public void pauseDrive() {
+        resetEncoders();
+        leftMotor.set(ControlMode.MotionMagic, 0);
+        rightMotor.set(ControlMode.MotionMagic, 0);
+    }
+
 }

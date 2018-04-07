@@ -96,14 +96,13 @@ public class Auto {
     private static void runPathAuto() {
         if (stage < movements.size()) {
             currentMovement = movements.get(stage);
-            // autoDrive.moveCurve(currentMovement);
             currentMovement.run(autoDrive);
             if (currentMovement instanceof AutoPath) {
                 AutoPath currentPath = (AutoPath) currentMovement;
                 int index = autoDrive.getCurrentIndex(currentPath);
                 if (index == prevIndex) {
                     sameIndexIterations++;
-                    double progress = autoDrive.getProgress(currentPath);
+                    double progress = autoDrive.getPathProgress(currentPath);
                     // Safety code to stop drivetrain after a stopping collision or a de-alignment.
                     double angle = Components.getDrive().getPigeon().getFusedHeading();
                     if ((sameIndexIterations >= 500 / 20
@@ -127,7 +126,6 @@ public class Auto {
             moveOtherComponents(currentMovement);
             if (currentMovement.checkFinished(autoDrive) && transition(currentMovement.getMode())) {
                 currentMovement.finish(autoDrive);
-                // autoDrive.finishPath(currentMovement);
                 stage++;
                 prevIndex = 0;
             }
@@ -249,8 +247,7 @@ public class Auto {
                         break;
                     case 2:
                         if (movement instanceof AutoPath && ((AutoPath) movement)
-                            .getStart() == ((AutoPath) movement).getEnd()
-                            .toStartingSide()) {
+                            .getStart() == ((AutoPath) movement).getEnd().toStartingSide()) {
                             Components.getIntake().runWheelsIn(1);
                             if (movement.getProgress(autoDrive) > 0.95) {
                                 Components.getIntake().closeClaw();
