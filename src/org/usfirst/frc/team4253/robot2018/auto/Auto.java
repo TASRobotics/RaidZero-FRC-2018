@@ -62,7 +62,7 @@ public class Auto {
         switch (plan) {
             case SwitchOnly:
             case SwitchThenScale:
-            case ActuallyScaleOnly:
+            case ScaleOnly:
             case ScaleThenSwitch:
             case DoubleScale:
                 runPathAuto();

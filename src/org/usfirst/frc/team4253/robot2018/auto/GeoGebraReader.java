@@ -61,7 +61,7 @@ public class GeoGebraReader {
                             plateData.getScaleSide()));
                     }
                     break;
-                case ActuallyScaleOnly:
+                case ScaleOnly:
                     paths.add(read(Mode.ScaleFirst, 0, startingSide, plateData.getScaleSide()));
                     paths.add(read(Mode.ScaleFirst, 1, plateData.getScaleSide(),
                         plateData.getScaleSide()));

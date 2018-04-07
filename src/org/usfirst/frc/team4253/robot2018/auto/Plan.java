@@ -15,7 +15,7 @@ public enum Plan {
     /**
      * Scale then move back and stop.
      */
-    ActuallyScaleOnly,
+    ScaleOnly,
     /**
      * Scale then switch.
      * 
