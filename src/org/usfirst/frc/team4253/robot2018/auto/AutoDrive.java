@@ -19,8 +19,8 @@ public class AutoDrive {
     private static final double AUTO_ANGLE_D = 0.1;
 
     private static final double INCH_TO_TICKS = 2542 / 32;
-    private static final double DEGREES_TO_TICKS_POINT = 1.0 / 24;
-    private static final double DEGREES_TO_TICKS_PIVOT = 1.0 / 45;
+    private static final double DEGREES_TO_TICKS_POINT = 24;
+    private static final double DEGREES_TO_TICKS_PIVOT = 45;
 
     private static final int DEFAULT_VEL = 500;
     private static final int DEFAULT_ACCEL = 1000;
