@@ -5,6 +5,10 @@ package org.usfirst.frc.team4253.robot2018.auto;
  */
 public interface Movement {
 
+    default void startWithAngle(double angle) {
+
+    }
+
     /**
      * Performs the movement.
      * 

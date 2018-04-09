@@ -129,9 +129,9 @@ public class Auto {
                 currentMovement.finish(autoDrive);
                 stage++;
                 prevIndex = 0;
-                currentMovement = movements.get(stage);
-                if (currentMovement instanceof Straight || currentMovement instanceof Turn) {
-                    autoDrive.resetEncoders();
+                if (stage < movements.size()) {
+                    double angle = Components.getDrive().getPigeon().getFusedHeading();
+                    movements.get(stage).startWithAngle(angle);
                 }
             }
         }
@@ -269,9 +269,9 @@ public class Auto {
                                 Components.getIntake().runWheelsOut(0.4);
                             }
                             if (movement.getProgress(autoDrive) > 0.99) {
-                                Components.getIntake().openClaw();
-                            } else if (movement.getProgress(autoDrive) > 0.6) {
                                 Components.getIntake().closeClaw();
+                            } else if (movement.getProgress(autoDrive) > 0.6) {
+                                Components.getIntake().openClaw();
                             }
                         }
                         break;
@@ -290,17 +290,6 @@ public class Auto {
                 break;
             case DoubleSwitch: {
                 switch (stage) {
-                    case 0:
-                        if (movement.getProgress(autoDrive) > 0.3) {
-                            Components.getLift().move(Lift.SWITCH_HEIGHT);
-                        }
-                        if (movement.getProgress(autoDrive) > 0.98) {
-                            Components.getIntake().runWheelsOut(0.4);
-                        }
-                        if (movement.getProgress(autoDrive) > 0.99) {
-                            Components.getIntake().openClaw();
-                        }
-                        break;
                     case 1:
                         if (movement.getProgress(autoDrive) > 0.4) {
                             Components.getLift().move(Lift.GRAB_CUBE_HEIGHT);

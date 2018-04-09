@@ -20,14 +20,14 @@ public class AutoDrive {
 
     private static final double INCH_TO_TICKS = 2542 / 32;
     private static final double DEGREES_TO_TICKS_POINT = 24;
-    private static final double DEGREES_TO_TICKS_PIVOT = 45;
+    private static final double DEGREES_TO_TICKS_PIVOT = 50;
 
     private static final int DEFAULT_VEL = 500;
     private static final int DEFAULT_ACCEL = 1000;
 
     private static final int VEL_TOLERANCE = 5;
     private static final int POS_TOLERANCE = 25;
-    private static final double ANGLE_TOLERANCE = 3;
+    private static final double ANGLE_TOLERANCE = 15;
 
     private static final int PIGEON_TIMEOUT = 100;
     private static final double WHEEL_BASED_RADIUS = 15.0;
@@ -284,12 +284,11 @@ public class AutoDrive {
      * @param targetPosInches the target physical position to move the robot to, in inches
      */
     public void moveStraight(int targetPosInches) {
-        moveStraight(targetPosInches, 0, 0, 0);
+        moveStraight(targetPosInches, 0);
     }
 
-    public void moveStraight(int targetPosInches, int rightInit, int leftInit, double angleHold) {
-        int encoderDistanceTravelled =
-            (int) (targetPosInches * INCH_TO_TICKS - ((rightInit + leftInit) / 2));
+    public void moveStraight(int targetPosInches, double angleHold) {
+        int encoderDistanceTravelled = (int) (targetPosInches * INCH_TO_TICKS);
         autoAngle(angleHold, 0);
         rightMotor.configMotionCruiseVelocity(DEFAULT_VEL + (int) autoStraightModifier,
             MotorSettings.TIMEOUT);
@@ -300,8 +299,8 @@ public class AutoDrive {
         leftMotor.configMotionAcceleration(DEFAULT_ACCEL - (int) autoStraightModifier,
             MotorSettings.TIMEOUT);
 
-        rightMotor.set(ControlMode.MotionMagic, rightInit + encoderDistanceTravelled);
-        leftMotor.set(ControlMode.MotionMagic, leftInit + encoderDistanceTravelled);
+        rightMotor.set(ControlMode.MotionMagic, encoderDistanceTravelled);
+        leftMotor.set(ControlMode.MotionMagic, encoderDistanceTravelled);
     }
 
     /**

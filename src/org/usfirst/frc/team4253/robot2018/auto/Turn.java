@@ -8,6 +8,7 @@ public class Turn implements Movement {
     private Mode mode;
     private TurnType type;
     private double angle;
+    private double startingAngle;
 
     /**
      * Constructs a Turn object with the given mode, turn type and angle.
@@ -23,18 +24,23 @@ public class Turn implements Movement {
     }
 
     @Override
+    public void startWithAngle(double angle) {
+        startingAngle = angle;
+    }
+
+    @Override
     public void run(AutoDrive drive) {
         drive.turn(type, angle);
     }
 
     @Override
     public double getProgress(AutoDrive drive) {
-        return drive.getTurnProgress(angle);
+        return drive.getTurnProgress(startingAngle + angle);
     }
 
     @Override
     public boolean checkFinished(AutoDrive drive) {
-        return drive.checkTurnFinished(angle);
+        return drive.checkTurnFinished(startingAngle + angle);
     }
 
     @Override

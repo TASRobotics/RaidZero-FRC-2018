@@ -93,43 +93,45 @@ public class GeoGebraReader {
                     // read(Mode.ScaleFirst, 2, plateData.getScaleSide(), plateData.getScaleSide());
                     // paths.add(stage2);
                     if (plateData.getScaleSide() == Side.Right) {
-                        Turn stage1 = new Turn(Mode.ScaleFirst, TurnType.PointTurn, 60);
+                        Turn stage1 = new Turn(Mode.ScaleFirst, TurnType.PivotOnRight, 90);
                         paths.add(stage1);
-                    } else {
-                        Turn stage1 = new Turn(Mode.ScaleFirst, TurnType.PointTurn, -60);
-                        paths.add(stage1);
-                    }
-                    Straight stage2 = new Straight(Mode.ScaleFirst, 60);
-                    paths.add(stage2);
-                    Straight stage3 = new Straight(Mode.ScaleFirst, -60);
-                    paths.add(stage3);
-                    if (plateData.getScaleSide() == Side.Right) {
-                        Turn stage4 = new Turn(Mode.ScaleFirst, TurnType.PointTurn, -60);
+                        Straight stage2 = new Straight(Mode.ScaleFirst, 60, 90);
+                        paths.add(stage2);
+                        Straight stage3 = new Straight(Mode.ScaleFirst, -60, 90);
+                        paths.add(stage3);
+                        Turn stage4 = new Turn(Mode.ScaleFirst, TurnType.PivotOnRight, -90);
                         paths.add(stage4);
                     } else {
-                        Turn stage4 = new Turn(Mode.ScaleFirst, TurnType.PointTurn, 60);
+                        Turn stage1 = new Turn(Mode.ScaleFirst, TurnType.PivotOnLeft, -90);
+                        paths.add(stage1);
+                        Straight stage2 = new Straight(Mode.ScaleFirst, 60, -90);
+                        paths.add(stage2);
+                        Straight stage3 = new Straight(Mode.ScaleFirst, -60, -90);
+                        paths.add(stage3);
+                        Turn stage4 = new Turn(Mode.ScaleFirst, TurnType.PivotOnLeft, 90);
                         paths.add(stage4);
                     }
                     break;
                 }
                 case DoubleSwitch: {
                     paths.add(
-                        read(Mode.DoubleSwitch, 0, startingSide, plateData.getNearSwitchSide()));
+                        read(Mode.SwitchScale, 0, startingSide, plateData.getNearSwitchSide()));
                     if (plateData.getScaleSide() == Side.Right) {
                         Turn stage1 = new Turn(Mode.DoubleSwitch, TurnType.PivotOnRight, 90);
                         paths.add(stage1);
-                    } else {
-                        Turn stage1 = new Turn(Mode.DoubleSwitch, TurnType.PivotOnLeft, -90);
-                        paths.add(stage1);
-                    }
-                    Straight stage2 = new Straight(Mode.DoubleSwitch, 50);
-                    paths.add(stage2);
-                    Straight stage3 = new Straight(Mode.DoubleSwitch, -50);
-                    paths.add(stage3);
-                    if (plateData.getScaleSide() == Side.Right) {
+                        Straight stage2 = new Straight(Mode.DoubleSwitch, 50, 90);
+                        paths.add(stage2);
+                        Straight stage3 = new Straight(Mode.DoubleSwitch, -50, 90);
+                        paths.add(stage3);
                         Turn stage4 = new Turn(Mode.DoubleSwitch, TurnType.PivotOnRight, -90);
                         paths.add(stage4);
                     } else {
+                        Turn stage1 = new Turn(Mode.DoubleSwitch, TurnType.PivotOnLeft, -90);
+                        paths.add(stage1);
+                        Straight stage2 = new Straight(Mode.DoubleSwitch, 50, -90);
+                        paths.add(stage2);
+                        Straight stage3 = new Straight(Mode.DoubleSwitch, -50, -90);
+                        paths.add(stage3);
                         Turn stage4 = new Turn(Mode.DoubleSwitch, TurnType.PivotOnLeft, 90);
                         paths.add(stage4);
                     }
