@@ -89,11 +89,50 @@ public class GeoGebraReader {
                     AutoPath stage1 =
                         read(Mode.ScaleFirst, 1, plateData.getScaleSide(), plateData.getScaleSide());
                     paths.add(stage1);
-                    AutoPath stage2 =
-                        read(Mode.ScaleFirst, 2, plateData.getScaleSide(), plateData.getScaleSide());
-                    paths.add(stage2);
-                    // stage 3
-                    // stage 4
+                    // AutoPath stage2 =
+                    // read(Mode.ScaleFirst, 2, plateData.getScaleSide(), plateData.getScaleSide());
+                    // paths.add(stage2);
+                    if (plateData.getScaleSide() == Side.Right) {
+                        Turn stage2 = new Turn(Mode.ScaleFirst, TurnType.PointTurn, 90);
+                        paths.add(stage2);
+                    } else {
+                        Turn stage2 = new Turn(Mode.ScaleFirst, TurnType.PointTurn, -90);
+                        paths.add(stage2);
+                    }
+                    Straight stage3 = new Straight(Mode.ScaleFirst, 50);
+                    paths.add(stage3);
+                    Straight stage4 = new Straight(Mode.ScaleFirst, -50);
+                    paths.add(stage4);
+                    if (plateData.getScaleSide() == Side.Right) {
+                        Turn stage5 = new Turn(Mode.ScaleFirst, TurnType.PointTurn, -90);
+                        paths.add(stage5);
+                    } else {
+                        Turn stage5 = new Turn(Mode.ScaleFirst, TurnType.PointTurn, 90);
+                        paths.add(stage5);
+                    }
+                    break;
+                }
+                case DoubleSwitch: {
+                    paths.add(
+                        read(Mode.SwitchScale, 0, startingSide, plateData.getNearSwitchSide()));
+                    if (plateData.getScaleSide() == Side.Right) {
+                        Turn stage2 = new Turn(Mode.SwitchScale, TurnType.PivotOnRight, 90);
+                        paths.add(stage2);
+                    } else {
+                        Turn stage2 = new Turn(Mode.SwitchScale, TurnType.PivotOnLeft, -90);
+                        paths.add(stage2);
+                    }
+                    Straight stage3 = new Straight(Mode.SwitchScale, 50);
+                    paths.add(stage3);
+                    Straight stage4 = new Straight(Mode.SwitchScale, -50);
+                    paths.add(stage4);
+                    if (plateData.getScaleSide() == Side.Right) {
+                        Turn stage5 = new Turn(Mode.SwitchScale, TurnType.PivotOnRight, -90);
+                        paths.add(stage5);
+                    } else {
+                        Turn stage5 = new Turn(Mode.SwitchScale, TurnType.PivotOnLeft, 90);
+                        paths.add(stage5);
+                    }
                     break;
                 }
                 case Elims:

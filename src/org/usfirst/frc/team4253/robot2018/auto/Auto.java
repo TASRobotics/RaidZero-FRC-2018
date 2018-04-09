@@ -65,6 +65,7 @@ public class Auto {
             case ScaleOnly:
             case ScaleThenSwitch:
             case DoubleScale:
+            case DoubleSwitch:
                 runPathAuto();
                 break;
             case Elims:
@@ -128,6 +129,10 @@ public class Auto {
                 currentMovement.finish(autoDrive);
                 stage++;
                 prevIndex = 0;
+                currentMovement = movements.get(stage);
+                if (currentMovement instanceof Straight || currentMovement instanceof Turn) {
+                    autoDrive.resetEncoders();
+                }
             }
         }
         // else if (plan == Plan.ScaleThenSwitch && stage == 3

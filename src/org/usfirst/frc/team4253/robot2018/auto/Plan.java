@@ -28,6 +28,10 @@ public enum Plan {
      */
     DoubleScale,
     /**
+     * Double Switch
+     */
+    DoubleSwitch,
+    /**
      * Cross the line (only works if we start at the side).
      */
     CrossLine,
