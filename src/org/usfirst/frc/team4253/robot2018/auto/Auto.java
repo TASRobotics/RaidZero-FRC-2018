@@ -246,7 +246,7 @@ public class Auto {
                         }
                         break;
                     case 1:
-                        if (movement.getProgress(autoDrive) > 0.1) {
+                        if (movement.getProgress(autoDrive) > 0.4) {
                             Components.getLift().move(Lift.GRAB_CUBE_HEIGHT);
                         }
                         break;
@@ -288,6 +288,52 @@ public class Auto {
                         break;
                 }
                 break;
+            case DoubleSwitch: {
+                switch (stage) {
+                    case 0:
+                        if (movement.getProgress(autoDrive) > 0.3) {
+                            Components.getLift().move(Lift.SWITCH_HEIGHT);
+                        }
+                        if (movement.getProgress(autoDrive) > 0.98) {
+                            Components.getIntake().runWheelsOut(0.4);
+                        }
+                        if (movement.getProgress(autoDrive) > 0.99) {
+                            Components.getIntake().openClaw();
+                        }
+                        break;
+                    case 1:
+                        if (movement.getProgress(autoDrive) > 0.4) {
+                            Components.getLift().move(Lift.GRAB_CUBE_HEIGHT);
+                        }
+                        break;
+                    case 2:
+                        if (movement.getProgress(autoDrive) > 0.5) {
+                            Components.getIntake().runWheelsIn(1);
+                            Components.getIntake().openClaw();
+                        }
+                        if (movement.getProgress(autoDrive) > 0.99) {
+                            Components.getIntake().stopWheels();
+                        } else if (movement.getProgress(autoDrive) > 0.97) {
+                            Components.getIntake().closeClaw();
+                            Components.getIntake().runWheelsIn(0.5);
+                        }
+                        break;
+                    case 3:
+                        if (movement.getProgress(autoDrive) > 0.5) {
+                            Components.getLift().move(Lift.SWITCH_HEIGHT);
+                        }
+                        break;
+                    case 4:
+                        if (movement.getProgress(autoDrive) > 0.98) {
+                            Components.getIntake().runWheelsOut(0.4);
+                        }
+                        if (movement.getProgress(autoDrive) > 0.99) {
+                            Components.getIntake().openClaw();
+                        }
+                        break;
+                }
+                break;
+            }
             default:
                 break;
         }
