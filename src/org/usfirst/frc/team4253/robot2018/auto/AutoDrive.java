@@ -34,7 +34,6 @@ public class AutoDrive {
 
     private double currentAngle;
     private double currentAngularRate;
-    private double autoStraightModifier;
     private double autoAngleModifier;
 
     private TalonSRX rightMotor;
@@ -290,39 +289,17 @@ public class AutoDrive {
     public void moveStraight(int targetPosInches, double angleHold) {
         int encoderDistanceTravelled = (int) (targetPosInches * INCH_TO_TICKS);
         autoAngle(angleHold, 0);
-        rightMotor.configMotionCruiseVelocity(DEFAULT_VEL + (int) autoStraightModifier,
+        rightMotor.configMotionCruiseVelocity(DEFAULT_VEL + (int) autoAngleModifier,
             MotorSettings.TIMEOUT);
-        rightMotor.configMotionAcceleration(DEFAULT_ACCEL + (int) autoStraightModifier,
+        rightMotor.configMotionAcceleration(DEFAULT_ACCEL + (int) autoAngleModifier,
             MotorSettings.TIMEOUT);
-        leftMotor.configMotionCruiseVelocity(DEFAULT_VEL - (int) autoStraightModifier,
+        leftMotor.configMotionCruiseVelocity(DEFAULT_VEL - (int) autoAngleModifier,
             MotorSettings.TIMEOUT);
-        leftMotor.configMotionAcceleration(DEFAULT_ACCEL - (int) autoStraightModifier,
+        leftMotor.configMotionAcceleration(DEFAULT_ACCEL - (int) autoAngleModifier,
             MotorSettings.TIMEOUT);
 
         rightMotor.set(ControlMode.MotionMagic, encoderDistanceTravelled);
         leftMotor.set(ControlMode.MotionMagic, encoderDistanceTravelled);
-    }
-
-    /**
-     * Straightens the robot based off the gyro.
-     * 
-     * <p>This changes the {@link #autoStraightModifier} so that the robot moves straight.
-     */
-    private void autoStraight(double angleHold) {
-        PigeonIMU.FusionStatus fusionStatus = new PigeonIMU.FusionStatus();
-        double[] xyz_dps = new double[3];
-        pigeon.getRawGyro(xyz_dps);
-        pigeon.getFusedHeading(fusionStatus);
-
-        currentAngle = fusionStatus.heading;
-        currentAngularRate = xyz_dps[2];
-
-        autoStraightModifier =
-            ((angleHold - currentAngle) * AUTO_STRAIGHT_P - currentAngularRate * AUTO_STRIAGHT_D);
-        if (leftMotor.getSelectedSensorVelocity(0) < 0) {
-            autoAngleModifier = -autoAngleModifier;
-        }
-
     }
 
     /**
@@ -382,7 +359,8 @@ public class AutoDrive {
      * @return the turn progress
      */
     public double getTurnProgress(double startingAngle, double targetAngle) {
-        return Math.abs(pigeon.getFusedHeading() - startingAngle) / (targetAngle - startingAngle);
+        return Math.abs(pigeon.getFusedHeading() - startingAngle)
+            / Math.abs(targetAngle - startingAngle);
     }
 
     /**

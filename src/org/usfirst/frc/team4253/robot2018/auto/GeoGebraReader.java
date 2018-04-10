@@ -88,26 +88,26 @@ public class GeoGebraReader {
                     AutoPath stage0 =
                         read(Mode.ScaleFirst, 0, startingSide, plateData.getScaleSide());
                     paths.add(stage0);
-                    double angle =
-                        stage0.getMotorData()[stage0.getMotorData().length - 1].getAngle();
                     if (plateData.getScaleSide() == Side.Right) {
-                        Turn stage1 = new Turn(Mode.ScaleFirst, TurnType.PivotOnRight, angle += 90);
+                        Turn stage1 = new Turn(Mode.ScaleFirst, TurnType.PivotOnRight, 135);
                         paths.add(stage1);
-                        Straight stage2 = new Straight(Mode.ScaleFirst, 60, angle);
+                        Straight stage2 = new Straight(Mode.ScaleFirst, 80, 135);
                         paths.add(stage2);
-                        Straight stage3 = new Straight(Mode.ScaleFirst, -60, angle);
+                        Straight stage3 = new Straight(Mode.ScaleFirst, -80, 135);
                         paths.add(stage3);
-                        Turn stage4 = new Turn(Mode.ScaleFirst, TurnType.PivotOnRight, angle -= 90);
+                        Turn stage4 = new Turn(Mode.ScaleFirst, TurnType.PivotOnRight, 45);
                         paths.add(stage4);
+                        paths.add(new Straight(Mode.ScaleFirst, 10, 45));
                     } else {
-                        Turn stage1 = new Turn(Mode.ScaleFirst, TurnType.PivotOnLeft, angle -= 90);
+                        Turn stage1 = new Turn(Mode.ScaleFirst, TurnType.PivotOnLeft, -135);
                         paths.add(stage1);
-                        Straight stage2 = new Straight(Mode.ScaleFirst, 60, angle);
+                        Straight stage2 = new Straight(Mode.ScaleFirst, 60, -135);
                         paths.add(stage2);
-                        Straight stage3 = new Straight(Mode.ScaleFirst, -60, angle);
+                        Straight stage3 = new Straight(Mode.ScaleFirst, -60, -135);
                         paths.add(stage3);
-                        Turn stage4 = new Turn(Mode.ScaleFirst, TurnType.PivotOnLeft, angle += 90);
+                        Turn stage4 = new Turn(Mode.ScaleFirst, TurnType.PivotOnLeft, -45);
                         paths.add(stage4);
+                        paths.add(new Straight(Mode.ScaleFirst, 10, -45));
                     }
                     break;
                 }

@@ -249,7 +249,7 @@ public class Auto {
                         }
                         break;
                     case 1:
-                        if (movement.getProgress(autoDrive) > 0.4) {
+                        if (movement.getProgress(autoDrive) > 0.2) {
                             Components.getLift().move(Lift.GRAB_CUBE_HEIGHT);
                         }
                         break;
@@ -266,26 +266,27 @@ public class Auto {
                             }
 
                             if (movement.getProgress(autoDrive) > 0.65) {
-                                Components.getLift().move(Lift.SWITCH_HEIGHT);
+                                // Components.getLift().move(Lift.SWITCH_HEIGHT);
                             }
                             if (movement.getProgress(autoDrive) > 0.98) {
-                                Components.getIntake().runWheelsOut(0.4);
+                                // Components.getIntake().runWheelsOut(0.4);
                             }
                             if (movement.getProgress(autoDrive) > 0.99) {
                                 Components.getIntake().closeClaw();
                             } else if (movement.getProgress(autoDrive) > 0.6) {
-                                Components.getIntake().openClaw();
+                                // Components.getIntake().openClaw();
                             }
                         }
                         break;
                     case 3:
+                        Components.getIntake().stopWheels();
                         Components.getLift().move(Lift.SWITCH_HEIGHT);
                         break;
                     case 4:
                         Components.getLift().move(Lift.SCALE_HEIGHT);
-                        if (movement.getProgress(autoDrive) > 0.90) {
-                            Components.getIntake().runWheelsOut(0.5);
-                        }
+                        break;
+                    case 5:
+                        Components.getIntake().runWheelsOut(0.5);
                         break;
                     default:
                         break;
