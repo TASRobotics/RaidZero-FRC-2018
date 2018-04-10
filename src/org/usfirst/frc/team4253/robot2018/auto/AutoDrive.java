@@ -377,11 +377,12 @@ public class AutoDrive {
     /**
      * Returns the progress of the turn.
      * 
-     * @param angle the target angle of the turn
+     * @param startingAngle the starting angle of the turn
+     * @param targetAngle the target angle of the turn
      * @return the turn progress
      */
-    public double getTurnProgress(double angle) {
-        return pigeon.getFusedHeading() / angle;
+    public double getTurnProgress(double startingAngle, double targetAngle) {
+        return Math.abs(pigeon.getFusedHeading() - startingAngle) / (targetAngle - startingAngle);
     }
 
     /**

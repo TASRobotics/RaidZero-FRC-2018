@@ -23,7 +23,6 @@ public class Turn implements Movement {
         this.angle = angle;
     }
 
-    @Override
     public void startWithAngle(double angle) {
         startingAngle = angle;
     }
@@ -35,12 +34,12 @@ public class Turn implements Movement {
 
     @Override
     public double getProgress(AutoDrive drive) {
-        return drive.getTurnProgress(startingAngle + angle);
+        return drive.getTurnProgress(startingAngle, angle);
     }
 
     @Override
     public boolean checkFinished(AutoDrive drive) {
-        return drive.checkTurnFinished(startingAngle + angle);
+        return drive.checkTurnFinished(angle);
     }
 
     @Override

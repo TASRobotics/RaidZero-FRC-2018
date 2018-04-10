@@ -7,7 +7,6 @@ public class Straight implements Movement {
 
     private Mode mode;
     private int distance;
-    private double startingAngle;
     private double theoreticalAngle;
 
     /**
@@ -17,15 +16,10 @@ public class Straight implements Movement {
      * @param distance the distance in inches
      * @param angle the theoretical starting angle
      */
-    public Straight(Mode mode, int distance, int angle) {
+    public Straight(Mode mode, int distance, double angle) {
         this.mode = mode;
         this.distance = distance;
         theoreticalAngle = angle;
-    }
-
-    @Override
-    public void startWithAngle(double angle) {
-        startingAngle = angle;
     }
 
     @Override

@@ -130,8 +130,11 @@ public class Auto {
                 stage++;
                 prevIndex = 0;
                 if (stage < movements.size()) {
-                    double angle = Components.getDrive().getPigeon().getFusedHeading();
-                    movements.get(stage).startWithAngle(angle);
+                    Movement nextMovement = movements.get(stage);
+                    if (nextMovement instanceof Turn) {
+                        double angle = Components.getDrive().getPigeon().getFusedHeading();
+                        ((Turn) nextMovement).startWithAngle(angle);
+                    }
                 }
             }
         }
