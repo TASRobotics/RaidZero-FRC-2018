@@ -29,7 +29,7 @@ public class Turn implements Movement {
 
     @Override
     public void run(AutoDrive drive) {
-        drive.turn(type, angle - startingAngle);
+        drive.turn(type, startingAngle, angle);
     }
 
     @Override

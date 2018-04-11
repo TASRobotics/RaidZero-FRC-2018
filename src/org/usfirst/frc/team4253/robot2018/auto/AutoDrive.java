@@ -20,7 +20,7 @@ public class AutoDrive {
 
     private static final double INCH_TO_TICKS = 2542 / 32;
     private static final double DEGREES_TO_TICKS_POINT = 24;
-    private static final double DEGREES_TO_TICKS_PIVOT = 50;
+    private static final double DEGREES_TO_TICKS_PIVOT = 47;
 
     private static final int DEFAULT_VEL = 500;
     private static final int DEFAULT_ACCEL = 1000;
@@ -31,6 +31,8 @@ public class AutoDrive {
 
     private static final int PIGEON_TIMEOUT = 100;
     private static final double WHEEL_BASED_RADIUS = 15.0;
+
+    private static final double TURN_OFFSET_MULTIPLIER = 0;
 
     private double currentAngle;
     private double currentAngularRate;
@@ -326,29 +328,39 @@ public class AutoDrive {
      * Turns the robot for a given number of degrees.
      * 
      * @param type the type of turn to execute
-     * @param degrees the angle in degrees, positive means counterclockwise
+     * @param startingAngle the starting angle in degrees
+     * @param targetAngle the target angle in degrees, positive means counterclockwise
      */
-    public void turn(TurnType type, double degrees) {
+    public void turn(TurnType type, double startingAngle, double targetAngle) {
         switch (type) {
             case PointTurn: {
-                double ticks = degrees * DEGREES_TO_TICKS_POINT;
-                leftMotor.set(ControlMode.MotionMagic, -ticks);
-                rightMotor.set(ControlMode.MotionMagic, ticks);
+                // (pigeon.getangle-startingangle)*degrees_to_ticks-motor.getencposition = 0
+                double ticks = (targetAngle - startingAngle) * DEGREES_TO_TICKS_POINT;
+                double encOffset = calcOffset(startingAngle, DEGREES_TO_TICKS_POINT);
+                leftMotor.set(ControlMode.MotionMagic, -ticks - encOffset);
+                rightMotor.set(ControlMode.MotionMagic, ticks + encOffset);
                 break;
             }
             case PivotOnLeft: {
-                double ticks = degrees * DEGREES_TO_TICKS_PIVOT;
+                double ticks = (targetAngle - startingAngle) * DEGREES_TO_TICKS_PIVOT;
+                double encOffset = calcOffset(startingAngle, DEGREES_TO_TICKS_PIVOT);
                 leftMotor.set(ControlMode.MotionMagic, 0);
-                rightMotor.set(ControlMode.MotionMagic, ticks);
+                rightMotor.set(ControlMode.MotionMagic, ticks + encOffset);
                 break;
             }
             case PivotOnRight: {
-                double ticks = degrees * DEGREES_TO_TICKS_PIVOT;
-                leftMotor.set(ControlMode.MotionMagic, -ticks);
+                double ticks = (targetAngle - startingAngle) * DEGREES_TO_TICKS_PIVOT;
+                double encOffset = calcOffset(startingAngle, DEGREES_TO_TICKS_PIVOT);
+                leftMotor.set(ControlMode.MotionMagic, -ticks - encOffset);
                 rightMotor.set(ControlMode.MotionMagic, 0);
                 break;
             }
         }
+    }
+
+    private double calcOffset(double startingAngle, double degreesToTicks) {
+        return TURN_OFFSET_MULTIPLIER * (getEncoderPos()
+            - Math.abs(pigeon.getFusedHeading() - startingAngle) * degreesToTicks);
     }
 
     /**
