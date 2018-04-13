@@ -20,7 +20,7 @@ public class AutoDrive {
 
     private static final double INCH_TO_TICKS = 2542 / 32;
     private static final double DEGREES_TO_TICKS_POINT = 24;
-    private static final double DEGREES_TO_TICKS_PIVOT = 47;
+    private static final double DEGREES_TO_TICKS_PIVOT = 46;
 
     private static final int DEFAULT_VEL = 500;
     private static final int DEFAULT_ACCEL = 1000;
@@ -332,6 +332,14 @@ public class AutoDrive {
      * @param targetAngle the target angle in degrees, positive means counterclockwise
      */
     public void turn(TurnType type, double startingAngle, double targetAngle) {
+        turn(type, startingAngle, targetAngle, DEFAULT_VEL, DEFAULT_ACCEL);
+    }
+
+    public void turn(TurnType type, double startingAngle, double targetAngle, int vel, int acc) {
+        leftMotor.configMotionCruiseVelocity(vel, 0);
+        leftMotor.configMotionAcceleration(acc, 0);
+        rightMotor.configMotionCruiseVelocity(vel, 0);
+        rightMotor.configMotionAcceleration(acc, 0);
         switch (type) {
             case PointTurn: {
                 // (pigeon.getangle-startingangle)*degrees_to_ticks-motor.getencposition = 0

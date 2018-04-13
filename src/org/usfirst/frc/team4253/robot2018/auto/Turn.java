@@ -9,6 +9,8 @@ public class Turn implements Movement {
     private TurnType type;
     private double angle;
     private double startingAngle;
+    private int vel;
+    private int acc;
 
     /**
      * Constructs a Turn object with the given mode, turn type and angle.
@@ -18,9 +20,15 @@ public class Turn implements Movement {
      * @param angle the angle in degrees (positive means counterclockwise)
      */
     public Turn(Mode mode, TurnType type, double angle) {
+        this(mode, type, angle, 0, 0);
+    }
+
+    public Turn(Mode mode, TurnType type, double angle, int vel, int acc) {
         this.mode = mode;
         this.type = type;
         this.angle = angle;
+        this.vel = vel;
+        this.acc = acc;
     }
 
     public void startWithAngle(double angle) {
@@ -29,7 +37,11 @@ public class Turn implements Movement {
 
     @Override
     public void run(AutoDrive drive) {
-        drive.turn(type, startingAngle, angle);
+        if (vel == 0) {
+            drive.turn(type, startingAngle, angle);
+        } else {
+            drive.turn(type, startingAngle, angle, vel, acc);
+        }
     }
 
     @Override
