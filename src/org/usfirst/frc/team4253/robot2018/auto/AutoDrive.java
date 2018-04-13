@@ -27,7 +27,7 @@ public class AutoDrive {
 
     private static final int VEL_TOLERANCE = 5;
     private static final int POS_TOLERANCE = 25;
-    private static final double ANGLE_TOLERANCE = 15;
+    private static final double ANGLE_TOLERANCE = 10;
 
     private static final int PIGEON_TIMEOUT = 100;
     private static final double WHEEL_BASED_RADIUS = 15.0;

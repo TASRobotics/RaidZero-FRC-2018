@@ -284,9 +284,9 @@ public class Auto {
                         break;
                     case 4:
                         Components.getLift().move(Lift.SCALE_HEIGHT);
-                        break;
-                    case 5:
-                        Components.getIntake().runWheelsOut(0.5);
+                        if (movement.getProgress(autoDrive) > 0.95) {
+                            Components.getIntake().runWheelsOut(0.5);
+                        }
                         break;
                     default:
                         break;

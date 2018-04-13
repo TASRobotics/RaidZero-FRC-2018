@@ -93,14 +93,14 @@ public class GeoGebraReader {
                         paths.add(stage1);
                         Straight stage2 = new Straight(Mode.ScaleFirst, 80, 145);
                         paths.add(stage2);
-                        Straight stage3 = new Straight(Mode.ScaleFirst, -80, 145);
-                        paths.add(stage3);
-                        Turn stage4 = new Turn(Mode.ScaleFirst, TurnType.PivotOnRight, 45);
+                        // Straight stage3 = new Straight(Mode.ScaleFirst, -80, 145);
+                        // paths.add(stage3);
+                        Turn stage4 = new Turn(Mode.ScaleFirst, TurnType.PivotOnLeft, 30);
                         paths.add(stage4);
-                        paths.add(new Straight(Mode.ScaleFirst, 10, 45));
+                        paths.add(new Straight(Mode.ScaleFirst, 60, 30));
                     } else {
                         Turn stage1 =
-                            new Turn(Mode.ScaleFirst, TurnType.PivotOnLeft, -145, 250, 500);
+                            new Turn(Mode.ScaleFirst, TurnType.PivotOnLeft, -145, 300, 300);
                         paths.add(stage1);
                         Straight stage2 = new Straight(Mode.ScaleFirst, 80, -145);
                         paths.add(stage2);
