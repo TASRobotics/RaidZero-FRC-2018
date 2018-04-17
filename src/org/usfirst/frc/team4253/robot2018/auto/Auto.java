@@ -295,20 +295,18 @@ public class Auto {
             case DoubleSwitch: {
                 switch (stage) {
                     case 1:
+                    case 5:
                         if (movement.getProgress(autoDrive) > 0.4) {
                             Components.getLift().move(Lift.GRAB_CUBE_HEIGHT);
                         }
                         break;
                     case 2:
-                        if (movement.getProgress(autoDrive) > 0.5) {
-                            Components.getIntake().runWheelsIn(1);
+                    case 6:
+                        Components.getIntake().runWheelsIn(1);
+                        if (movement.getProgress(autoDrive) < 0.5) {
                             Components.getIntake().openClaw();
-                        }
-                        if (movement.getProgress(autoDrive) > 0.99) {
-                            Components.getIntake().stopWheels();
-                        } else if (movement.getProgress(autoDrive) > 0.97) {
+                        } else {
                             Components.getIntake().closeClaw();
-                            Components.getIntake().runWheelsIn(0.5);
                         }
                         break;
                     case 3:
@@ -317,11 +315,8 @@ public class Auto {
                         }
                         break;
                     case 4:
-                        if (movement.getProgress(autoDrive) > 0.98) {
+                        if (movement.getProgress(autoDrive) > 0.9) {
                             Components.getIntake().runWheelsOut(0.4);
-                        }
-                        if (movement.getProgress(autoDrive) > 0.99) {
-                            Components.getIntake().openClaw();
                         }
                         break;
                 }
@@ -372,6 +367,14 @@ public class Auto {
                     default:
                         return true;
                 }
+            case DoubleSwitch:
+                switch (stage) {
+                    case 2:
+                    case 6:
+                        Components.getIntake().stopWheels();
+                        return true;
+                }
+                return true;
             default:
                 return true;
         }

@@ -129,27 +129,31 @@ public class GeoGebraReader {
                     double angle =
                         stage0.getMotorData()[stage0.getMotorData().length - 1].getAngle();
                     if (plateData.getScaleSide() == Side.Right) {
-                        Turn stage1 =
-                            new Turn(Mode.DoubleSwitch, TurnType.PivotOnRight, angle += 90);
+                        Turn stage1 = new Turn(Mode.DoubleSwitch, TurnType.PivotOnRight, 70);
                         paths.add(stage1);
-                        Straight stage2 = new Straight(Mode.DoubleSwitch, 50, angle);
+                        Straight stage2 = new Straight(Mode.DoubleSwitch, 30, 70);
                         paths.add(stage2);
-                        Straight stage3 = new Straight(Mode.DoubleSwitch, -50, angle);
+                        Straight stage3 = new Straight(Mode.DoubleSwitch, -30, 70);
                         paths.add(stage3);
-                        Turn stage4 =
-                            new Turn(Mode.DoubleSwitch, TurnType.PivotOnRight, angle -= 90);
+                        Turn stage4 = new Turn(Mode.DoubleSwitch, TurnType.PivotOnRight, 0);
                         paths.add(stage4);
+                        Turn stage5 = new Turn(Mode.DoubleSwitch, TurnType.PivotOnRight, 70);
+                        paths.add(stage5);
+                        Straight stage6 = new Straight(Mode.DoubleSwitch, 35, 70);
+                        paths.add(stage6);
                     } else {
-                        Turn stage1 =
-                            new Turn(Mode.DoubleSwitch, TurnType.PivotOnLeft, angle -= 90);
+                        Turn stage1 = new Turn(Mode.DoubleSwitch, TurnType.PivotOnLeft, -70);
                         paths.add(stage1);
-                        Straight stage2 = new Straight(Mode.DoubleSwitch, 50, angle);
+                        Straight stage2 = new Straight(Mode.DoubleSwitch, 30, -70);
                         paths.add(stage2);
-                        Straight stage3 = new Straight(Mode.DoubleSwitch, -50, angle);
+                        Straight stage3 = new Straight(Mode.DoubleSwitch, -30, -70);
                         paths.add(stage3);
-                        Turn stage4 =
-                            new Turn(Mode.DoubleSwitch, TurnType.PivotOnLeft, angle += 90);
+                        Turn stage4 = new Turn(Mode.DoubleSwitch, TurnType.PivotOnLeft, 0);
                         paths.add(stage4);
+                        Turn stage5 = new Turn(Mode.DoubleSwitch, TurnType.PivotOnLeft, -70);
+                        paths.add(stage5);
+                        Straight stage6 = new Straight(Mode.DoubleSwitch, 35, -70);
+                        paths.add(stage6);
                     }
                     break;
                 }
