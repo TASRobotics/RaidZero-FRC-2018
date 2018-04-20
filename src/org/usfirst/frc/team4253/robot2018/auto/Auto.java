@@ -312,6 +312,7 @@ public class Auto {
                     case 3:
                         if (movement.getProgress(autoDrive) > 0.5) {
                             Components.getLift().move(Lift.SWITCH_HEIGHT);
+                            Components.getIntake().stopWheels();
                         }
                         break;
                     case 4:
@@ -369,7 +370,6 @@ public class Auto {
                 }
             case DoubleSwitch:
                 switch (stage) {
-                    case 2:
                     case 6:
                         Components.getIntake().stopWheels();
                         return true;
