@@ -13,8 +13,8 @@ public class Auto {
 
     private static AutoDrive autoDrive;
     private static Plan plan;
-    private static List<AutoPath> paths;
-    private static AutoPath currentPath;
+    private static List<Movement> movements;
+    private static Movement currentMovement;
     private static int stage;
     private static int prevIndex;
     private static int sameIndexIterations;
@@ -42,7 +42,7 @@ public class Auto {
         plan = AutoChooser.getPlan();
         StartingSide startingSide = AutoChooser.getStartingSide();
         PlateData plateData = MatchData.getPlateData();
-        paths = GeoGebraReader.getPaths(plan, startingSide, plateData);
+        movements = GeoGebraReader.getPaths(plan, startingSide, plateData);
         Components.getIntake().closeClaw();
         stage = 0;
         prevIndex = 0;
@@ -62,13 +62,14 @@ public class Auto {
         switch (plan) {
             case SwitchOnly:
             case SwitchThenScale:
-            case ActuallyScaleOnly:
+            case ScaleOnly:
             case ScaleThenSwitch:
             case DoubleScale:
+            case DoubleSwitch:
                 runPathAuto();
                 break;
             case Elims:
-                if (paths.isEmpty()) {
+                if (movements.isEmpty()) {
                     crossLine();
                     System.out.println("path is empty");
                 } else {
@@ -94,49 +95,60 @@ public class Auto {
      * Runs autonomous with paths.
      */
     private static void runPathAuto() {
-        if (stage < paths.size()) {
-            currentPath = paths.get(stage);
-            int index = autoDrive.getCurrentIndex(currentPath);
-            autoDrive.moveCurve(currentPath);
-            if (index == prevIndex) {
-                sameIndexIterations++;
-                double progress = autoDrive.getProgress(currentPath);
-                // Safety code to stop drivetrain after a stopping collision or a de-alignment.
-                if ((sameIndexIterations >= 500 / 20
-                    || Math.abs(autoDrive.getCurrentAngle(currentPath)
-                        - Components.getDrive().getPigeon().getFusedHeading()) > 20)
-                    && progress <= 0.9 && progress >= 0.1) {
-                    autoDrive.pauseDrive();
-                    Components.getLift().movePWM(0);
-                    Components.getIntake().stopWheels();
-                    abort = true;
-                    System.out.println("ABORTED");
-                    System.out
-                        .println("Angle Diff:" + Math.abs(autoDrive.getCurrentAngle(currentPath)
-                        - Components.getDrive().getPigeon().getFusedHeading()));
-                    System.out.println("Number of stopped iterations:" + sameIndexIterations);
-                    return;
+        if (stage < movements.size()) {
+            currentMovement = movements.get(stage);
+            currentMovement.run(autoDrive);
+            if (currentMovement instanceof AutoPath) {
+                AutoPath currentPath = (AutoPath) currentMovement;
+                int index = autoDrive.getCurrentIndex(currentPath);
+                if (index == prevIndex) {
+                    sameIndexIterations++;
+                    double progress = autoDrive.getPathProgress(currentPath);
+                    // Safety code to stop drivetrain after a stopping collision or a de-alignment.
+                    double angle = Components.getDrive().getPigeon().getFusedHeading();
+                    if ((sameIndexIterations >= 500 / 20
+                        || Math.abs(autoDrive.getCurrentAngle(currentPath) - angle) > 20)
+                        && progress <= 0.9 && progress >= 0.1) {
+                        autoDrive.pauseDrive();
+                        Components.getLift().movePWM(0);
+                        Components.getIntake().stopWheels();
+                        abort = true;
+                        System.out.println("ABORTED");
+                        System.out.println("Angle Diff:"
+                            + Math.abs(autoDrive.getCurrentAngle(currentPath) - angle));
+                        System.out.println("Number of stopped iterations:" + sameIndexIterations);
+                        return;
+                    }
+                } else {
+                    sameIndexIterations = 0;
                 }
-            } else {
-                sameIndexIterations = 0;
+                prevIndex = index;
             }
-            prevIndex = index;
-            moveOtherComponents(currentPath);
-            if (autoDrive.checkFinished(currentPath) && transition(currentPath.getMode())) {
-                autoDrive.finishPath(currentPath);
+            moveOtherComponents(currentMovement);
+            if (currentMovement.checkFinished(autoDrive) && transition(currentMovement.getMode())) {
+                currentMovement.finish(autoDrive);
                 stage++;
                 prevIndex = 0;
-            }
-        } else if (plan == Plan.ScaleThenSwitch && stage == 3
-            && currentPath.getStart() == currentPath.getEnd().toStartingSide()) {
-            autoDrive.moveStraight(10);
-            if (autoDrive.getEncoderPos() > 9) {
-                Components.getIntake().runWheelsOut(0.4);
-                if (autoDrive.getEncoderPos() > 9.5) {
-                    Components.getIntake().openClaw();
+                if (stage < movements.size()) {
+                    Movement nextMovement = movements.get(stage);
+                    if (nextMovement instanceof Turn) {
+                        double angle = Components.getDrive().getPigeon().getFusedHeading();
+                        ((Turn) nextMovement).startWithAngle(angle);
+                    }
                 }
             }
-        } else {
+        }
+        // else if (plan == Plan.ScaleThenSwitch && stage == 3
+        // && currentMovement.getStart() == currentMovement.getEnd().toStartingSide()) {
+        // autoDrive.moveStraight(10);
+        // if (autoDrive.getEncoderPos() > 9) {
+        // Components.getIntake().runWheelsOut(0.4);
+        // if (autoDrive.getEncoderPos() > 9.5) {
+        // Components.getIntake().openClaw();
+        // }
+        // }
+        // }
+        else {
             autoDrive.pauseDrive();
         }
     }
@@ -144,20 +156,20 @@ public class Auto {
     /**
      * Runs other components that are not the drive.
      * 
-     * @param path the geogebra path.
+     * @param movement the geogebra path.
      */
-    private static void moveOtherComponents(AutoPath path) {
-        switch (path.getMode()) {
+    private static void moveOtherComponents(Movement movement) {
+        switch (movement.getMode()) {
             case SwitchScale:
                 switch (stage) {
                     case 0:
-                        if (autoDrive.getProgress(path) > 0.3) {
+                        if (movement.getProgress(autoDrive) > 0.3) {
                             Components.getLift().move(Lift.SWITCH_HEIGHT);
                         }
-                        if (autoDrive.getProgress(path) > 0.98) {
+                        if (movement.getProgress(autoDrive) > 0.98) {
                             Components.getIntake().runWheelsOut(0.4);
                         }
-                        if (autoDrive.getProgress(path) > 0.99) {
+                        if (movement.getProgress(autoDrive) > 0.99) {
                             Components.getIntake().openClaw();
                         }
                         break;
@@ -166,20 +178,20 @@ public class Auto {
                         Components.getIntake().stopWheels();
                         break;
                     case 2:
-                        if (autoDrive.getProgress(path) > 0.95) {
+                        if (movement.getProgress(autoDrive) > 0.95) {
                             Components.getIntake().runWheelsOut(0.5);
-                        } else if (autoDrive.getProgress(path) > 0.55) {
+                        } else if (movement.getProgress(autoDrive) > 0.55) {
                             Components.getIntake().stopWheels();
-                        } else if (autoDrive.getProgress(path) > 0.45) {
+                        } else if (movement.getProgress(autoDrive) > 0.45) {
                             Components.getIntake().closeClaw();
                             Components.getIntake().runWheelsIn(0.2);
                         } else {
                             Components.getIntake().openClaw();
                             Components.getIntake().runWheelsIn(1.0);
                         }
-                        if (autoDrive.getProgress(path) > 0.5) {
+                        if (movement.getProgress(autoDrive) > 0.5) {
                             Components.getLift().move(Lift.SCALE_HEIGHT);
-                        } else if (autoDrive.getProgress(path) > 0.3) {
+                        } else if (movement.getProgress(autoDrive) > 0.3) {
                             Components.getLift().move(Lift.GRAB_CUBE_HEIGHT);
                         }
                         break;
@@ -190,13 +202,13 @@ public class Auto {
             case SideSwitch:
                 switch (stage) {
                     case 0:
-                        if (autoDrive.getProgress(path) > 0.3) {
+                        if (movement.getProgress(autoDrive) > 0.3) {
                             Components.getLift().move(Lift.SWITCH_HEIGHT);
                         }
-                        if (autoDrive.getProgress(path) > 0.98) {
+                        if (movement.getProgress(autoDrive) > 0.98) {
                             Components.getIntake().runWheelsOut(0.4);
                         }
-                        if (autoDrive.getProgress(path) > 0.99) {
+                        if (movement.getProgress(autoDrive) > 0.99) {
                             Components.getIntake().openClaw();
                         }
                         break;
@@ -205,20 +217,20 @@ public class Auto {
                         Components.getIntake().stopWheels();
                         break;
                     case 2:
-                        if (autoDrive.getProgress(path) > 0.95) {
+                        if (movement.getProgress(autoDrive) > 0.95) {
                             Components.getIntake().runWheelsOut(0.5);
-                        } else if (autoDrive.getProgress(path) > 0.55) {
+                        } else if (movement.getProgress(autoDrive) > 0.55) {
                             Components.getIntake().stopWheels();
-                        } else if (autoDrive.getProgress(path) > 0.45) {
+                        } else if (movement.getProgress(autoDrive) > 0.45) {
                             Components.getIntake().closeClaw();
                             Components.getIntake().runWheelsIn(0.2);
                         } else {
                             Components.getIntake().openClaw();
                             Components.getIntake().runWheelsIn(1.0);
                         }
-                        if (autoDrive.getProgress(path) > 0.5) {
+                        if (movement.getProgress(autoDrive) > 0.5) {
                             Components.getLift().move(Lift.SCALE_HEIGHT);
-                        } else if (autoDrive.getProgress(path) > 0.3) {
+                        } else if (movement.getProgress(autoDrive) > 0.3) {
                             Components.getLift().move(Lift.GRAB_CUBE_HEIGHT);
                         }
                         break;
@@ -229,48 +241,50 @@ public class Auto {
             case ScaleFirst:
                 switch (stage) {
                     case 0:
-                        if (autoDrive.getProgress(path) > 0.5) {
+                        if (movement.getProgress(autoDrive) > 0.5) {
                             Components.getLift().move(Lift.SCALE_HEIGHT);
                         }
-                        if (autoDrive.getProgress(path) > 0.95) {
+                        if (movement.getProgress(autoDrive) > 0.95) {
                             Components.getIntake().runWheelsOut(0.5);
                         }
                         break;
                     case 1:
-                        if (autoDrive.getProgress(path) > 0.1) {
+                        if (movement.getProgress(autoDrive) > 0.2) {
                             Components.getLift().move(Lift.GRAB_CUBE_HEIGHT);
                         }
                         break;
                     case 2:
-                        if (path.getStart() == path.getEnd().toStartingSide()) {
+                        if (movement instanceof AutoPath && ((AutoPath) movement)
+                            .getStart() == ((AutoPath) movement).getEnd().toStartingSide()) {
                             Components.getIntake().runWheelsIn(1);
-                            if (autoDrive.getProgress(path) > 0.95) {
+                            if (movement.getProgress(autoDrive) > 0.95) {
                                 Components.getIntake().closeClaw();
                             }
                         } else {
-                            if (autoDrive.getProgress(path) < 0.65) {
+                            if (movement.getProgress(autoDrive) < 0.65) {
                                 Components.getIntake().runWheelsIn(1);
                             }
 
-                            if (autoDrive.getProgress(path) > 0.65) {
-                                Components.getLift().move(Lift.SWITCH_HEIGHT);
+                            if (movement.getProgress(autoDrive) > 0.65) {
+                                // Components.getLift().move(Lift.SWITCH_HEIGHT);
                             }
-                            if (autoDrive.getProgress(path) > 0.98) {
-                                Components.getIntake().runWheelsOut(0.4);
+                            if (movement.getProgress(autoDrive) > 0.98) {
+                                // Components.getIntake().runWheelsOut(0.4);
                             }
-                            if (autoDrive.getProgress(path) > 0.99) {
-                                Components.getIntake().openClaw();
-                            } else if (autoDrive.getProgress(path) > 0.6) {
+                            if (movement.getProgress(autoDrive) > 0.99) {
                                 Components.getIntake().closeClaw();
+                            } else if (movement.getProgress(autoDrive) > 0.6) {
+                                // Components.getIntake().openClaw();
                             }
                         }
                         break;
                     case 3:
+                        Components.getIntake().stopWheels();
                         Components.getLift().move(Lift.SWITCH_HEIGHT);
                         break;
                     case 4:
                         Components.getLift().move(Lift.SCALE_HEIGHT);
-                        if (autoDrive.getProgress(path) > 0.90) {
+                        if (movement.getProgress(autoDrive) > 0.95) {
                             Components.getIntake().runWheelsOut(0.5);
                         }
                         break;
@@ -278,6 +292,37 @@ public class Auto {
                         break;
                 }
                 break;
+            case DoubleSwitch: {
+                switch (stage) {
+                    case 1:
+                    case 5:
+                        if (movement.getProgress(autoDrive) > 0.4) {
+                            Components.getLift().move(Lift.GRAB_CUBE_HEIGHT);
+                        }
+                        break;
+                    case 2:
+                    case 6:
+                        Components.getIntake().runWheelsIn(1);
+                        if (movement.getProgress(autoDrive) < 0.5) {
+                            Components.getIntake().openClaw();
+                        } else {
+                            Components.getIntake().closeClaw();
+                        }
+                        break;
+                    case 3:
+                        if (movement.getProgress(autoDrive) > 0.5) {
+                            Components.getLift().move(Lift.SWITCH_HEIGHT);
+                            Components.getIntake().stopWheels();
+                        }
+                        break;
+                    case 4:
+                        if (movement.getProgress(autoDrive) > 0.9) {
+                            Components.getIntake().runWheelsOut(0.4);
+                        }
+                        break;
+                }
+                break;
+            }
             default:
                 break;
         }
@@ -323,6 +368,13 @@ public class Auto {
                     default:
                         return true;
                 }
+            case DoubleSwitch:
+                switch (stage) {
+                    case 6:
+                        Components.getIntake().stopWheels();
+                        return true;
+                }
+                return true;
             default:
                 return true;
         }

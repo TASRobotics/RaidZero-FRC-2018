@@ -1,6 +1,7 @@
 package org.usfirst.frc.team4253.robot2018;
 
 import org.usfirst.frc.team4253.robot2018.auto.Auto;
+import org.usfirst.frc.team4253.robot2018.camera.Camera;
 import org.usfirst.frc.team4253.robot2018.components.Components;
 import org.usfirst.frc.team4253.robot2018.teleop.Teleop;
 
@@ -19,6 +20,7 @@ public class Robot extends IterativeRobot {
         Components.initialize();
         Auto.initialize();
         Teleop.initialize();
+        Camera.start();
     }
 
     /**

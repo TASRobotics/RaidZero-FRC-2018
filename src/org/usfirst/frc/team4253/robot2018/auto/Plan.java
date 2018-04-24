@@ -15,7 +15,7 @@ public enum Plan {
     /**
      * Scale then move back and stop.
      */
-    ActuallyScaleOnly,
+    ScaleOnly,
     /**
      * Scale then switch.
      * 
@@ -27,6 +27,10 @@ public enum Plan {
      * Double scale.
      */
     DoubleScale,
+    /**
+     * Double Switch
+     */
+    DoubleSwitch,
     /**
      * Cross the line (only works if we start at the side).
      */

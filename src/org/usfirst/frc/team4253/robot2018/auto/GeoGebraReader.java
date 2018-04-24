@@ -25,9 +25,9 @@ public class GeoGebraReader {
      * @param plateData the plate assignment data
      * @return the paths in a list ordered by stage
      */
-    public static List<AutoPath> getPaths(Plan plan, StartingSide startingSide,
+    public static List<Movement> getPaths(Plan plan, StartingSide startingSide,
         PlateData plateData) {
-        ArrayList<AutoPath> paths = new ArrayList<>();
+        ArrayList<Movement> paths = new ArrayList<>();
         try {
             switch (plan) {
                 case SwitchOnly:
@@ -61,7 +61,7 @@ public class GeoGebraReader {
                             plateData.getScaleSide()));
                     }
                     break;
-                case ActuallyScaleOnly:
+                case ScaleOnly:
                     paths.add(read(Mode.ScaleFirst, 0, startingSide, plateData.getScaleSide()));
                     paths.add(read(Mode.ScaleFirst, 1, plateData.getScaleSide(),
                         plateData.getScaleSide()));
@@ -85,15 +85,76 @@ public class GeoGebraReader {
                     }
                     break;
                 case DoubleScale: {
-                    paths.add(read(Mode.ScaleFirst, 0, startingSide, plateData.getScaleSide()));
-                    AutoPath stage1 =
-                        read(Mode.ScaleFirst, 1, plateData.getScaleSide(), plateData.getScaleSide());
-                    paths.add(stage1);
-                    AutoPath stage2 =
-                        read(Mode.ScaleFirst, 2, plateData.getScaleSide(), plateData.getScaleSide());
-                    paths.add(stage2);
-                    // stage 3
-                    // stage 4
+                    AutoPath stage0 =
+                        read(Mode.ScaleFirst, 0, startingSide, plateData.getScaleSide());
+                    paths.add(stage0);
+                    if (plateData.getScaleSide() == Side.Right) {
+                        Turn stage1 = new Turn(Mode.ScaleFirst, TurnType.PivotOnRight, 145);
+                        paths.add(stage1);
+                        Straight stage2 = new Straight(Mode.ScaleFirst, 77, 145);
+                        paths.add(stage2);
+                        // Straight stage3 = new Straight(Mode.ScaleFirst, -80, 145);
+                        // paths.add(stage3);
+                        Turn stage4 = new Turn(Mode.ScaleFirst, TurnType.PivotOnLeft, 30);
+                        paths.add(stage4);
+                        paths.add(new Straight(Mode.ScaleFirst, 60, 30));
+                    } else {
+                        Turn stage1 = new Turn(Mode.ScaleFirst, TurnType.PivotOnLeft, -145);
+                        paths.add(stage1);
+                        Straight stage2 = new Straight(Mode.ScaleFirst, 77, -145);
+                        paths.add(stage2);
+                        // Straight stage3 = new Straight(Mode.ScaleFirst, -80, 145);
+                        // paths.add(stage3);
+                        Turn stage4 = new Turn(Mode.ScaleFirst, TurnType.PivotOnRight, -30);
+                        paths.add(stage4);
+                        paths.add(new Straight(Mode.ScaleFirst, 60, -30));
+
+                        // Turn stage1 =
+                        // new Turn(Mode.ScaleFirst, TurnType.PivotOnLeft, -145, 300, 300);
+                        // paths.add(stage1);
+                        // Straight stage2 = new Straight(Mode.ScaleFirst, 80, -145);
+                        // paths.add(stage2);
+                        // Straight stage3 = new Straight(Mode.ScaleFirst, -80, -145);
+                        // paths.add(stage3);
+                        // Turn stage4 = new Turn(Mode.ScaleFirst, TurnType.PivotOnLeft, -45);
+                        // paths.add(stage4);
+                        // paths.add(new Straight(Mode.ScaleFirst, 10, -45));
+                    }
+                    break;
+                }
+                case DoubleSwitch: {
+                    AutoPath stage0 =
+                        read(Mode.SwitchScale, 0, startingSide, plateData.getNearSwitchSide());
+                    paths.add(stage0);
+                    double angle =
+                        stage0.getMotorData()[stage0.getMotorData().length - 1].getAngle();
+                    if (plateData.getScaleSide() == Side.Right) {
+                        Turn stage1 = new Turn(Mode.DoubleSwitch, TurnType.PivotOnRight, 70);
+                        paths.add(stage1);
+                        Straight stage2 = new Straight(Mode.DoubleSwitch, 30, 70);
+                        paths.add(stage2);
+                        Straight stage3 = new Straight(Mode.DoubleSwitch, -30, 70);
+                        paths.add(stage3);
+                        Turn stage4 = new Turn(Mode.DoubleSwitch, TurnType.PivotOnRight, 0);
+                        paths.add(stage4);
+                        Turn stage5 = new Turn(Mode.DoubleSwitch, TurnType.PivotOnRight, 70);
+                        paths.add(stage5);
+                        Straight stage6 = new Straight(Mode.DoubleSwitch, 35, 70);
+                        paths.add(stage6);
+                    } else {
+                        Turn stage1 = new Turn(Mode.DoubleSwitch, TurnType.PivotOnLeft, -70);
+                        paths.add(stage1);
+                        Straight stage2 = new Straight(Mode.DoubleSwitch, 30, -70);
+                        paths.add(stage2);
+                        Straight stage3 = new Straight(Mode.DoubleSwitch, -30, -70);
+                        paths.add(stage3);
+                        Turn stage4 = new Turn(Mode.DoubleSwitch, TurnType.PivotOnLeft, 0);
+                        paths.add(stage4);
+                        Turn stage5 = new Turn(Mode.DoubleSwitch, TurnType.PivotOnLeft, -70);
+                        paths.add(stage5);
+                        Straight stage6 = new Straight(Mode.DoubleSwitch, 35, -70);
+                        paths.add(stage6);
+                    }
                     break;
                 }
                 case Elims:
