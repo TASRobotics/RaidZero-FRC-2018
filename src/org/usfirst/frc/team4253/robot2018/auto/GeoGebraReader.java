@@ -91,23 +91,23 @@ public class GeoGebraReader {
                     if (plateData.getScaleSide() == Side.Right) {
                         Turn stage1 = new Turn(Mode.ScaleFirst, TurnType.PivotOnRight, 145);
                         paths.add(stage1);
-                        Straight stage2 = new Straight(Mode.ScaleFirst, 77, 145);
+                        Straight stage2 = new Straight(Mode.ScaleFirst, 65, 145);
                         paths.add(stage2);
                         // Straight stage3 = new Straight(Mode.ScaleFirst, -80, 145);
                         // paths.add(stage3);
                         Turn stage4 = new Turn(Mode.ScaleFirst, TurnType.PivotOnLeft, 30);
                         paths.add(stage4);
-                        paths.add(new Straight(Mode.ScaleFirst, 60, 30));
+                        paths.add(new Straight(Mode.ScaleFirst, 45, 30));
                     } else {
                         Turn stage1 = new Turn(Mode.ScaleFirst, TurnType.PivotOnLeft, -145);
                         paths.add(stage1);
-                        Straight stage2 = new Straight(Mode.ScaleFirst, 77, -145);
+                        Straight stage2 = new Straight(Mode.ScaleFirst, 65, -145);
                         paths.add(stage2);
                         // Straight stage3 = new Straight(Mode.ScaleFirst, -80, 145);
                         // paths.add(stage3);
                         Turn stage4 = new Turn(Mode.ScaleFirst, TurnType.PivotOnRight, -30);
                         paths.add(stage4);
-                        paths.add(new Straight(Mode.ScaleFirst, 60, -30));
+                        paths.add(new Straight(Mode.ScaleFirst, 45, -30));
 
                         // Turn stage1 =
                         // new Turn(Mode.ScaleFirst, TurnType.PivotOnLeft, -145, 300, 300);
