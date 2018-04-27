@@ -29,12 +29,12 @@ public class GeoGebraReader {
 
     private static final Turn L_SWITCH_TURN_TO_CUBE =
         new Turn(Mode.TripleSwitch, TurnType.PivotOnLeft, -70);
-    private static final Straight L_SWITCH_FORWARD_1 = new Straight(Mode.TripleSwitch, 38, -70);
-    private static final Straight L_SWITCH_BACKWARD_1 = new Straight(Mode.TripleSwitch, -38, -70);
+    private static final Straight L_SWITCH_FORWARD_1 = new Straight(Mode.TripleSwitch, 42, -70);
+    private static final Straight L_SWITCH_BACKWARD_1 = new Straight(Mode.TripleSwitch, -42, -70);
     private static final Turn L_SWITCH_TURN_TO_SWITCH =
         new Turn(Mode.TripleSwitch, TurnType.PivotOnLeft, 0);
-    private static final Straight L_SWITCH_FORWARD_2 = new Straight(Mode.TripleSwitch, 40, -70);
-    private static final Straight L_SWITCH_BACKWARD_2 = new Straight(Mode.TripleSwitch, -40, -70);
+    private static final Straight L_SWITCH_FORWARD_2 = new Straight(Mode.TripleSwitch, 45, -70);
+    private static final Straight L_SWITCH_BACKWARD_2 = new Straight(Mode.TripleSwitch, -45, -70);
 
     /**
      * Reads the necessary CSV files and returns the autonomous paths.
@@ -189,13 +189,15 @@ public class GeoGebraReader {
                     }
                     break;
                 case Elims:
-                    if (plateData.getScaleSide() == Side.Right) {
+                    if (plateData.getScaleSide() == Side.Left) {
                         paths.add(read(Mode.ScaleFirst, 0, startingSide, plateData.getScaleSide()));
                         paths.add(read(Mode.ScaleFirst, 1, plateData.getScaleSide(),
                             plateData.getScaleSide()));
-                    } else if (plateData.getNearSwitchSide() == Side.Right) {
+                    } else if (plateData.getNearSwitchSide() == Side.Left) {
                         paths.add(
                             read(Mode.SideSwitch, 0, startingSide, plateData.getNearSwitchSide()));
+                    } else {
+                        paths.add(new Straight(Mode.DoNothing, 140, 0));
                     }
                     break;
                 default:
