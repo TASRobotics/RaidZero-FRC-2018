@@ -66,6 +66,7 @@ public class Auto {
             case ScaleThenSwitch:
             case DoubleScale:
             case DoubleSwitch:
+            case TripleSwitch:
                 runPathAuto();
                 break;
             case Elims:
@@ -292,7 +293,7 @@ public class Auto {
                         break;
                 }
                 break;
-            case DoubleSwitch: {
+            case TripleSwitch: {
                 switch (stage) {
                     case 1:
                     case 5:
@@ -310,12 +311,14 @@ public class Auto {
                         }
                         break;
                     case 3:
+                    case 7:
                         if (movement.getProgress(autoDrive) > 0.5) {
                             Components.getLift().move(Lift.SWITCH_HEIGHT);
                             Components.getIntake().stopWheels();
                         }
                         break;
                     case 4:
+                    case 8:
                         if (movement.getProgress(autoDrive) > 0.9) {
                             Components.getIntake().runWheelsOut(0.4);
                         }
@@ -368,10 +371,12 @@ public class Auto {
                     default:
                         return true;
                 }
-            case DoubleSwitch:
+            case TripleSwitch:
                 switch (stage) {
                     case 6:
-                        Components.getIntake().stopWheels();
+                        if (plan == Plan.DoubleSwitch) {
+                            Components.getIntake().stopWheels();
+                        }
                         return true;
                 }
                 return true;
