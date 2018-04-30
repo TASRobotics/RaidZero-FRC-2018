@@ -189,15 +189,18 @@ public class GeoGebraReader {
                     }
                     break;
                 case Elims:
-                    if (plateData.getScaleSide() == Side.Left) {
-                        paths.add(read(Mode.ScaleFirst, 0, startingSide, plateData.getScaleSide()));
-                        paths.add(read(Mode.ScaleFirst, 1, plateData.getScaleSide(),
-                            plateData.getScaleSide()));
-                    } else if (plateData.getNearSwitchSide() == Side.Left) {
-                        paths.add(
-                            read(Mode.SideSwitch, 0, startingSide, plateData.getNearSwitchSide()));
+                    paths.add(
+                        read(Mode.ScaleFirst, 0, StartingSide.Right, plateData.getScaleSide()));
+                    if (plateData.getScaleSide() == Side.Right) {
+                        Turn stage1 = new Turn(Mode.ScaleFirst, TurnType.PivotOnRight, 145);
+                        paths.add(stage1);
+                        Straight stage2 = new Straight(Mode.ScaleFirst, 70, 145);
+                        paths.add(stage2);
+                        Turn stage4 = new Turn(Mode.ScaleFirst, TurnType.PivotOnLeft, 30);
+                        paths.add(stage4);
+                        paths.add(new Straight(Mode.ScaleFirst, 45, 30));
                     } else {
-                        paths.add(new Straight(Mode.DoNothing, 140, 0));
+                        paths.add(new Turn(Mode.ScaleFirst, TurnType.PivotOnLeft, -145));
                     }
                     break;
                 default:
