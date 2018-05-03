@@ -27,6 +27,7 @@ public class AutoChooser {
         planChooser.addObject("Switch only", Plan.SwitchOnly);
         planChooser.addObject("Scale only", Plan.ScaleOnly);
         planChooser.addObject("Double switch", Plan.DoubleSwitch);
+        planChooser.addObject("Triple Switch", Plan.TripleSwitch);
         planChooser.addObject("Double scale", Plan.DoubleScale);
         planChooser.addObject("Elims", Plan.Elims);
         planChooser.addObject("Cross line", Plan.CrossLine);

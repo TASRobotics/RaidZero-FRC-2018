@@ -6,6 +6,8 @@ import org.usfirst.frc.team4253.robot2018.components.Lift;
 import static edu.wpi.first.wpilibj.GenericHID.Hand.kLeft;
 import static edu.wpi.first.wpilibj.GenericHID.Hand.kRight;
 
+import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.DigitalOutput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -20,9 +22,14 @@ public class Teleop {
     private static TeleopDrive teleopDrive;
 
     private static final double INTAKE_WHEEL_POWER = 0.9;
+    private static final int LIGHT_SENSOR_CHANNEL = 0;
+    private static final int LED_CHANNEL = 0;
+    private static final int LIGHT_SENSOR_THRESHOLD = 1000;
 
     private static boolean climbMode = false;
     private static boolean defeatRamp = false;
+    private static AnalogInput lightSensor;
+    private static DigitalOutput led;
 
     /**
      * Initializes the teleop-specific components.
@@ -32,6 +39,8 @@ public class Teleop {
     public static void initialize() {
         controller1 = new XboxController(0);
         controller2 = new XboxController(1);
+        lightSensor = new AnalogInput(LIGHT_SENSOR_CHANNEL);
+        led = new DigitalOutput(LED_CHANNEL);
         teleopDrive = new TeleopDrive(Components.getDrive(), Components.getLift());
     }
 
@@ -132,6 +141,7 @@ public class Teleop {
                 Components.getLift().movePWM(-0.5);
             }
         }
+        // led.set(lightSensor.getValue() > LIGHT_SENSOR_THRESHOLD);
 
         SmartDashboard.putNumber("Match Time", DriverStation.getInstance().getMatchTime());
         SmartDashboard.putBoolean("Ramp Rate Override", defeatRamp);

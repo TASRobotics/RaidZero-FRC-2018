@@ -3,6 +3,7 @@ package org.usfirst.frc.team4253.robot2018.auto;
 import org.usfirst.frc.team4253.robot2018.components.Components;
 import org.usfirst.frc.team4253.robot2018.components.Lift;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.List;
 
@@ -15,10 +16,12 @@ public class Auto {
     private static Plan plan;
     private static List<Movement> movements;
     private static Movement currentMovement;
+    private static PlateData plateData;
     private static int stage;
     private static int prevIndex;
     private static int sameIndexIterations;
     private static boolean abort;
+    private static Timer time = new Timer();
 
     /**
      * Initializes the autonomous-specific components.
@@ -41,13 +44,14 @@ public class Auto {
         Components.getLift().resetEnc();
         plan = AutoChooser.getPlan();
         StartingSide startingSide = AutoChooser.getStartingSide();
-        PlateData plateData = MatchData.getPlateData();
+        plateData = MatchData.getPlateData();
         movements = GeoGebraReader.getPaths(plan, startingSide, plateData);
         Components.getIntake().closeClaw();
         stage = 0;
         prevIndex = 0;
         sameIndexIterations = 0;
         abort = false;
+        time.start();
     }
 
     /**
@@ -66,15 +70,18 @@ public class Auto {
             case ScaleThenSwitch:
             case DoubleScale:
             case DoubleSwitch:
+            case TripleSwitch:
                 runPathAuto();
                 break;
             case Elims:
-                if (movements.isEmpty()) {
-                    crossLine();
-                    System.out.println("path is empty");
+                if (plateData.getScaleSide() == Side.Left) {
+                    if (time.get() > 4) {
+                        runPathAuto();
+                    }
                 } else {
                     runPathAuto();
                 }
+
                 break;
             case CrossLine:
                 crossLine();
@@ -244,7 +251,8 @@ public class Auto {
                         if (movement.getProgress(autoDrive) > 0.5) {
                             Components.getLift().move(Lift.SCALE_HEIGHT);
                         }
-                        if (movement.getProgress(autoDrive) > 0.95) {
+                        if (movement.getProgress(
+                            autoDrive) > (plateData.getScaleSide() == Side.Left ? 0.99 : 0.95)) {
                             Components.getIntake().runWheelsOut(0.5);
                         }
                         break;
@@ -292,7 +300,7 @@ public class Auto {
                         break;
                 }
                 break;
-            case DoubleSwitch: {
+            case TripleSwitch: {
                 switch (stage) {
                     case 1:
                     case 5:
@@ -310,12 +318,14 @@ public class Auto {
                         }
                         break;
                     case 3:
+                    case 7:
                         if (movement.getProgress(autoDrive) > 0.5) {
                             Components.getLift().move(Lift.SWITCH_HEIGHT);
                             Components.getIntake().stopWheels();
                         }
                         break;
                     case 4:
+                    case 8:
                         if (movement.getProgress(autoDrive) > 0.9) {
                             Components.getIntake().runWheelsOut(0.4);
                         }
@@ -348,7 +358,7 @@ public class Auto {
             case ScaleFirst:
                 switch (stage) {
                     case 0:
-                        Components.getIntake().stopWheels();
+                        Components.getIntake().runWheelsOut(0.5);
                         return true;
                     case 1:
                         Components.getIntake().openClaw();
@@ -368,10 +378,12 @@ public class Auto {
                     default:
                         return true;
                 }
-            case DoubleSwitch:
+            case TripleSwitch:
                 switch (stage) {
                     case 6:
-                        Components.getIntake().stopWheels();
+                        if (plan == Plan.DoubleSwitch) {
+                            Components.getIntake().stopWheels();
+                        }
                         return true;
                 }
                 return true;

@@ -21,9 +21,9 @@ public enum Mode {
      */
     ScaleFirst,
     /**
-     * Double switch.
+     * Triple switch.
      */
-    DoubleSwitch,
+    TripleSwitch,
     /**
      * Do nothing.
      */
