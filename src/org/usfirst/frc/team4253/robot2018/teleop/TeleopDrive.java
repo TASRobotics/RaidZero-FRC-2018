@@ -9,8 +9,8 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 
 public class TeleopDrive {
 
-    private static final double DEFAULTRAMPTIME = 0.0;
-    private static final double MAXRAMPTIME = 0.6;
+    private static final double DEFAULT_RAMP_TIME = 0.0;
+    private static final double MAX_RAMP_TIME = 0.6;
     private Drive drive;
     private Lift lift;
 
@@ -32,9 +32,9 @@ public class TeleopDrive {
      */
     public void setup() {
         drive.setLowGear();
-        drive.getLeftMotor().configOpenloopRamp(DEFAULTRAMPTIME, 0); // Ramp rate - change second
+        drive.getLeftMotor().configOpenloopRamp(DEFAULT_RAMP_TIME, 0); // Ramp rate - change second
                                                                      // parameter to not-magic
-        drive.getRightMotor().configOpenloopRamp(DEFAULTRAMPTIME, 0);
+        drive.getRightMotor().configOpenloopRamp(DEFAULT_RAMP_TIME, 0);
         drive.getRightMotor().configPeakOutputForward(0.96, MotorSettings.TIMEOUT);
         drive.getRightMotor().configPeakOutputReverse(-0.96, MotorSettings.TIMEOUT);
         drive.getLeftMotor().configPeakOutputForward(1.0, MotorSettings.TIMEOUT);
@@ -50,14 +50,14 @@ public class TeleopDrive {
     public void drive(double leftInput, double rightInput, boolean defeatRamp) {
         if ((lift.getEncoderPos() > Lift.SWITCH_HEIGHT) && !defeatRamp) {
             drive.getLeftMotor().configOpenloopRamp(Utils.map(lift.getEncoderPos(),
-                Lift.SWITCH_HEIGHT, Lift.SCALE_HEIGHT, DEFAULTRAMPTIME, MAXRAMPTIME), 0);
+                Lift.SWITCH_HEIGHT, Lift.SCALE_HEIGHT, DEFAULT_RAMP_TIME, MAX_RAMP_TIME), 0);
             drive.getRightMotor().configOpenloopRamp(Utils.map(lift.getEncoderPos(),
-                Lift.SWITCH_HEIGHT, Lift.SCALE_HEIGHT, DEFAULTRAMPTIME, MAXRAMPTIME), 0);
+                Lift.SWITCH_HEIGHT, Lift.SCALE_HEIGHT, DEFAULT_RAMP_TIME, MAX_RAMP_TIME), 0);
         } else {
-            drive.getLeftMotor().configOpenloopRamp(DEFAULTRAMPTIME, 0); // Ramp rate - change
+            drive.getLeftMotor().configOpenloopRamp(DEFAULT_RAMP_TIME, 0); // Ramp rate - change
                                                                          // second
             // parameter to not-magic number
-            drive.getRightMotor().configOpenloopRamp(DEFAULTRAMPTIME, 0);
+            drive.getRightMotor().configOpenloopRamp(DEFAULT_RAMP_TIME, 0);
 
         }
 
