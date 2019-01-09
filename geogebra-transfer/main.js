@@ -7,34 +7,34 @@ const robotNumber = '4253';
 
 const pathInfoFormat = {
     mode: oneOf('switch and scale', 'scale first', 'side switch'),
-	stage: dependsOn('mode', mode => {
-		if (mode === 'scale first') {
-			return numberAnd(stage => stage >= 0 && stage <= 4);
-		}
-		return numberAnd(stage => stage >= 0 && stage <= 2);
-	}),
+    stage: dependsOn('mode', mode => {
+        if (mode === 'scale first') {
+            return numberAnd(stage => stage >= 0 && stage <= 4);
+        }
+        return numberAnd(stage => stage >= 0 && stage <= 2);
+    }),
     start: dependsOn(['mode', 'stage'], ([mode, stage]) => {
-		if (stage === 0) {
-			switch (mode) {
-				case 'switch and scale':
-					return is('center');
-				case 'scale first':
-					return oneOf('left', 'center', 'right');
-				case 'side switch':
-					return oneOf('left', 'right');
-			}
-		}
-		return oneOf('left', 'right');
+        if (stage === 0) {
+            switch (mode) {
+                case 'switch and scale':
+                    return is('center');
+                case 'scale first':
+                    return oneOf('left', 'center', 'right');
+                case 'side switch':
+                    return oneOf('left', 'right');
+            }
+        }
+        return oneOf('left', 'right');
     }),
     end: dependsOn(['mode', 'stage', 'start'], ([mode, stage, start]) => {
         if (mode === 'side switch' && (stage === 0 || stage === 1)
             || mode === 'scale first' && [1, 3, 4].includes(stage)) {
             return is(start);
         }
-		if (mode === 'switch and scale' && stage === 2
+        if (mode === 'switch and scale' && stage === 2
             || mode === 'side switch' && stage === 2) {
-			return is(oppositeOf(start));
-		}
+            return is(oppositeOf(start));
+        }
         return oneOf('left', 'right');
     }),
     direction: dependsOn('stage', stage => {
@@ -186,12 +186,12 @@ function upload(filename, data) {
 }
 
 function oppositeOf(x) {
-	switch (x) {
-		case 'left':
-			return 'right';
-		case 'right':
-			return 'left';
-	}
+    switch (x) {
+        case 'left':
+            return 'right';
+        case 'right':
+            return 'left';
+    }
 }
 
 function number(x, name) {
