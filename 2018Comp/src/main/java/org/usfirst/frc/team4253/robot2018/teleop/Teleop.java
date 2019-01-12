@@ -11,12 +11,13 @@ import edu.wpi.first.wpilibj.DigitalOutput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.Compressor;
 
 /**
  * Teleop specific code for the robot.
  */
 public class Teleop {
-
+    private static Compressor comp = new Compressor();
     private static XboxController controller1;
     private static XboxController controller2;
     private static TeleopDrive teleopDrive;
@@ -63,6 +64,11 @@ public class Teleop {
      * <p>This should be called repeatedly during teleop mode.
      */
     public static void run() {
+        if (controller1.getStartButton()) {
+            comp.start();
+        } else {
+            comp.stop();
+        }
         // Player 1
         // defeat Ramp timing
         if (controller1.getStartButton() && controller1.getBackButton()) {
