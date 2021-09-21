@@ -10,7 +10,7 @@
   "license": "UNLICENSED",
   "dependencies": {
     "clipboardy": "^1.2.2",
-    "ssh2": "^0.5.5",
+    "ssh2": "^1.4.0",
     "ssh2-streams": "^0.1.20"
   }
 }
